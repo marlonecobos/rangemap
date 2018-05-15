@@ -1,11 +1,22 @@
 Package: rangemap
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Species distributional ranges
 Version: 0.1.0
 Author: Who wrote it
 Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Description: This package presents various tools to create species
+    range maps based on occurrence data, statistics, and distinct 
+    shapefiles. Other tools of this package can be used to analyze
+    environmental characteristics of the species ranges and to 
+    create high quality figures for publication.
+Imports:
+    maps (>= 3.3),
+    maptools (>= 0.9),
+    raster (>= 2.6),
+    rgeos (>= 0.3)
+    sp (>= 1.2)
+Depends: 
+    R (>= 3.4.0)
+License: GPL-2
 Encoding: UTF-8
 LazyData: true
