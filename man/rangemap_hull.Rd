@@ -31,7 +31,7 @@ object projected to the Azimuthal equal area projection.
 \description{
 rangemap_hull generates a species range polygon for a given species
 by considering all the polygons of political entities in which the species has
-been detected.
+been detected. Shape files can be saved in the working directory if it is needed.
 }
 \examples{
 if(!require(rgbif)){
