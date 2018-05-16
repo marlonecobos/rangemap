@@ -11,12 +11,15 @@ rangemap_buff <- function(occ, dist, poly) {
   # create a buffer based on a user-defined distance
   buff_area <- raster::buffer(occ_sp, width = dist)
 
+  # disolve polygons
+
+
   # world map or user map
   if (missing(poly)) {
-    w_map <- maps::map(database = "world", fill = TRUE, plot = FALSE) #map of the world
+    w_map <- maps::map(database = "world", fill = TRUE, plot = FALSE) # map of the world
 
-    w_po <- sapply(strsplit(w_map$names, ":"), function(x) x[1]) #preparing data to create polygon
-    poly <- maptools::map2SpatialPolygons(w_map, IDs = w_po, proj4string = crs) #map to polygon
+    w_po <- sapply(strsplit(w_map$names, ":"), function(x) x[1]) # preparing data to create polygon
+    poly <- maptools::map2SpatialPolygons(w_map, IDs = w_po, proj4string = crs) # map to polygon
   }
 
   # clip a world map based on the created buffer (resolution?)
@@ -27,13 +30,17 @@ rangemap_buff <- function(occ, dist, poly) {
   clip_area_pro <- sp::spTransform(clip_area, CRS("+proj=aeqd +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"))
 
   # calculate areas
-  area_a <- raster::area(clip_area_pro)
+  area_a <- raster::area(clip_area_pro) # check this
 
-  area_t <- sum(area_a[, 4]) #check this
+  area_t <- sum(area_a[, 4]) # check this
+
+  area_o <- length(occ[, 1]) * 4 # area of occupancy separated more than 4 km (make a grid for this?)
+
+  area_e <- ### extent of occurrence
 
   # return results (list or a different object?)
-  sp_dat <- data.frame(occ[1, 1], length(occ[, 1]), area_t)
-  names(sp_dat) <- c("Species", "Individual records", "Total area")
+  sp_dat <- data.frame(occ[1, 1], length(occ[, 1]), area_t, area_o, area_e) # extent of occ = total area?
+  names(sp_dat) <- c("Species", "Individual records", "Total area", "Area of occupancy", "Extent of occurrence")
 
   results <- list(sp_dat, clip_area, area_a)
   return(results)
