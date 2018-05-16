@@ -1,5 +1,9 @@
 # rangemap_buff
 
+# documentation
+
+# dependencies
+
 rangemap_buff <- function(occ, dist, poly) {
   # erase duplicate records
   occ <- occ[row.names(unique(occ[, 2:3])), ]

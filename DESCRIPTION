@@ -6,7 +6,7 @@ Authors@R: c(
     person("Marlon E.", "Cobos", email = "manubio13@gmail.com", role = c("aut")),
     person("Vijay", "Barve", email = "vijay.barve@gmail.com", role = "aut"),
     person("Narayani", "Barve", email = "narayani.ku@gmail.com", role = "aut"),
-    person("Alberto", "Jiménez-Valverde", email = "alberto.jimenez.valverde@gmail.com ", role = "aut"))
+    person("Alberto", "Jiménez-Valverde", email = "alberto.jimenez.valverde@gmail.com", role = "aut"))
 Maintainer: The package maintainer <yourself@somewhere.net>
 Description: This package presents various tools to create species
     range maps based on occurrence data, statistics, and distinct 
