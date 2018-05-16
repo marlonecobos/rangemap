@@ -2,7 +2,7 @@
 % Please edit documentation in R/rangemap_buff.R
 \name{rangemap_buff}
 \alias{rangemap_buff}
-\title{Species range maps based on buffered occurrences}
+\title{Species distributional ranges based on buffered occurrences}
 \usage{
 rangemap_buff(occurrences, distance = 1, polygons, export = FALSE)
 }
@@ -22,8 +22,8 @@ directory, appart of the returned object.}
 }
 \value{
 A named list containing a data.frame with information about the species range, a
-SpatialPolygon object of the species range in latlong projection, and the same SpatialPolygon
-object projected to the azimuthal equal area projection.
+SpatialPolygon object of the species range in Geographic projection, and the same SpatialPolygon
+object projected to the Azimuthal equal area projection.
 }
 \description{
 rangemap_buff generates a species range polygon for a given species
@@ -37,7 +37,7 @@ library(rgbif)
 }
 
 # getting the data from GBIF
-occ <- occ_search(taxonKey = pek[1], return = "data")
+occ <- occ_search(taxonKey = 2422480, return = "data")
 
 # keeping only georeferenced records
 occ_g <- pe_dat[!is.na(pe_dat$decimalLatitude) & !is.na(pe_dat$decimalLongitude),]

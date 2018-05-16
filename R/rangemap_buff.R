@@ -1,4 +1,4 @@
-#' Species range maps based on buffered occurrences
+#' Species distributional ranges based on buffered occurrences
 #'
 #' @description rangemap_buff generates a species range polygon for a given species
 #' by buffering provided occurrences using a defined distance. Shape files can be saved
@@ -15,8 +15,8 @@
 #' directory, appart of the returned object.
 #'
 #' @return A named list containing a data.frame with information about the species range, a
-#' SpatialPolygon object of the species range in latlong projection, and the same SpatialPolygon
-#' object projected to the azimuthal equal area projection.
+#' SpatialPolygon object of the species range in Geographic projection, and the same SpatialPolygon
+#' object projected to the Azimuthal equal area projection.
 #'
 #' @examples
 #' if(!require(rgbif)){
@@ -25,7 +25,7 @@
 #' }
 #'
 #' # getting the data from GBIF
-#' occ <- occ_search(taxonKey = pek[1], return = "data")
+#' occ <- occ_search(taxonKey = 2422480, return = "data")
 #'
 #' # keeping only georeferenced records
 #' occ_g <- pe_dat[!is.na(pe_dat$decimalLatitude) & !is.na(pe_dat$decimalLongitude),]
@@ -35,9 +35,9 @@
 #'
 #' buff_range <- rangemap_buff(occurrences = occ_g, distance = dist)
 
-# dependencies: sp (SpatialPointsDataFrame, spTransform),
+# Dependencies: sp (SpatialPointsDataFrame, spTransform),
 #               raster (buffer, area), maps (map), maptools (map2SpatialPolygons),
-#               rgeos (gIntersection, gCentroid)
+#               rgeos (gUnaryUnion, gIntersection, gCentroid)
 
 rangemap_buff <- function(occurrences, distance = 1, polygons, export = FALSE) {
 
@@ -52,7 +52,7 @@ rangemap_buff <- function(occurrences, distance = 1, polygons, export = FALSE) {
   buff_area <- raster::buffer(occ_sp, width = distance)
 
   # disolve polygons
-
+  buff_area <- rgeos::gUnaryUnion(oregon.tract, id = oregon.tract@data$state) ###
 
   # world map or user map
   if (missing(polygons)) {
