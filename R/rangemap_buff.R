@@ -95,9 +95,9 @@ rangemap_buff <- function(occurrences, distance = 100000, polygons, export = FAL
   # calculate areas in km2
   area_km2 <- raster::area(clip_area) / 1000000 # total area of the species range
 
-  extent_occ <- a### extent of occurrence
+  extent_occ <- 1### extent of occurrence
 
-  area_occ <- length(occ[, 1]) * 4 # area of occupancy separated more than 4 km (make a grid for this?)
+  area_occ <- length(c(occ[, 2])$decimalLongitude) * 4 # area of occupancy separated more than 4 km (make a grid for this?)
 
   # adding areas to species range
   clip_area <- sp::SpatialPolygonsDataFrame(clip_area, data = data.frame(area_km2, extent_occ, area_occ),
@@ -110,7 +110,7 @@ rangemap_buff <- function(occurrences, distance = 100000, polygons, export = FAL
 
   # return results (list or a different object?)
   sp_dat <- data.frame(occ[1, 1], length(occ[, 1]), area_t, area_o, area_e) # extent of occ = total area?
-  names(sp_dat) <- c("Species", "Individual records", "Total area", "Area of occupancy", "Extent of occurrence")
+  names(sp_dat) <- c("Species", "Non-dupplicated records", "Total area", "Area of occupancy", "Extent of occurrence")
 
   results <- list(sp_dat, clip_area)
   return(results)
