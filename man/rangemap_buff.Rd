@@ -4,26 +4,27 @@
 \alias{rangemap_buff}
 \title{Species distributional ranges based on buffered occurrences}
 \usage{
-rangemap_buff(occurrences, distance = 1, polygons, export = FALSE)
+rangemap_buff(occurrences, distance = 1e+05, polygons, export = FALSE, name)
 }
 \arguments{
 \item{occurrences}{a data.frame containing species occurrences, columns must be:
-Species, Longitude, and Latitude.}
+Species, Longitude, and Latitude. Geographic coordinates must be in decimal degrees}
 
-\item{distance}{(numeric) distance in decimal degrees to be used for creating the buffer areas
-around occurrences, default = 1.}
+\item{distance}{(numeric) distance in meters to be used for creating the buffer areas
+around occurrences, default = 100000.}
 
 \item{polygons}{(optional) a SpatialPolygon object that will be clipped with the buffer areas
-to create species ranges based on actual limits. If not defined, a default world map will be
+to create species ranges based on actual limits. Projection must be If not defined, a default world map will be
 used.}
 
 \item{export}{(logical) if TRUE a shapefile of the species range will be written in the working
 directory, appart of the returned object.}
+
+\item{name}{(character) valid if export TRUE. The name of the shapefile to be exported.}
 }
 \value{
-A named list containing a data.frame with information about the species range, a
-SpatialPolygon object of the species range in Geographic projection, and the same SpatialPolygon
-object projected to the Azimuthal equal area projection.
+A named list containing a data.frame with information about the species range and a
+SpatialPolygonDataFrame object of the species range in Azimuthal equal area projection.
 }
 \description{
 rangemap_buff generates a species range polygon for a given species
@@ -40,10 +41,11 @@ library(rgbif)
 occ <- occ_search(taxonKey = 2422480, return = "data")
 
 # keeping only georeferenced records
-occ_g <- pe_dat[!is.na(pe_dat$decimalLatitude) & !is.na(pe_dat$decimalLongitude),]
+occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
+            c("name", "decimalLongitude", "decimalLatitude")]
 
 # buffer distance
-dist <- 0.5
+dist <- 100000
 
 buff_range <- rangemap_buff(occurrences = occ_g, distance = dist)
 }
