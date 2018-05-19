@@ -52,9 +52,8 @@ if export = TRUE.}
 \item{...}{other arguments from function \code{\link[Base]{plot}}.}
 }
 \value{
-A named list containing a data.frame with information about the species range, a
-SpatialPolygon object of the species range in Geographic projection, and the same SpatialPolygon
-object projected to the Azimuthal equal area projection.
+A figure of the species distributional range in a geographical context, with the
+map components defined by the user.
 }
 \description{
 rangemap_fig generates customizable figures of species range maps

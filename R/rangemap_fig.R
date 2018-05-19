@@ -31,9 +31,8 @@
 #' if export = TRUE.
 #' @param ... other arguments from function \code{\link[Base]{plot}}.
 #'
-#' @return A named list containing a data.frame with information about the species range, a
-#' SpatialPolygon object of the species range in Geographic projection, and the same SpatialPolygon
-#' object projected to the Azimuthal equal area projection.
+#' @return A figure of the species distributional range in a geographical context, with the
+#' map components defined by the user.
 #'
 #' @details Position of distinct elements depend on the spatial configuration of the species range.
 #' Therefore, their positiuon may need to be changed if the elements are needed. Position options are
@@ -43,7 +42,7 @@
 
 # Dependencies: sp (SpatialPointsDataFrame, spTransform), viridis?,
 #               maps (map), maptools (map2SpatialPolygons),
-#               ggplot2?, scales?
+#               ggplot2?,
 
 rangemap_fig <- function(range, polygon, xlim, ylim, grid = "measured", appearance = "labels",
                          sides = "bottomleft", north = FALSE, north_position = "topleft",
