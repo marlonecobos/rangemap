@@ -68,7 +68,7 @@ rangemap_buff <- function(occurrences, distance = 100000, polygons, export = FAL
   }
 
   # keeping only records in land
-  occ_sp <- occ_sp[!is.na(over(occ_sp, polygons)),]
+  occ_sp <- occ_sp[!is.na(sp::over(occ_sp, polygons)),]
 
   # project the points using their centriods as reference
   centroid <- rgeos::gCentroid(occ_sp, byid = FALSE)
