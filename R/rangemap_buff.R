@@ -104,15 +104,14 @@ rangemap_buff <- function(occurrences, distance = 100000, polygons, export = FAL
                                             match.ID = FALSE)
 
   #exporting
-  if (export = TRUE) {
-    rgdal::writeOGR(clip_area, ".", name, driver="ESRI Shapefile")
+  if (export == TRUE) {
+    rgdal::writeOGR(clip_area, ".", name, driver = "ESRI Shapefile")
   }
 
   # return results (list or a different object?)
-  sp_dat <- data.frame(occ[1, 1], length(occ[, 1]), area_t, area_o, area_e) # extent of occ = total area?
-  names(sp_dat) <- c("Species", "Non-dupplicated records", "Total area", "Area of occupancy", "Extent of occurrence")
+  sp_dat <- data.frame(occ[1, 1], length(occ[, 1]), area_km2, extent_occ, area_occ) # extent of occ = total area?
+  names(sp_dat) <- c("Species", "Total non-duplicate records", "Total area", "Extent of occurrence", "Area of occupancy")
 
   results <- list(sp_dat, clip_area)
   return(results)
 }
-
