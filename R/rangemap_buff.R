@@ -51,12 +51,6 @@ rangemap_buff <- function(occurrences, distance = 100000, polygons, export = FAL
     stop("occurrences data.frame must have the following columns: \nSpecies, Longitude, and Latitude")
   }
 
-  if (!missing(polygons)) {
-    if (condition) {
-      # stop if projection is not the one that is needed or only project it?
-    }
-  }
-
   # erase duplicate records
   occ <- unique(occurrences)
 
@@ -64,17 +58,6 @@ rangemap_buff <- function(occurrences, distance = 100000, polygons, export = FAL
   WGS84 <- sp::CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
   occ_sp <- sp::SpatialPointsDataFrame(coords = occ[, 2:3], data = occ,
                                    proj4string = WGS84)
-
-  # project the points using their centriods as reference
-  centroid <- rgeos::gCentroid(occ_sp, byid = FALSE)
-
-  AEQD <- sp::CRS(paste("+proj=aeqd +lat_0=", centroid@coords[2], " +lon_0=", centroid@coords[1],
-                        " +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs", sep = ""))
-
-  occ_pr <- sp::spTransform(occ_sp, AEQD)
-
-  # create a buffer based on a user-defined distance
-  buff_area <- rgeos::gBuffer(occ_pr, width = distance)
 
   # world map or user map fro creating species range
   if (missing(polygons)) {
@@ -84,35 +67,76 @@ rangemap_buff <- function(occurrences, distance = 100000, polygons, export = FAL
     polygons <- maptools::map2SpatialPolygons(w_map, IDs = w_po, proj4string = WGS84) # map to polygon
   }
 
+  # keeping only records in land
+  occ_sp <- occ_sp[!is.na(over(occ_sp, polygons)),]
+
+  # project the points using their centriods as reference
+  centroid <- rgeos::gCentroid(occ_sp, byid = FALSE)
+
+  AEQD <- sp::CRS(paste("+proj=aeqd +lat_0=", centroid@coords[2], " +lon_0=", centroid@coords[1],
+                        " +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs", sep = ""))
+
+  occ_pr <- sp::spTransform(occ_sp, AEQD)
+
   # project polygons
   polygons <- sp::spTransform(polygons, AEQD)
+
+  # create a buffer based on a user-defined distance
+  buff_area <- rgeos::gBuffer(occ_pr, width = distance)
 
   # clip a world map based on the created buffer
   clip_area <- rgeos::gIntersection(polygons, buff_area, byid = TRUE, drop_lower_td = TRUE)
 
-  # reproject to WGS84?
-  clip_area_pro <- sp::spTransform(clip_area, WGS84)
-
   # calculate areas in km2
-  area_km2 <- raster::area(clip_area) / 1000000 # total area of the species range
+  area_km2 <- sum(raster::area(clip_area) / 1000000) # total area of the species range
 
-  extent_occ <- 1### extent of occurrence
+  ## extent of occurrence
+  coord <- as.data.frame(occ[, 2:3]) # spatial point dataframe to data frame keeping only coordinates
+  covexhull <- chull(coord) # convex hull from points
+  coord_pol <- coord[c(covexhull, covexhull[1]),] # defining coordinates
+  covexhull_polygon <- sp::SpatialPolygons(list(sp::Polygons(list(sp::Polygon(coord_pol)), ID = 1))) # into SpatialPolygons
+  sp::proj4string(covexhull_polygon) <- WGS84 # project
+  covexhull_polygon_pr <- sp::spTransform(covexhull_polygon, AEQD) # reproject
+  c_hull_extent <- rgeos::gIntersection(polygons, covexhull_polygon_pr, byid = TRUE, drop_lower_td = TRUE) # area of interest
 
-  area_occ <- length(c(occ[, 2])$decimalLongitude) * 4 # area of occupancy separated more than 4 km (make a grid for this?)
+  ext_occ_areas <- raster::area(c_hull_extent) / 1000000
+  extent_occ <- sum(ext_occ_areas) # total area of the species range
 
-  # adding areas to species range
-  clip_area <- sp::SpatialPolygonsDataFrame(clip_area, data = data.frame(area_km2, extent_occ, area_occ),
+  ## area of occupancy
+  raster_sp <- plotKML::vect2rast.SpatialPoints(as(occ_pr, "SpatialPoints"), cell.size = 2000) # raster from points
+  grid_sp <- as(raster_sp, "SpatialPolygonsDataFrame") # raster to polygon
+
+  area_occ_areas <- raster::area(grid_sp) / 1000000
+  area_occ <- sum(area_occ_areas) # area calculation
+
+  # adding characteristics to spatial polygons
+  species <- as.character(occurrences[1,1])
+  clip_area <- sp::SpatialPolygonsDataFrame(clip_area, data = data.frame(species, area_km2, # species range
+                                                                         extent_occ, area_occ),
                                             match.ID = FALSE)
+
+  extent_occurrence <- sp::SpatialPolygonsDataFrame(c_hull_extent, # extent of occurrence
+                                                    data = data.frame(species,
+                                                                      ext_occ_areas),
+                                                    match.ID = FALSE)
+
+  area_occupancy <- sp::SpatialPolygonsDataFrame(grid_sp, data = data.frame(species, # area of occupancy
+                                                                            area_occ_areas),
+                                                 match.ID = FALSE)
 
   #exporting
   if (export == TRUE) {
     rgdal::writeOGR(clip_area, ".", name, driver = "ESRI Shapefile")
+    rgdal::writeOGR(extent_occurrence, ".", paste(name, "extent_occ", sep = "_"), driver = "ESRI Shapefile")
+    rgdal::writeOGR(area_occupancy, ".", paste(name, "area_occ", sep = "_"), driver = "ESRI Shapefile")
   }
 
   # return results (list or a different object?)
-  sp_dat <- data.frame(occ[1, 1], length(occ[, 1]), area_km2, extent_occ, area_occ) # extent of occ = total area?
-  names(sp_dat) <- c("Species", "Total non-duplicate records", "Total area", "Extent of occurrence", "Area of occupancy")
+  sp_dat <- data.frame(occ[1, 1], dim(occ_pr)[1], area_km2, extent_occ, area_occ) # extent of occ = total area?
+  names(sp_dat) <- c("Species", "Non-duplicate records", "Range area", "Extent of occurrence", "Area of occupancy")
 
-  results <- list(sp_dat, clip_area)
+  results <- list(sp_dat, clip_area, extent_occurrence, area_occupancy)
+  names(results) <- c("Summary", "Species range", "Extent of occurrence",
+                      "Area of occupancy")
   return(results)
 }
