@@ -34,7 +34,8 @@
 #' # buffer distance
 #' dist <- 100000
 #'
-#' buff_range <- rangemap_buff(occurrences = occ_g, distance = dist)
+#' buff_range <- rangemap_buff(occurrences = occ_g, distance = dist,
+#'                             export = TRUE, name = "test")
 
 # Dependencies: sp (SpatialPointsDataFrame, spTransform),
 #               raster (buffer, area), maps (map), maptools (map2SpatialPolygons),
