@@ -42,13 +42,13 @@
 #               rgeos (gIntersection, gCentroid),
 
 rangemap_hull <- function(occurrences, hull_type = "concave", distance = 0.5, split_distance = 2, export = FALSE) {
-
+  # erase duplicate records
+  # create hulls depending in the user-defined argument (convex, concave, and alpha)
+  # split hulls based on a user-defined distance
+  # create a buffer based on a user-defined distance
+  # clip a world map based on the created buffer (resolution?)
+  # calculate areas
+  # return results
 }
 
-# erase duplicate records
-# create hulls depending in the user-defined argument (convex, concave, and alpha)
-# split hulls based on a user-defined distance
-# create a buffer based on a user-defined distance
-# clip a world map based on the created buffer (resolution?)
-# calculate areas
-# return results
+

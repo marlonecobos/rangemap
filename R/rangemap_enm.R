@@ -25,17 +25,17 @@
 #'
 #' @examples
 
-# Dependencies: sp (SpatialPointsDataFrame, spTransform),
+# Dependencies: sp (SpatialPointsDataFrame, spTransform), rgdal?,
 #               raster (buffer, area), maps (map), maptools (map2SpatialPolygons),
 #               rgeos (gUnaryUnion, gIntersection, gCentroid)
 
 rangemap_enm <- function(occurrences, model, threshold_value, threshold, export = FALSE) {
-
+  # use records with which the enm was created and calculate a threshold
+  # that can be defined at distinct levels (0%, 5%, 10%, etc.)
+  # or use a threshold value specified by the user
+  # threshold the enm
+  # calculate areas (number of pixels times resolution)
+  # return results
 }
 
-# use records with which the enm was created and calculate a threshold
-# that can be defined at distinct levels (0%, 5%, 10%, etc.)
-# or use a threshold value specified by the user
-# threshold the enm
-# calculate areas (number of pixels times resolution)
-# return results
+

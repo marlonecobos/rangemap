@@ -44,11 +44,11 @@
 #               rgeos (gIntersection, gCentroid), GADMTools (gadm.loadCountries)
 
 rangemap_bound <- function(occurrences, boundaries = "countries", polygons, disolve = TRUE, export = FALSE) {
-
+  # erase duplicate records
+  # select polygons based on records overlap
+  # poligons can be defined by the user and can also be loaded by the user
+  # calculate areas
+  # return results
 }
 
-# erase duplicate records
-# select polygons based on records overlap
-# poligons can be defined by the user and can also be loaded by the user
-# calculate areas
-# return results
+
