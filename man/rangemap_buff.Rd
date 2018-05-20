@@ -4,32 +4,36 @@
 \alias{rangemap_buff}
 \title{Species distributional ranges based on buffered occurrences}
 \usage{
-rangemap_buff(occurrences, distance = 1e+05, polygons, export = FALSE, name)
+rangemap_buff(occurrences, distance = 1e+05, polygons, save_shp = FALSE,
+  name)
 }
 \arguments{
 \item{occurrences}{a data.frame containing species occurrences, columns must be:
 Species, Longitude, and Latitude. Geographic coordinates must be in decimal degrees}
 
-\item{distance}{(numeric) distance in meters to be used for creating the buffer areas
+\item{distance}{(numeric) distance, in meters, to be used for creating the buffer areas
 around occurrences, default = 100000.}
 
 \item{polygons}{(optional) a SpatialPolygon object that will be clipped with the buffer areas
-to create species ranges based on actual limits. Projection must be If not defined, a default world map will be
-used.}
+to create species ranges based on actual limits. Projection must be Geographic (longitude, latitude).
+If not defined, a default, simple world map will be used.}
 
-\item{export}{(logical) if TRUE a shapefile of the species range will be written in the working
-directory, appart of the returned object.}
+\item{save_shp}{(logical) if TRUE shapefiles of the species range, extent of occurrence and area of
+occupancy will be written in the working directory.}
 
-\item{name}{(character) valid if export TRUE. The name of the shapefile to be exported.}
+\item{name}{(character) valid if save_shp TRUE. The name of the shapefile to be exported.}
 }
 \value{
-A named list containing a data.frame with information about the species range and a
-SpatialPolygonDataFrame object of the species range in Azimuthal equal area projection.
+A named list containing a data.frame with information about the species range and
+SpatialPolygonDataFrame objects of the species range, extent of occurrence, and area of occupancy;
+all in Azimuthal equal area projection. If save_shp = TRUE, written shapefiles' projections
+will be the same as the SpatialPolygonDataFrame objects.
 }
 \description{
-rangemap_buff generates a species range polygon for a given species
-by buffering provided occurrences using a defined distance. Shape files can be saved
-in the working directory if it is needed.
+rangemap_buff generates SpatialPolygonsDataFrame objects of a species range
+by buffering provided occurrences using a defined distance, and the species extent of occurrence
+and area of occupancy according to the UICN criteria. Shape files can be saved in the working
+directory if it is needed.
 }
 \examples{
 if(!require(rgbif)){
@@ -48,5 +52,5 @@ occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
 dist <- 100000
 
 buff_range <- rangemap_buff(occurrences = occ_g, distance = dist,
-                            export = TRUE, name = "test")
+                            save_shp = TRUE, name = "test")
 }

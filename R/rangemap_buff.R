@@ -1,22 +1,25 @@
 #' Species distributional ranges based on buffered occurrences
 #'
-#' @description rangemap_buff generates a species range polygon for a given species
-#' by buffering provided occurrences using a defined distance. Shape files can be saved
-#' in the working directory if it is needed.
+#' @description rangemap_buff generates SpatialPolygonsDataFrame objects of a species range
+#' by buffering provided occurrences using a defined distance, and the species extent of occurrence
+#' and area of occupancy according to the UICN criteria. Shape files can be saved in the working
+#' directory if it is needed.
 #'
 #' @param occurrences a data.frame containing species occurrences, columns must be:
 #' Species, Longitude, and Latitude. Geographic coordinates must be in decimal degrees
-#' @param distance (numeric) distance in meters to be used for creating the buffer areas
+#' @param distance (numeric) distance, in meters, to be used for creating the buffer areas
 #' around occurrences, default = 100000.
 #' @param polygons (optional) a SpatialPolygon object that will be clipped with the buffer areas
-#' to create species ranges based on actual limits. Projection must be If not defined, a default world map will be
-#' used.
-#' @param export (logical) if TRUE a shapefile of the species range will be written in the working
-#' directory, appart of the returned object.
-#' @param name (character) valid if export TRUE. The name of the shapefile to be exported.
+#' to create species ranges based on actual limits. Projection must be Geographic (longitude, latitude).
+#' If not defined, a default, simple world map will be used.
+#' @param save_shp (logical) if TRUE shapefiles of the species range, extent of occurrence and area of
+#' occupancy will be written in the working directory.
+#' @param name (character) valid if save_shp TRUE. The name of the shapefile to be exported.
 #'
-#' @return A named list containing a data.frame with information about the species range and a
-#' SpatialPolygonDataFrame object of the species range in Azimuthal equal area projection.
+#' @return A named list containing a data.frame with information about the species range and
+#' SpatialPolygonDataFrame objects of the species range, extent of occurrence, and area of occupancy;
+#' all in Azimuthal equal area projection. If save_shp = TRUE, written shapefiles' projections
+#' will be the same as the SpatialPolygonDataFrame objects.
 #'
 #' @examples
 #' if(!require(rgbif)){
@@ -35,13 +38,17 @@
 #' dist <- 100000
 #'
 #' buff_range <- rangemap_buff(occurrences = occ_g, distance = dist,
-#'                             export = TRUE, name = "test")
+#'                             save_shp = TRUE, name = "test")
 
-# Dependencies: sp (SpatialPointsDataFrame, spTransform),
-#               raster (buffer, area), maps (map), maptools (map2SpatialPolygons),
-#               rgeos (gUnaryUnion, gIntersection, gCentroid)
+# Dependencies: sp (SpatialPointsDataFrame, spTransform, SpatialPolygonsDataFrame,
+#                   CRS, over, Polygons, Polygon, SpatialPolygons, proj4string),
+#               maps (map),
+#               maptools (map2SpatialPolygons),
+#               raster (area, rasterize, extent),
+#               rgdal (writeOGR),
+#               rgeos (gIntersection, gCentroid, gBuffer)
 
-rangemap_buff <- function(occurrences, distance = 100000, polygons, export = FALSE, name) {
+rangemap_buff <- function(occurrences, distance = 100000, polygons, save_shp = FALSE, name) {
   # testing potential issues
   if (missing(occurrences)) {
     stop("Argument occurrences is necessary to perform the analysis")
@@ -52,7 +59,7 @@ rangemap_buff <- function(occurrences, distance = 100000, polygons, export = FAL
   }
 
   # erase duplicate records
-  occ <- unique(occurrences)
+  occ <- as.data.frame(unique(occurrences))
 
   # make a spatial object from coordinates
   WGS84 <- sp::CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
@@ -68,7 +75,7 @@ rangemap_buff <- function(occurrences, distance = 100000, polygons, export = FAL
   }
 
   # keeping only records in land
-  occ_sp <- occ_sp[!is.na(sp::over(occ_sp, polygons)),]
+  occ_sp <- occ_sp[!is.na(sp::over(occ_sp, polygons)), ]
 
   # project the points using their centriods as reference
   centroid <- rgeos::gCentroid(occ_sp, byid = FALSE)
@@ -99,40 +106,41 @@ rangemap_buff <- function(occurrences, distance = 100000, polygons, export = FAL
   covexhull_polygon_pr <- sp::spTransform(covexhull_polygon, AEQD) # reproject
   c_hull_extent <- rgeos::gIntersection(polygons, covexhull_polygon_pr, byid = TRUE, drop_lower_td = TRUE) # area of interest
 
-  ext_occ_areas <- raster::area(c_hull_extent) / 1000000
-  extent_occ <- sum(ext_occ_areas) # total area of the species range
+  ext_occ_area_km2 <- raster::area(c_hull_extent) / 1000000
+  extent_occ_km2 <- sum(ext_occ_area_km2) # total area of the species range
 
   ## area of occupancy
-  raster_sp <- plotKML::vect2rast.SpatialPoints(as(occ_pr, "SpatialPoints"), cell.size = 2000) # raster from points
+  grid <- raster::raster(ext = raster::extent(occ_pr) + 10000, res = c(2000, 2000), crs = AEQD)
+  raster_sp <- raster::rasterize(occ_pr[, 2:3], grid)[[1]] # raster from points
   grid_sp <- as(raster_sp, "SpatialPolygonsDataFrame") # raster to polygon
 
-  area_occ_areas <- raster::area(grid_sp) / 1000000
-  area_occ <- sum(area_occ_areas) # area calculation
+  area_occ_area_km2 <- raster::area(grid_sp) / 1000000
+  area_occ_km2 <- sum(area_occ_area_km2) # area calculation
 
   # adding characteristics to spatial polygons
-  species <- as.character(occurrences[1,1])
+  species <- as.character(occurrences[1, 1])
   clip_area <- sp::SpatialPolygonsDataFrame(clip_area, data = data.frame(species, area_km2, # species range
-                                                                         extent_occ, area_occ),
+                                                                         extent_occ_km2, area_occ_km2),
                                             match.ID = FALSE)
 
   extent_occurrence <- sp::SpatialPolygonsDataFrame(c_hull_extent, # extent of occurrence
                                                     data = data.frame(species,
-                                                                      ext_occ_areas),
+                                                                      ext_occ_area_km2),
                                                     match.ID = FALSE)
 
   area_occupancy <- sp::SpatialPolygonsDataFrame(grid_sp, data = data.frame(species, # area of occupancy
-                                                                            area_occ_areas),
+                                                                            area_occ_area_km2),
                                                  match.ID = FALSE)
 
   #exporting
-  if (export == TRUE) {
+  if (save_shp == TRUE) {
     rgdal::writeOGR(clip_area, ".", name, driver = "ESRI Shapefile")
     rgdal::writeOGR(extent_occurrence, ".", paste(name, "extent_occ", sep = "_"), driver = "ESRI Shapefile")
     rgdal::writeOGR(area_occupancy, ".", paste(name, "area_occ", sep = "_"), driver = "ESRI Shapefile")
   }
 
   # return results (list or a different object?)
-  sp_dat <- data.frame(occ[1, 1], dim(occ_pr)[1], area_km2, extent_occ, area_occ) # extent of occ = total area?
+  sp_dat <- data.frame(occ[1, 1], dim(occ_pr)[1], area_km2, extent_occ_km2, area_occ_km2) # extent of occ = total area?
   names(sp_dat) <- c("Species", "Non-duplicate records", "Range area", "Extent of occurrence", "Area of occupancy")
 
   results <- list(sp_dat, clip_area, extent_occurrence, area_occupancy)
