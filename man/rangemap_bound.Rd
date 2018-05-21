@@ -4,16 +4,18 @@
 \alias{rangemap_bound}
 \title{Species distributional ranges based on political boundaries}
 \usage{
-rangemap_bound(occurrences, boundaries = "countries", polygons,
-  disolve = TRUE, export = FALSE)
+rangemap_bound(occurrences, country_code, boundary_level = 0, polygons,
+  disolve = TRUE, save_shp = FALSE, name)
 }
 \arguments{
 \item{occurrences}{a data.frame containing species occurrences, columns must be:
 Species, Longitude, and Latitude.}
 
-\item{boundaries}{(character) type of boundaries to use from the available: "countries",
-"states" for USA and CAN only, "counties" for USA, "departments" and "provinces" for other
-countries; default = "countries".}
+\item{country_code}{(character) vector of country codes that will be considered when
+creating the species range. Codes follow the ISO-3166-1 norm as in function \code{\link[raster]{getData}}.}
+
+\item{boundary_level}{(numeric) the level of the administrative boundaries from 0 to 5 (0 is
+the country and higher values equal finer divisions), default = 0.}
 
 \item{polygons}{(optional) a SpatialPolygon object that will be used instead of boundaries
 to create species ranges based on overlapping of species records with these layer. If defined,
@@ -22,8 +24,10 @@ argument boundaries will not be considered.}
 \item{disolve}{(logical) if TRUE distint polygons selected as part of the species range will
 be disolved for creating simpler polygons, default = TRUE.}
 
-\item{export}{(logical) if TRUE a shapefile of the species range will be written in the working
-directory, appart of the returned object.}
+\item{save_shp}{(logical) if TRUE shapefiles of the species range, extent of occurrence and area of
+occupancy will be written in the working directory.}
+
+\item{name}{(character) valid if save_shp TRUE. The name of the shapefile to be exported.}
 }
 \value{
 A named list containing a data.frame with information about the species range, a
@@ -36,7 +40,7 @@ by considering all the polygons of political entities in which the species has
 been detected. Shape files can be saved in the working directory if it is needed.
 }
 \details{
-Boundaries used are loaded using the \code{\link[GADMTools]{gadm.loadCountries}} funcion.
+Boundaries used are loaded using the \code{\link[raster]{getData}} funcion.
 }
 \examples{
 if(!require(rgbif)){
@@ -48,9 +52,15 @@ library(rgbif)
 occ <- occ_search(taxonKey = 2440788, return = "data")
 
 # keeping only georeferenced records
-occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),]
+occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
+            c("name", "decimalLongitude", "decimalLatitude")]
 
+level <- 0
 disolve <- TRUE
+save <- TRUE
+name <- "test"
+countries <- c("PER", "BRA", "COL", "VEN", "ECU", "GUF", "GUY", "SUR")
 
-bound_range <- rangemap_bound(occurrences = occ_g, boundaries = "countries", disolve = disolve)
+bound_range <- rangemap_bound(occurrences = occ_g, country_code = countries, boundary_level = level,
+                              disolve = disolve, save_shp = save, name = name)
 }

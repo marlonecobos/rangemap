@@ -36,17 +36,19 @@
 #'
 #' # buffer distance
 #' dist <- 100000
+#' save <- TRUE
+#' name <- "test"
 #'
 #' buff_range <- rangemap_buff(occurrences = occ_g, distance = dist,
-#'                             save_shp = TRUE, name = "test")
+#'                             save_shp = save, name = name)
 
-# Dependencies: sp (SpatialPointsDataFrame, spTransform, SpatialPolygonsDataFrame,
-#                   CRS, over, Polygons, Polygon, SpatialPolygons, proj4string),
-#               maps (map),
+# Dependencies: maps (map),
 #               maptools (map2SpatialPolygons),
 #               raster (area, rasterize, extent),
 #               rgdal (writeOGR),
-#               rgeos (gIntersection, gCentroid, gBuffer)
+#               rgeos (gIntersection, gCentroid, gBuffer),
+#               sp (SpatialPointsDataFrame, spTransform, SpatialPolygonsDataFrame,
+#                   CRS, over, Polygons, Polygon, SpatialPolygons, proj4string)
 
 rangemap_buff <- function(occurrences, distance = 100000, polygons, save_shp = FALSE, name) {
   # testing potential issues
@@ -132,8 +134,9 @@ rangemap_buff <- function(occurrences, distance = 100000, polygons, save_shp = F
                                                                             area_occ_area_km2),
                                                  match.ID = FALSE)
 
-  #exporting
+  # exporting
   if (save_shp == TRUE) {
+    cat("Writing shapefiles in the working directory.")
     rgdal::writeOGR(clip_area, ".", name, driver = "ESRI Shapefile")
     rgdal::writeOGR(extent_occurrence, ".", paste(name, "extent_occ", sep = "_"), driver = "ESRI Shapefile")
     rgdal::writeOGR(area_occupancy, ".", paste(name, "area_occ", sep = "_"), driver = "ESRI Shapefile")

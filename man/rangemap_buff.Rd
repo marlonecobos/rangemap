@@ -50,7 +50,9 @@ occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
 
 # buffer distance
 dist <- 100000
+save <- TRUE
+name <- "test"
 
 buff_range <- rangemap_buff(occurrences = occ_g, distance = dist,
-                            save_shp = TRUE, name = "test")
+                            save_shp = save, name = name)
 }
