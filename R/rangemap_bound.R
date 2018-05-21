@@ -85,6 +85,10 @@ rangemap_bound <- function(occurrences, country_code, boundary_level = 0,
     polygons <- sp::spTransform(polygon, WGS84)
   }
 
+  # erasing rds files in working directory
+  erase_rds <- list.files(path = ".", pattern = "^GADM_", full.names = TRUE)
+  unlink(erase_rds)
+
   # keeping only records in land
   occ_sp <- occ_sp[!is.na(sp::over(occ_sp, as(polygons, "SpatialPolygons"))), ]
 
