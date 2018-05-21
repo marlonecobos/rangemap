@@ -80,7 +80,8 @@ rangemap_bound <- function(occurrences, country_code, boundary_level = 0,
     for (i in 1:length(country_code)){
       bounds[[i]] <- raster::getData('GADM', country = country_code[i], level = boundary_level)
     }
-    polygon <- do.call("bind", bounds)
+    polygon <- do.call("rbind", bounds)
+    polygon@data$OBJECTID <- 1:length(bounds)
     polygons <- sp::spTransform(polygon, WGS84)
   }
 
