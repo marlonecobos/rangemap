@@ -6,7 +6,8 @@
 #' @param range an object produced with any of the following functions:
 #' \code{\link{rangemap_buff}}, \code{\link{rangemap_bound}}, \code{\link{rangemap_hull}},
 #' \code{\link{rangemap_enm}}, and \code{\link{rangemap_tsa}}.
-#' @param polygon a SpatialPolygon object to be used as base map for plotting the species range.
+#' @param polygons a SpatialPolygon object to be used as base map for plotting the species range.
+#' If not provided, a simplified world map will be used.
 #' @param xlim two element numeric vector giving a range of longitudes, expressed in degrees,
 #' to which drawing should be restricted. Longitude is measured in degrees east of Greenwich,
 #' so that, in particular, locations in the USA have negative longitude. If fill = TRUE, polygons
@@ -21,14 +22,19 @@
 #' @param appearance (character) type of grid if grid is different than "null". It can be "labels",
 #' "grids", or "ticks".
 #' @param sides (character) sides in which the labels will be placed in the figure.
-#' @param north (logical) if TRUE, a simple north arrow will be placed in north_position.
-#' @param north_position (character) site in the figure where the north arrow will be placed.
+#' @param northarrow (logical) if TRUE, a simple north arrow will be placed in northarrow_position.
+#' @param northarrow_position (character) site in the figure where the north arrow will be placed.
 #' @param scalebar (logical) if TRUE a simple scale bar will be inserted in scalebar_position.
 #' @param scalebar_position (character) place for the scale bar insertion.
-#' @param export (logical) if TRUE a figure in format = format will be written in the working
+#' @param save_figure (logical) if TRUE a figure in figure_fromat format will be written in the working
 #' directory, appart of the returned object.
-#' @param format (character) format of the figure that will be written in the working directory
-#' if export = TRUE.
+#' @param figure_fromat (character) format of the figure that will be written in the working directory
+#' if save_figure = TRUE, default = "png". Options include: "bmp", "jpeg", "png", "tif", and "pdf".
+#' @param figure_size (numeric) vector of two values in mm, c(width, height), of the size in which the
+#' figure will be saved. Recommended widths for scientific publications are 79, 107.5, and 165 mm.
+#' Default = c(165, 165)
+#' @param figure_resolution (numeric) value of the resolution (ppi) in which the figure will be saved,
+#' default = 300.
 #' @param ... other arguments from function \code{\link[Base]{plot}}.
 #'
 #' @return A figure of the species distributional range in a geographical context, with the
@@ -40,20 +46,31 @@
 #'
 #' @examples
 
-# Dependencies: sp (SpatialPointsDataFrame, spTransform), viridis?,
-#               maps (map), maptools (map2SpatialPolygons),
-#               ggplot2?,
+# Dependencies: ggplot2?,
+#               maps (map),
+#               maptools (map2SpatialPolygons),
+#               scales (alpha),
+#               sp (SpatialPointsDataFrame, spTransform),
+#               viridis?,
 
-rangemap_fig <- function(range, polygon, xlim, ylim, grid = "measured", appearance = "labels",
-                         sides = "bottomleft", north = FALSE, north_position = "topleft",
+
+rangemap_fig <- function(range, polygons, xlim, ylim, grid = "measured", appearance = "labels",
+                         sides = "bottomleft", northarrow = FALSE, northarrow_position = "topleft",
                          scalebar = FALSE, scalebar_position = "bottomleft",
-                         export = FALSE, format = "png", ...) {
+                         save_figure = FALSE, figure_fromat = "png", figure_size = c(165, 165),
+                         figure_resolution = 300, ...) {
+
+  # bringing maps if polygons false
+
+  # project for mantaining shapes
+
   # plot a background map (e.g., the world or a close up to a region)
   # plot the object created git previous functions
   # add north arrow if asked
   # add grid arrow if asked
   # add leggend if asked
   # add text if asked
+  # save figure if asked
 }
 
 

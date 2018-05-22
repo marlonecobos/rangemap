@@ -71,7 +71,8 @@ rangemap_bound <- function(occurrences, country_code, boundary_level = 0,
   }
 
   # erase duplicate records
-  occ <- as.data.frame(unique(occurrences))
+  occ <- as.data.frame(unique(occurrences))[, 1:3]
+  colnames(occ) <- c("Species", "Longitude", "Latitude")
 
   # make a spatial object from coordinates
   WGS84 <- sp::CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
@@ -170,14 +171,15 @@ rangemap_bound <- function(occurrences, country_code, boundary_level = 0,
     rgdal::writeOGR(boundaries, ".", name, driver = "ESRI Shapefile")
     rgdal::writeOGR(extent_occurrence, ".", paste(name, "extent_occ", sep = "_"), driver = "ESRI Shapefile")
     rgdal::writeOGR(area_occupancy, ".", paste(name, "area_occ", sep = "_"), driver = "ESRI Shapefile")
+    rgdal::writeOGR(occ_pr, ".", paste(name, "unique_records", sep = "_"), driver = "ESRI Shapefile")
   }
 
   # return results (list or a different object?)
   sp_dat <- data.frame(occ[1, 1], dim(occ_pr)[1], rangekm2, eocckm2, aocckm2) # extent of occ = total area?
-  names(sp_dat) <- c("Species", "Non-duplicate records", "Range area", "Extent of occurrence", "Area of occupancy")
+  colnames(sp_dat) <- c("Species", "Unique records", "Range area", "Extent of occurrence", "Area of occupancy")
 
-  results <- list(sp_dat, boundaries, extent_occurrence, area_occupancy)
-  names(results) <- c("Summary", "Species range", "Extent of occurrence",
+  results <- list(sp_dat, occ_pr, boundaries, extent_occurrence, area_occupancy)
+  names(results) <- c("Summary", "Species unique records", "Species range", "Extent of occurrence",
                       "Area of occupancy")
   return(results)
 }
