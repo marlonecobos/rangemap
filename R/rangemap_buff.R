@@ -1,9 +1,9 @@
 #' Species distributional ranges based on buffered occurrences
 #'
-#' @description rangemap_buff generates SpatialPolygonsDataFrame objects of a species range
-#' by buffering provided occurrences using a defined distance, and the species extent of occurrence
-#' and area of occupancy according to the UICN criteria. Shape files can be saved in the working
-#' directory if it is needed.
+#' @description rangemap_buff generates SpatialPolygonsDataFrame objects of a species range, and
+#' extent of occurrence and area of occupancy according to the UICN criteria. The species
+#' range is calculated by buffering provided occurrences using a defined distance. Shapefiles
+#' of the results can be saved in the working directory if it is needed.
 #'
 #' @param occurrences a data.frame containing species occurrences, columns must be:
 #' Species, Longitude, and Latitude. Geographic coordinates must be in decimal degrees

@@ -5,14 +5,16 @@
 \title{Species distributional ranges based on political boundaries}
 \usage{
 rangemap_bound(occurrences, country_code, boundary_level = 0, polygons,
-  disolve = TRUE, save_shp = FALSE, name)
+  dissolve = TRUE, save_shp = FALSE, name)
 }
 \arguments{
 \item{occurrences}{a data.frame containing species occurrences, columns must be:
 Species, Longitude, and Latitude.}
 
 \item{country_code}{(character) vector of country codes that will be considered when
-creating the species range. Codes follow the ISO-3166-1 norm as in function \code{\link[raster]{getData}}.}
+creating the species range. Note that including neighbor countries may be necessary to calculate
+the extent of occurrence based on the IUCN criteria, even if they are not occupied by the species.
+Codes follow the ISO-3166-1 norm as in function \code{\link[raster]{getData}}.}
 
 \item{boundary_level}{(numeric) the level of the administrative boundaries from 0 to 5 (0 is
 the country and higher values equal finer divisions), default = 0.}
@@ -21,8 +23,9 @@ the country and higher values equal finer divisions), default = 0.}
 to create species ranges based on overlapping of species records with these layer. If defined,
 argument boundaries will not be considered.}
 
-\item{disolve}{(logical) if TRUE distint polygons selected as part of the species range will
-be disolved for creating simpler polygons, default = TRUE.}
+\item{dissolve}{(logical) if TRUE distint polygons selected as part of the species range will
+be disolved for creating simpler polygons, default = TRUE. The dissolving process may take some
+more time, especially if species with broad distributions are being analyzed.}
 
 \item{save_shp}{(logical) if TRUE shapefiles of the species range, extent of occurrence and area of
 occupancy will be written in the working directory.}
@@ -37,7 +40,8 @@ object projected to the Azimuthal equal area projection.
 \description{
 rangemap_bound generates a species range polygon for a given species
 by considering all the polygons of political entities in which the species has
-been detected. Shape files can be saved in the working directory if it is needed.
+been detected. The species extent of occurrence and area of occupancy according to
+the IUCN are also generated. Shape files can be saved in the working directory if it is needed.
 }
 \details{
 Boundaries used are loaded using the \code{\link[raster]{getData}} funcion.
@@ -56,11 +60,11 @@ occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
             c("name", "decimalLongitude", "decimalLatitude")]
 
 level <- 0
-disolve <- TRUE
+dissolve <- TRUE
 save <- TRUE
 name <- "test"
-countries <- c("PER", "BRA", "COL", "VEN", "ECU", "GUF", "GUY", "SUR")
+countries <- c("PER", "BRA", "COL", "VEN", "ECU", "GUF", "GUY", "SUR", "BOL")
 
 bound_range <- rangemap_bound(occurrences = occ_g, country_code = countries, boundary_level = level,
-                              disolve = disolve, save_shp = save, name = name)
+                              dissolve = dissolve, save_shp = save, name = name)
 }
