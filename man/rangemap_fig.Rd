@@ -4,17 +4,20 @@
 \alias{rangemap_fig}
 \title{Figures of species range maps}
 \usage{
-rangemap_fig(range, polygon, xlim, ylim, grid = "measured",
-  appearance = "labels", sides = "bottomleft", north = FALSE,
-  north_position = "topleft", scalebar = FALSE,
-  scalebar_position = "bottomleft", export = FALSE, format = "png", ...)
+rangemap_fig(range, polygons, xlim, ylim, grid = "measured",
+  appearance = "labels", sides = "bottomleft", northarrow = FALSE,
+  northarrow_position = "topleft", scalebar = FALSE,
+  scalebar_position = "bottomleft", save_figure = FALSE,
+  figure_fromat = "png", figure_size = c(165, 165),
+  figure_resolution = 300, ...)
 }
 \arguments{
 \item{range}{an object produced with any of the following functions:
 \code{\link{rangemap_buff}}, \code{\link{rangemap_bound}}, \code{\link{rangemap_hull}},
 \code{\link{rangemap_enm}}, and \code{\link{rangemap_tsa}}.}
 
-\item{polygon}{a SpatialPolygon object to be used as base map for plotting the species range.}
+\item{polygons}{a SpatialPolygon object to be used as base map for plotting the species range.
+If not provided, a simplified world map will be used.}
 
 \item{xlim}{two element numeric vector giving a range of longitudes, expressed in degrees,
 to which drawing should be restricted. Longitude is measured in degrees east of Greenwich,
@@ -35,19 +38,26 @@ spans the entire latitude range of the database.}
 
 \item{sides}{(character) sides in which the labels will be placed in the figure.}
 
-\item{north}{(logical) if TRUE, a simple north arrow will be placed in north_position.}
+\item{northarrow}{(logical) if TRUE, a simple north arrow will be placed in northarrow_position.}
 
-\item{north_position}{(character) site in the figure where the north arrow will be placed.}
+\item{northarrow_position}{(character) site in the figure where the north arrow will be placed.}
 
 \item{scalebar}{(logical) if TRUE a simple scale bar will be inserted in scalebar_position.}
 
 \item{scalebar_position}{(character) place for the scale bar insertion.}
 
-\item{export}{(logical) if TRUE a figure in format = format will be written in the working
+\item{save_figure}{(logical) if TRUE a figure in figure_fromat format will be written in the working
 directory, appart of the returned object.}
 
-\item{format}{(character) format of the figure that will be written in the working directory
-if export = TRUE.}
+\item{figure_fromat}{(character) format of the figure that will be written in the working directory
+if save_figure = TRUE, default = "png". Options include: "bmp", "jpeg", "png", "tif", and "pdf".}
+
+\item{figure_size}{(numeric) vector of two values in mm, c(width, height), of the size in which the
+figure will be saved. Recommended widths for scientific publications are 79, 107.5, and 165 mm.
+Default = c(165, 165)}
+
+\item{figure_resolution}{(numeric) value of the resolution (ppi) in which the figure will be saved,
+default = 300.}
 
 \item{...}{other arguments from function \code{\link[Base]{plot}}.}
 }
