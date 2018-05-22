@@ -5,7 +5,7 @@
 \title{Species distributional ranges based on political boundaries}
 \usage{
 rangemap_bound(occurrences, country_code, boundary_level = 0, polygons,
-  dissolve = TRUE, save_shp = FALSE, name)
+  dissolve = FALSE, save_shp = FALSE, name)
 }
 \arguments{
 \item{occurrences}{a data.frame containing species occurrences, columns must be:
@@ -24,11 +24,11 @@ to create species ranges based on overlapping of species records with these laye
 argument boundaries will not be considered.}
 
 \item{dissolve}{(logical) if TRUE distint polygons selected as part of the species range will
-be disolved for creating simpler polygons, default = TRUE. The dissolving process may take some
+be disolved for creating simpler polygons, default = FALSE. The dissolving process may take some
 more time, especially if species with broad distributions are being analyzed.}
 
 \item{save_shp}{(logical) if TRUE shapefiles of the species range, extent of occurrence and area of
-occupancy will be written in the working directory.}
+occupancy will be written in the working directory, default = FALSE.}
 
 \item{name}{(character) valid if save_shp TRUE. The name of the shapefile to be exported.}
 }
@@ -60,7 +60,7 @@ occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
             c("name", "decimalLongitude", "decimalLatitude")]
 
 level <- 0
-dissolve <- TRUE
+dissolve <- FALSE
 save <- TRUE
 name <- "test"
 countries <- c("PER", "BRA", "COL", "VEN", "ECU", "GUF", "GUY", "SUR", "BOL")

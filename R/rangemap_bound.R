@@ -17,10 +17,10 @@
 #' to create species ranges based on overlapping of species records with these layer. If defined,
 #' argument boundaries will not be considered.
 #' @param dissolve (logical) if TRUE distint polygons selected as part of the species range will
-#' be disolved for creating simpler polygons, default = TRUE. The dissolving process may take some
+#' be disolved for creating simpler polygons, default = FALSE. The dissolving process may take some
 #' more time, especially if species with broad distributions are being analyzed.
 #' @param save_shp (logical) if TRUE shapefiles of the species range, extent of occurrence and area of
-#' occupancy will be written in the working directory.
+#' occupancy will be written in the working directory, default = FALSE.
 #' @param name (character) valid if save_shp TRUE. The name of the shapefile to be exported.
 #'
 #' @return A named list containing a data.frame with information about the species range, a
@@ -43,7 +43,7 @@
 #'             c("name", "decimalLongitude", "decimalLatitude")]
 #'
 #' level <- 0
-#' dissolve <- TRUE
+#' dissolve <- FALSE
 #' save <- TRUE
 #' name <- "test"
 #' countries <- c("PER", "BRA", "COL", "VEN", "ECU", "GUF", "GUY", "SUR", "BOL")
@@ -60,7 +60,7 @@
 #                   CRS, over, Polygons, Polygon, SpatialPolygons, proj4string)
 
 rangemap_bound <- function(occurrences, country_code, boundary_level = 0,
-                           polygons, dissolve = TRUE, save_shp = FALSE, name) {
+                           polygons, dissolve = FALSE, save_shp = FALSE, name) {
   # testing potential issues
   if (missing(occurrences)) {
     stop("Argument occurrences is necessary to perform the analysis")
