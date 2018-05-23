@@ -8,69 +8,165 @@
 #' \code{\link{rangemap_enm}}, and \code{\link{rangemap_tsa}}.
 #' @param polygons a SpatialPolygon object to be used as base map for plotting the species range.
 #' If not provided, a simplified world map will be used.
-#' @param xlim two element numeric vector giving a range of longitudes, expressed in degrees,
-#' to which drawing should be restricted. Longitude is measured in degrees east of Greenwich,
-#' so that, in particular, locations in the USA have negative longitude. If fill = TRUE, polygons
-#' selected by region must be entirely inside the xlim range. The default value of this argument
-#' spans the entire longitude range of the database.
-#' @param ylim two element numeric vector giving a range of latitudes, expressed in degrees,
-#' to which drawing should be restricted. Latitude is measured in degrees north of the equator,
-#' so that, in particular, locations in the USA have positive latitude. If fill = TRUE, polygons
-#' selected by region must be entirely inside the ylim range. The default value of this argument
-#' spans the entire latitude range of the database.
-#' @param grid (character) units to be used in the grid. It can be "null", "measured", or "graticules".
-#' @param appearance (character) type of grid if grid is different than "null". It can be "labels",
-#' "grids", or "ticks".
-#' @param sides (character) sides in which the labels will be placed in the figure.
+#' @param add_extent (logical) if TRUE the extent of occurrence of the species will be added to
+#' the figure.
+#' @param add_occurrences (logical) if TRUE the species occurrence records will be added to
+#' the figure.
+#' @param grid (logical) if TRUE labels and ticks of coordinates will be inserted in sides.
+#' @param sides (character) sides in which the labels will be placed in the figure. Options
+#' for this are the same than for other position character options indicators.
 #' @param northarrow (logical) if TRUE, a simple north arrow will be placed in northarrow_position.
 #' @param northarrow_position (character) site in the figure where the north arrow will be placed.
 #' @param scalebar (logical) if TRUE a simple scale bar will be inserted in scalebar_position.
 #' @param scalebar_position (character) place for the scale bar insertion.
-#' @param save_figure (logical) if TRUE a figure in figure_fromat format will be written in the working
-#' directory, appart of the returned object.
-#' @param figure_fromat (character) format of the figure that will be written in the working directory
-#' if save_figure = TRUE, default = "png". Options include: "bmp", "jpeg", "png", "tif", and "pdf".
-#' @param figure_size (numeric) vector of two values in mm, c(width, height), of the size in which the
-#' figure will be saved. Recommended widths for scientific publications are 79, 107.5, and 165 mm.
-#' Default = c(165, 165)
-#' @param figure_resolution (numeric) value of the resolution (ppi) in which the figure will be saved,
-#' default = 300.
-#' @param ... other arguments from function \code{\link[Base]{plot}}.
 #'
 #' @return A figure of the species distributional range in a geographical context, with the
 #' map components defined by the user.
 #'
 #' @details Position of distinct elements depend on the spatial configuration of the species range.
-#' Therefore, their positiuon may need to be changed if the elements are needed. Position options are
-#' the same than in keywords for representing x and y in the function \code{\link[Base]{plot}}
+#' Therefore, their positiuon may need to be changed if the elements are needed. Position options are:
+#' "bottomright", "bottomleft", "topleft", and "topright".
 #'
 #' @examples
+#'
+#' if(!require(rgbif)){
+#'   install.packages("rgbif")
+#'   library(rgbif)
+#' }
+#'
+#' # getting the data from GBIF
+#' occ <- occ_search(taxonKey = 2440788, return = "data")
+#'
+#' # keeping only georeferenced records
+#' occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
+#'              c("name", "decimalLongitude", "decimalLatitude")]
+#'
+#' level <- 0
+#' dissolve <- FALSE
+#' save <- FALSE
+#' countries <- c("PER", "BRA", "COL", "VEN", "ECU", "GUF", "GUY", "SUR", "BOL")
+#'
+#' range <- rangemap::rangemap_bound(occurrences = occ_g, country_code = countries, boundary_level = level,
+#'                                 dissolve = FALSE, save_shp = FALSE)
+#'
+#' extent <- TRUE
+#' occ <- TRUE
+#' grid <- TRUE
+#' sides <- "bottomleft"
+#' scale <- FALSE
+#' scal_pos <- "bottomleft"
+#'
+#' range_map <- rangemap_fig(range, add_extent = extent, add_occurrences = occ,
+#'                           grid = grid, sides = sides, scalebar = scale,
+#'                           scalebar_position = scal_pos)
 
-# Dependencies: ggplot2?,
-#               maps (map),
-#               maptools (map2SpatialPolygons),
+# Dependencies: maptools (data(wrld_simpl)),
 #               scales (alpha),
-#               sp (SpatialPointsDataFrame, spTransform),
+#               sp (plot, spTransform, CRS),
 #               viridis?,
 
+rangemap_fig <- function(range, polygons, add_extent = FALSE, add_occurrences = FALSE,
+                         grid = FALSE, sides = "bottomleft", northarrow = FALSE,
+                         northarrow_position = "topright", scalebar = FALSE,
+                         scalebar_position = "bottomleft") {
 
-rangemap_fig <- function(range, polygons, xlim, ylim, grid = "measured", appearance = "labels",
-                         sides = "bottomleft", northarrow = FALSE, northarrow_position = "topleft",
-                         scalebar = FALSE, scalebar_position = "bottomleft",
-                         save_figure = FALSE, figure_fromat = "png", figure_size = c(165, 165),
-                         figure_resolution = 300, ...) {
+  suppressMessages(library(maptools))
+
+  # projections
+  AEQD <- range$`Species unique records`@proj4string # initial
+  WGS84 <- sp::CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0") # generic
+  ROBIN <- sp::CRS("+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs") # for pretty maps
 
   # bringing maps if polygons false
+  if (missing(polygons)) {
+    data(wrld_simpl)
+    polygons <- wrld_simpl
+    rm("wrld_simpl")
+  }
 
   # project for mantaining shapes
+  polygons <- sp::spTransform(polygons, ROBIN) # base map
+  range_sp <- sp::spTransform(range$`Species range`, ROBIN) # species range
+  extent_sp <- sp::spTransform(range$`Extent of occurrence`, ROBIN) # species extent of occ
+  occ_sp <- sp::spTransform(range$`Species unique records`, ROBIN) # species records
 
-  # plot a background map (e.g., the world or a close up to a region)
-  # plot the object created git previous functions
-  # add north arrow if asked
-  # add grid arrow if asked
-  # add leggend if asked
-  # add text if asked
-  # save figure if asked
+  # plot a background map and the range
+  ## limits of map
+  xlim <- as.numeric(c(range_sp@bbox[1, 1:2]))
+  ylim <- as.numeric(c(range_sp@bbox[2, 1:2]))
+
+  ## generic plot
+  par(mar = c(0, 0, 0, 0), tcl = 0.25)
+  sp::plot(polygons, xlim = xlim, ylim = ylim, col = "grey93")
+  sp::plot(range_sp, col = scales::alpha("darkgreen", 0.75), border = FALSE, add = TRUE)  #plot the species range
+  box()
+
+  # adding other attributes to the map
+  ## entent of occurrence
+  if (add_extent == TRUE) {
+    sp::plot(extent_sp, col = scales::alpha("blue", 0.4), border = FALSE, add = TRUE)
+  }
+
+  ## occurrences
+  if (add_occurrences == TRUE) {
+    points(occ_sp, pch = 21, bg = scales::alpha("yellow", 0.8), cex = 0.95)  #plot my sample sites
+  }
+
+  ## grid
+  if (grid == TRUE) {
+    if (sides == "bottomleft") {
+      axis(side = 1)
+      axis(side = 2)
+    }
+    if (sides == "bottomright") {
+      axis(side = 1)
+      axis(side = 4)
+    }
+    if (sides == "topleft") {
+      axis(side = 3)
+      axis(side = 2)
+    }
+    if (sides == "topright") {
+      axis(side = 3)
+      axis(side = 4)
+    }
+  }
+
+  ## north arrow
+  #if (northarrow == TRUE) {
+  #  GISTools::north.arrow(xb=15.75, yb = 43.25, len = 0.05, lab = "N")
+  #}
+
+  ## scale
+  #if (scalebar == TRUE) {
+  #  maps::map.scale(ratio = FALSE, relwidth = 0.1, cex = 0.6)
+  #}
+
+  ## legend
+  #if (legend == TRUE) {
+  #  if (add_extent == FALSE & add_occurrences == FALSE) {
+  #    legend(legend_position, legend = c("Species range"),
+  #           bty = "n", inset = 0.05, fill = scales::alpha("darkgreen", 0.75))
+  #  }
+  #  if (add_extent == TRUE & add_occurrences == TRUE) {
+  #    legend(legend_position, legend = c("Species range", "Extent of occurrence", "Ocurrences"),
+  #           bty="n", inset = 0.05, pch = c(NA, NA, 21),
+  #           bg = c(NA, NA, scales::alpha("yellow", 0.8)),
+  #           fill = c(scales::alpha("darkgreen", 0.75), scales::alpha("blue", 0.4),
+  #                    NA))
+  #  }
+  #  if (add_extent == TRUE & add_occurrences == FALSE) {
+  #    legend(legend_position, legend=c("Species range", "Extent of occurrence"),
+  #           bty="n", inset = 0.05, fill = c(scales::alpha("darkgreen", 0.75),
+  #                                           scales::alpha("blue", 0.4)))
+  #  }
+  #  if (add_extent == FALSE & add_occurrences == TRUE) {
+  #    legend(legend_position, legend=c("Species range", "Ocurrences"),
+  #           bty="n", inset = 0.05, pch = c(-1, 21),
+  #           col = c(NA, scales::alpha("yellow", 0.8)),
+  #           fill = c(scales::alpha("darkgreen", 0.75), NA))
+  #  }
+  #}
 }
 
 

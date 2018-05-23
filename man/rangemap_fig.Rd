@@ -4,12 +4,10 @@
 \alias{rangemap_fig}
 \title{Figures of species range maps}
 \usage{
-rangemap_fig(range, polygons, xlim, ylim, grid = "measured",
-  appearance = "labels", sides = "bottomleft", northarrow = FALSE,
-  northarrow_position = "topleft", scalebar = FALSE,
-  scalebar_position = "bottomleft", save_figure = FALSE,
-  figure_fromat = "png", figure_size = c(165, 165),
-  figure_resolution = 300, ...)
+rangemap_fig(range, polygons, add_extent = FALSE, add_occurrences = FALSE,
+  grid = FALSE, sides = "bottomleft", northarrow = FALSE,
+  northarrow_position = "topright", scalebar = FALSE,
+  scalebar_position = "bottomleft")
 }
 \arguments{
 \item{range}{an object produced with any of the following functions:
@@ -19,24 +17,16 @@ rangemap_fig(range, polygons, xlim, ylim, grid = "measured",
 \item{polygons}{a SpatialPolygon object to be used as base map for plotting the species range.
 If not provided, a simplified world map will be used.}
 
-\item{xlim}{two element numeric vector giving a range of longitudes, expressed in degrees,
-to which drawing should be restricted. Longitude is measured in degrees east of Greenwich,
-so that, in particular, locations in the USA have negative longitude. If fill = TRUE, polygons
-selected by region must be entirely inside the xlim range. The default value of this argument
-spans the entire longitude range of the database.}
+\item{add_extent}{(logical) if TRUE the extent of occurrence of the species will be added to
+the figure.}
 
-\item{ylim}{two element numeric vector giving a range of latitudes, expressed in degrees,
-to which drawing should be restricted. Latitude is measured in degrees north of the equator,
-so that, in particular, locations in the USA have positive latitude. If fill = TRUE, polygons
-selected by region must be entirely inside the ylim range. The default value of this argument
-spans the entire latitude range of the database.}
+\item{add_occurrences}{(logical) if TRUE the species occurrence records will be added to
+the figure.}
 
-\item{grid}{(character) units to be used in the grid. It can be "null", "measured", or "graticules".}
+\item{grid}{(logical) if TRUE labels and ticks of coordinates will be inserted in sides.}
 
-\item{appearance}{(character) type of grid if grid is different than "null". It can be "labels",
-"grids", or "ticks".}
-
-\item{sides}{(character) sides in which the labels will be placed in the figure.}
+\item{sides}{(character) sides in which the labels will be placed in the figure. Options
+for this are the same than for other position character options indicators.}
 
 \item{northarrow}{(logical) if TRUE, a simple north arrow will be placed in northarrow_position.}
 
@@ -45,21 +35,6 @@ spans the entire latitude range of the database.}
 \item{scalebar}{(logical) if TRUE a simple scale bar will be inserted in scalebar_position.}
 
 \item{scalebar_position}{(character) place for the scale bar insertion.}
-
-\item{save_figure}{(logical) if TRUE a figure in figure_fromat format will be written in the working
-directory, appart of the returned object.}
-
-\item{figure_fromat}{(character) format of the figure that will be written in the working directory
-if save_figure = TRUE, default = "png". Options include: "bmp", "jpeg", "png", "tif", and "pdf".}
-
-\item{figure_size}{(numeric) vector of two values in mm, c(width, height), of the size in which the
-figure will be saved. Recommended widths for scientific publications are 79, 107.5, and 165 mm.
-Default = c(165, 165)}
-
-\item{figure_resolution}{(numeric) value of the resolution (ppi) in which the figure will be saved,
-default = 300.}
-
-\item{...}{other arguments from function \code{\link[Base]{plot}}.}
 }
 \value{
 A figure of the species distributional range in a geographical context, with the
@@ -71,6 +46,39 @@ using the objects produced by other function of this package.
 }
 \details{
 Position of distinct elements depend on the spatial configuration of the species range.
-Therefore, their positiuon may need to be changed if the elements are needed. Position options are
-the same than in keywords for representing x and y in the function \code{\link[Base]{plot}}
+Therefore, their positiuon may need to be changed if the elements are needed. Position options are:
+"bottomright", "bottomleft", "topleft", and "topright".
+}
+\examples{
+
+if(!require(rgbif)){
+  install.packages("rgbif")
+  library(rgbif)
+}
+
+# getting the data from GBIF
+occ <- occ_search(taxonKey = 2440788, return = "data")
+
+# keeping only georeferenced records
+occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
+             c("name", "decimalLongitude", "decimalLatitude")]
+
+level <- 0
+dissolve <- FALSE
+save <- FALSE
+countries <- c("PER", "BRA", "COL", "VEN", "ECU", "GUF", "GUY", "SUR", "BOL")
+
+range <- rangemap::rangemap_bound(occurrences = occ_g, country_code = countries, boundary_level = level,
+                                dissolve = FALSE, save_shp = FALSE)
+
+extent <- TRUE
+occ <- TRUE
+grid <- TRUE
+sides <- "bottomleft"
+scale <- FALSE
+scal_pos <- "bottomleft"
+
+range_map <- rangemap_fig(range, add_extent = extent, add_occurrences = occ,
+                          grid = grid, sides = sides, scalebar = scale,
+                          scalebar_position = scal_pos)
 }
