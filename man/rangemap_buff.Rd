@@ -42,7 +42,14 @@ library(rgbif)
 }
 
 # getting the data from GBIF
-occ <- occ_search(taxonKey = 2422480, return = "data")
+species <- name_lookup(query = "Peltophryne empusa",
+                       rank="species", return = "data") # information about the species
+
+occ_count(taxonKey = species$key[1], georeferenced = TRUE) # testing if keys return records
+
+key <- species$key[1] # using species key that return information
+
+occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
 
 # keeping only georeferenced records
 occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),

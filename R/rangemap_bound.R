@@ -36,7 +36,14 @@
 #' }
 #'
 #' # getting the data from GBIF
-#' occ <- occ_search(taxonKey = 2440788, return = "data")
+#' species <- name_lookup(query = "Dasypus kappleri",
+#'                        rank="species", return = "data") # information about the species
+#'
+#' occ_count(taxonKey = species$key[14], georeferenced = TRUE) # testing if keys return records
+#'
+#' key <- species$key[14] # using species key that return information
+#'
+#' occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
 #'
 #' # keeping only georeferenced records
 #' occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
@@ -127,7 +134,7 @@ rangemap_bound <- function(occurrences, country_code, boundary_level = 0,
 
   # calculate areas in km2
   rangekm2 <- raster::area(boundaries) / 1000000
-  area_km2 <- sum(rangekm2) # total area of the species range
+  areakm2 <- sum(rangekm2) # total area of the species range
 
   ## extent of occurrence
   coord <- as.data.frame(occ[, 2:3]) # spatial point dataframe to data frame keeping only coordinates
@@ -175,7 +182,7 @@ rangemap_bound <- function(occurrences, country_code, boundary_level = 0,
   }
 
   # return results (list or a different object?)
-  sp_dat <- data.frame(occ[1, 1], dim(occ_pr)[1], rangekm2, eocckm2, aocckm2) # extent of occ = total area?
+  sp_dat <- data.frame(occ[1, 1], dim(occ_pr)[1], areakm2, eocckm2, aocckm2) # extent of occ = total area?
   colnames(sp_dat) <- c("Species", "Unique records", "Range area", "Extent of occurrence", "Area of occupancy")
 
   results <- list(sp_dat, occ_pr, boundaries, extent_occurrence, area_occupancy)

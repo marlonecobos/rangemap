@@ -28,7 +28,14 @@
 #' }
 #'
 #' # getting the data from GBIF
-#' occ <- occ_search(taxonKey = 2422480, return = "data")
+#' species <- name_lookup(query = "Peltophryne empusa",
+#'                        rank="species", return = "data") # information about the species
+#'
+#' occ_count(taxonKey = species$key[1], georeferenced = TRUE) # testing if keys return records
+#'
+#' key <- species$key[1] # using species key that return information
+#'
+#' occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
 #'
 #' # keeping only georeferenced records
 #' occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
@@ -98,7 +105,7 @@ rangemap_buff <- function(occurrences, distance = 100000, polygons, save_shp = F
   clip_area <- rgeos::gIntersection(polygons, buff_area, byid = TRUE, drop_lower_td = TRUE)
 
   # calculate areas in km2
-  area_km2 <- sum(raster::area(clip_area) / 1000000) # total area of the species range
+  areakm2 <- sum(raster::area(clip_area) / 1000000) # total area of the species range
 
   ## extent of occurrence
   coord <- as.data.frame(occ[, 2:3]) # spatial point dataframe to data frame keeping only coordinates
@@ -109,30 +116,30 @@ rangemap_buff <- function(occurrences, distance = 100000, polygons, save_shp = F
   covexhull_polygon_pr <- sp::spTransform(covexhull_polygon, AEQD) # reproject
   c_hull_extent <- rgeos::gIntersection(polygons, covexhull_polygon_pr, byid = TRUE, drop_lower_td = TRUE) # area of interest
 
-  ext_occ_area_km2 <- raster::area(c_hull_extent) / 1000000
-  extent_occ_km2 <- sum(ext_occ_area_km2) # total area of the species range
+  eockm2 <- raster::area(c_hull_extent) / 1000000
+  eocckm2 <- sum(eockm2) # total area of the species range
 
   ## area of occupancy
   grid <- raster::raster(ext = raster::extent(occ_pr) + 10000, res = c(2000, 2000), crs = AEQD)
   raster_sp <- raster::rasterize(occ_pr[, 2:3], grid)[[1]] # raster from points
   grid_sp <- as(raster_sp, "SpatialPolygonsDataFrame") # raster to polygon
 
-  area_occ_area_km2 <- raster::area(grid_sp) / 1000000
-  area_occ_km2 <- sum(area_occ_area_km2) # area calculation
+  aockm2 <- raster::area(grid_sp) / 1000000
+  aocckm2 <- sum(aockm2) # area calculation
 
   # adding characteristics to spatial polygons
   species <- as.character(occurrences[1, 1])
-  clip_area <- sp::SpatialPolygonsDataFrame(clip_area, data = data.frame(species, area_km2, # species range
-                                                                         extent_occ_km2, area_occ_km2),
+  clip_area <- sp::SpatialPolygonsDataFrame(clip_area, data = data.frame(species, areakm2, # species range
+                                                                         eocckm2, aocckm2),
                                             match.ID = FALSE)
 
   extent_occurrence <- sp::SpatialPolygonsDataFrame(c_hull_extent, # extent of occurrence
                                                     data = data.frame(species,
-                                                                      ext_occ_area_km2),
+                                                                      eockm2),
                                                     match.ID = FALSE)
 
   area_occupancy <- sp::SpatialPolygonsDataFrame(grid_sp, data = data.frame(species, # area of occupancy
-                                                                            area_occ_area_km2),
+                                                                            aockm2),
                                                  match.ID = FALSE)
 
   # exporting
@@ -145,7 +152,7 @@ rangemap_buff <- function(occurrences, distance = 100000, polygons, save_shp = F
   }
 
   # return results (list or a different object?)
-  sp_dat <- data.frame(occ[1, 1], dim(occ_pr)[1], area_km2, extent_occ_km2, area_occ_km2) # extent of occ = total area?
+  sp_dat <- data.frame(occ[1, 1], dim(occ_pr)[1], areakm2, eocckm2, aocckm2) # extent of occ = total area?
   colnames(sp_dat) <- c("Species", "Unique records", "Range area", "Extent of occurrence", "Area of occupancy")
 
   results <- list(sp_dat, occ_pr, clip_area, extent_occurrence, area_occupancy)

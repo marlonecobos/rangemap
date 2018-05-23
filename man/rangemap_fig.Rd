@@ -57,7 +57,14 @@ if(!require(rgbif)){
 }
 
 # getting the data from GBIF
-occ <- occ_search(taxonKey = 2440788, return = "data")
+species <- name_lookup(query = "Dasypus kappleri",
+                       rank="species", return = "data") # information about the species
+
+occ_count(taxonKey = species$key[14], georeferenced = TRUE) # testing if keys return records
+
+key <- species$key[14] # using species key that return information
+
+occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
 
 # keeping only georeferenced records
 occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
