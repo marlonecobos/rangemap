@@ -75,10 +75,7 @@ extent <- TRUE
 occ <- TRUE
 grid <- TRUE
 sides <- "bottomleft"
-scale <- FALSE
-scal_pos <- "bottomleft"
 
 range_map <- rangemap_fig(range, add_extent = extent, add_occurrences = occ,
-                          grid = grid, sides = sides, scalebar = scale,
-                          scalebar_position = scal_pos)
+                          grid = grid, sides = sides)
 }

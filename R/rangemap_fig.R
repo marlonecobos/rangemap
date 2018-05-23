@@ -53,12 +53,9 @@
 #' occ <- TRUE
 #' grid <- TRUE
 #' sides <- "bottomleft"
-#' scale <- FALSE
-#' scal_pos <- "bottomleft"
 #'
 #' range_map <- rangemap_fig(range, add_extent = extent, add_occurrences = occ,
-#'                           grid = grid, sides = sides, scalebar = scale,
-#'                           scalebar_position = scal_pos)
+#'                           grid = grid, sides = sides)
 
 # Dependencies: maptools (data(wrld_simpl)),
 #               scales (alpha),
@@ -81,8 +78,8 @@ rangemap_fig <- function(range, polygons, add_extent = FALSE, add_occurrences = 
   if (missing(polygons)) {
     data(wrld_simpl)
     polygons <- wrld_simpl
-    rm("wrld_simpl")
   }
+  rm("wrld_simpl", pos = ".GlobalEnv")
 
   # project for mantaining shapes
   polygons <- sp::spTransform(polygons, ROBIN) # base map
