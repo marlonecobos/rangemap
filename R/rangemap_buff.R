@@ -7,7 +7,7 @@
 #'
 #' @param occurrences a data.frame containing species occurrences, columns must be:
 #' Species, Longitude, and Latitude. Geographic coordinates must be in decimal degrees
-#' @param distance (numeric) distance, in meters, to be used for creating the buffer areas
+#' @param buffer_distance (numeric) distance, in meters, to be used for creating the buffer areas
 #' around occurrences, default = 100000.
 #' @param polygons (optional) a SpatialPolygon object that will be clipped with the buffer areas
 #' to create species ranges based on actual limits. Projection must be Geographic (longitude, latitude).
@@ -46,7 +46,7 @@
 #' save <- TRUE
 #' name <- "test"
 #'
-#' buff_range <- rangemap_buff(occurrences = occ_g, distance = dist,
+#' buff_range <- rangemap_buff(occurrences = occ_g, buffer_distance = dist,
 #'                             save_shp = save, name = name)
 
 # Dependencies: maps (map),
@@ -57,7 +57,7 @@
 #               sp (SpatialPointsDataFrame, spTransform, SpatialPolygonsDataFrame,
 #                   CRS, over, Polygons, Polygon, SpatialPolygons, proj4string)
 
-rangemap_buff <- function(occurrences, distance = 100000, polygons, save_shp = FALSE, name) {
+rangemap_buff <- function(occurrences, buffer_distance = 100000, polygons, save_shp = FALSE, name) {
   # testing potential issues
   if (missing(occurrences)) {
     stop("Argument occurrences is necessary to perform the analysis")
@@ -99,7 +99,7 @@ rangemap_buff <- function(occurrences, distance = 100000, polygons, save_shp = F
   polygons <- sp::spTransform(polygons, AEQD)
 
   # create a buffer based on a user-defined distance
-  buff_area <- rgeos::gBuffer(occ_pr, width = distance)
+  buff_area <- rgeos::gBuffer(occ_pr, width = buffer_distance)
 
   # clip a world map based on the created buffer
   clip_area <- rgeos::gIntersection(polygons, buff_area, byid = TRUE, drop_lower_td = TRUE)

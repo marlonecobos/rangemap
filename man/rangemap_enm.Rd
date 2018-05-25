@@ -4,7 +4,8 @@
 \alias{rangemap_enm}
 \title{Species distributional ranges based on ecological niche models}
 \usage{
-rangemap_enm(occurrences, model, threshold_value, threshold, export = FALSE)
+rangemap_enm(occurrences, model, threshold_value, threshold, save_shp = FALSE,
+  name)
 }
 \arguments{
 \item{occurrences}{a data.frame containing species occurrences, columns must be:
@@ -19,8 +20,10 @@ be the lowest considered as suitable for the species.}
 \item{threshold}{(numeric) percentage of occurrence records to be excluded from suitable areas
 considering their values of suitability in the continuous model (e.g., 0, 5, or 10).}
 
-\item{export}{(logical) if TRUE a shapefile of the species range will be written in the working
-directory, appart of the returned object.}
+\item{save_shp}{(logical) if TRUE shapefiles of the species range, extent of occurrence and area of
+occupancy will be written in the working directory, default = FALSE.}
+
+\item{name}{(character) valid if save_shp TRUE. The name of the shapefile to be exported.}
 }
 \value{
 A named list containing a data.frame with information about the species range, a

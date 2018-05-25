@@ -4,14 +4,14 @@
 \alias{rangemap_buff}
 \title{Species distributional ranges based on buffered occurrences}
 \usage{
-rangemap_buff(occurrences, distance = 1e+05, polygons, save_shp = FALSE,
-  name)
+rangemap_buff(occurrences, buffer_distance = 1e+05, polygons,
+  save_shp = FALSE, name)
 }
 \arguments{
 \item{occurrences}{a data.frame containing species occurrences, columns must be:
 Species, Longitude, and Latitude. Geographic coordinates must be in decimal degrees}
 
-\item{distance}{(numeric) distance, in meters, to be used for creating the buffer areas
+\item{buffer_distance}{(numeric) distance, in meters, to be used for creating the buffer areas
 around occurrences, default = 100000.}
 
 \item{polygons}{(optional) a SpatialPolygon object that will be clipped with the buffer areas
@@ -60,6 +60,6 @@ dist <- 100000
 save <- TRUE
 name <- "test"
 
-buff_range <- rangemap_buff(occurrences = occ_g, distance = dist,
+buff_range <- rangemap_buff(occurrences = occ_g, buffer_distance = dist,
                             save_shp = save, name = name)
 }

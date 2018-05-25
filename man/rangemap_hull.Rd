@@ -4,8 +4,8 @@
 \alias{rangemap_hull}
 \title{Species distributional ranges based on distinct hull polygons}
 \usage{
-rangemap_hull(occurrences, hull_type = "concave", distance = 0.5,
-  split_distance = 2, export = FALSE)
+rangemap_hull(occurrences, hull_type = "concave", buffer_distance = 50000,
+  split_distance = 250000, polygons, save_shp = FALSE, name)
 }
 \arguments{
 \item{occurrences}{a data.frame containing species occurrences, columns must be:
@@ -14,14 +14,20 @@ Species, Longitude, and Latitude.}
 \item{hull_type}{(character) type of hull polygons to be created. Available options are: "convex",
 "concave", and "alpha" hulls.}
 
-\item{distance}{(numeric) distance in decimal degrees to be used for creating a buffer area
-around the hull polygons, default = 0.5.}
+\item{buffer_distance}{(numeric) distance, in meters, to be used for creating the buffer areas
+around occurrences, default = 50000.}
 
-\item{split_distance}{(numeric) distance in decimal degrees that will limit connectivity among
-hull polygons created with chunks of points separated by long distances, , default = 2.}
+\item{split_distance}{(numeric) distance in meters that will limit connectivity among
+hull polygons created with chunks of points separated by long distances, , default = 250000.}
 
-\item{export}{(logical) if TRUE a shapefile of the species range will be written in the working
-directory, appart of the returned object.}
+\item{polygons}{(optional) a SpatialPolygon object that will be clipped with the buffer areas
+to create species ranges based on actual limits. Projection must be Geographic (longitude, latitude).
+If not defined, a default, simple world map will be used.}
+
+\item{save_shp}{(logical) if TRUE shapefiles of the species range, extent of occurrence and area of
+occupancy will be written in the working directory.}
+
+\item{name}{(character) valid if save_shp TRUE. The name of the shapefile to be exported.}
 }
 \value{
 A named list containing a data.frame with information about the species range, a
@@ -40,14 +46,23 @@ library(rgbif)
 }
 
 # getting the data from GBIF
-occ <- occ_search(taxonKey = 5219426, return = "data", limit = 1000)
+species <- name_lookup(query = "Panthera onca",
+                       rank = "species", return = "data") # information about the species
+
+occ_count(taxonKey = species$key[17], georeferenced = TRUE) # testing if keys return records
+
+key <- species$key[17] # using species key that return information
+
+occ <- occ_search(taxonKey = key, return = "data", limit = 2000)
 
 # keeping only georeferenced records
-occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),]
+occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
+             c("name", "decimalLongitude", "decimalLatitude")]
 
-disolve <- TRUE
+dist <- 50000
 hull <- "convex"
-split <- 4
+split <- 2500000
 
-hull_range <- rangemap_hull(occurrences = occ_g, hull_type = hull, distance = dist, split_distance = split)
+hull_range <- rangemap_hull(occurrences = occ_g, hull_type = hull, buffer_distance = dist,
+                            split_distance = split)
 }
