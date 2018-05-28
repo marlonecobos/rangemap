@@ -46,23 +46,25 @@ library(rgbif)
 }
 
 # getting the data from GBIF
-species <- name_lookup(query = "Panthera onca",
-                       rank = "species", return = "data") # information about the species
+species <- name_lookup(query = "Dasypus kappleri",
+rank="species", return = "data") # information about the species
 
-occ_count(taxonKey = species$key[17], georeferenced = TRUE) # testing if keys return records
+occ_count(taxonKey = species$key[14], georeferenced = TRUE) # testing if keys return records
 
-key <- species$key[17] # using species key that return information
+key <- species$key[14] # using species key that return information
 
-occ <- occ_search(taxonKey = key, return = "data", limit = 2000)
+occ <- occ_search(taxonKey = key, return = "data", limit = 2000) # using the taxon key
 
 # keeping only georeferenced records
 occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
              c("name", "decimalLongitude", "decimalLatitude")]
 
-dist <- 50000
+dist <- 100000
 hull <- "convex"
-split <- 2500000
+split <- 1500000
+save <- TRUE
+name <- "test"
 
 hull_range <- rangemap_hull(occurrences = occ_g, hull_type = hull, buffer_distance = dist,
-                            split_distance = split)
+                            split_distance = split, save_shp = save, name = name)
 }

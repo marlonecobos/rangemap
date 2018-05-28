@@ -30,25 +30,27 @@
 #' }
 #'
 #' # getting the data from GBIF
-#' species <- name_lookup(query = "Panthera onca",
-#'                        rank = "species", return = "data") # information about the species
+#' species <- name_lookup(query = "Dasypus kappleri",
+#' rank="species", return = "data") # information about the species
 #'
-#' occ_count(taxonKey = species$key[17], georeferenced = TRUE) # testing if keys return records
+#' occ_count(taxonKey = species$key[14], georeferenced = TRUE) # testing if keys return records
 #'
-#' key <- species$key[17] # using species key that return information
+#' key <- species$key[14] # using species key that return information
 #'
-#' occ <- occ_search(taxonKey = key, return = "data", limit = 2000)
+#' occ <- occ_search(taxonKey = key, return = "data", limit = 2000) # using the taxon key
 #'
 #' # keeping only georeferenced records
 #' occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
 #'              c("name", "decimalLongitude", "decimalLatitude")]
 #'
-#' dist <- 50000
+#' dist <- 100000
 #' hull <- "convex"
-#' split <- 2500000
+#' split <- 1500000
+#' save <- TRUE
+#' name <- "test"
 #'
 #' hull_range <- rangemap_hull(occurrences = occ_g, hull_type = hull, buffer_distance = dist,
-#'                             split_distance = split)
+#'                             split_distance = split, save_shp = save, name = name)
 
 # Dependencies: sp (SpatialPointsDataFrame, spTransform),
 #               raster (buffer, area), maps (map), maptools (map2SpatialPolygons),
@@ -122,9 +124,9 @@ rangemap_hull <- function(occurrences, hull_type = "concave", buffer_distance = 
       hulls <- list()
 
       for (i in 1:length(occ_prs)) {
-        coord <- as.data.frame(sp::coordinates(occ_prs[[i]])) # spatial point dataframe to data frame keeping only coordinates
+        coord <- as.data.frame(sp::coordinates(occ_prs@coords[[i]])) # spatial point dataframe to data frame keeping only coordinates
 
-        if (dim(coord)[1] > 1) {
+        if (dim(coord)[1] > 2) {
           covexhull <- chull(coord) # convex hull from points
           coord_pol <- coord[c(covexhull, covexhull[1]),] # defining coordinates
           hulls[[i]] <- sp::SpatialPolygons(list(sp::Polygons(list(sp::Polygon(coord_pol)), ID = 1))) # into SpatialPolygons
@@ -157,10 +159,11 @@ rangemap_hull <- function(occurrences, hull_type = "concave", buffer_distance = 
   hulls_buff_un <- do.call(sp::rbind.SpatialPolygons, c(hulls_buffer, list(makeUniqueIDs = TRUE)))
 
   # Clipping with the world
-  hulls_buf_world <- rgeos::gIntersection(hulls_buff_un, polygons, byid = FALSE, drop_lower_td = TRUE) # area of interest
+  #hulls_buf_world <- rgeos::gIntersection(hulls_buff_un, polygons, byid = FALSE, drop_lower_td = TRUE) # area of interest
 
   # calculate areas in km2
-  areakm2 <- sum(raster::area(hulls_buf_world) / 1000000) # total area of the species range
+  area <- raster::area(hulls_buff_un) / 1000000
+  areakm2 <- sum(area) # total area of the species range
 
   ## extent of occurrence
   coord <- as.data.frame(occ[, 2:3]) # spatial point dataframe to data frame keeping only coordinates
@@ -169,9 +172,9 @@ rangemap_hull <- function(occurrences, hull_type = "concave", buffer_distance = 
   covexhull_polygon <- sp::SpatialPolygons(list(sp::Polygons(list(sp::Polygon(coord_pol)), ID = 1))) # into SpatialPolygons
   sp::proj4string(covexhull_polygon) <- WGS84 # project
   covexhull_polygon_pr <- sp::spTransform(covexhull_polygon, AEQD) # reproject
-  c_hull_extent <- rgeos::gIntersection(polygons, covexhull_polygon_pr, byid = TRUE, drop_lower_td = TRUE) # area of interest
+  #c_hull_extent <- rgeos::gIntersection(polygons, covexhull_polygon_pr, byid = TRUE, drop_lower_td = TRUE) # area of interest
 
-  eockm2 <- raster::area(c_hull_extent) / 1000000
+  eockm2 <- raster::area(covexhull_polygon_pr) / 1000000
   eocckm2 <- sum(eockm2) # total area of the species range
 
   ## area of occupancy
@@ -184,11 +187,11 @@ rangemap_hull <- function(occurrences, hull_type = "concave", buffer_distance = 
 
   # adding characteristics to spatial polygons
   species <- as.character(occurrences[1, 1])
-  clip_area <- sp::SpatialPolygonsDataFrame(clip_area, data = data.frame(species, areakm2, # species range
+  clip_area <- sp::SpatialPolygonsDataFrame(hulls_buff_un, data = data.frame(species, area, # species range
                                                                          eocckm2, aocckm2),
                                             match.ID = FALSE)
 
-  extent_occurrence <- sp::SpatialPolygonsDataFrame(c_hull_extent, # extent of occurrence
+  extent_occurrence <- sp::SpatialPolygonsDataFrame(covexhull_polygon_pr, # extent of occurrence
                                                     data = data.frame(species,
                                                                       eockm2),
                                                     match.ID = FALSE)
