@@ -60,7 +60,7 @@ occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
              c("name", "decimalLongitude", "decimalLatitude")]
 
 dist <- 100000
-hull <- "convex"
+hull <- "convex" # try also, "concave" or "alpha"
 split <- 1500000
 save <- TRUE
 name <- "test"

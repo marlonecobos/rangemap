@@ -44,7 +44,7 @@
 #'              c("name", "decimalLongitude", "decimalLatitude")]
 #'
 #' dist <- 100000
-#' hull <- "convex"
+#' hull <- "convex" # try also, "concave" or "alpha"
 #' split <- 1500000
 #' save <- TRUE
 #' name <- "test"
@@ -138,7 +138,21 @@ rangemap_hull <- function(occurrences, hull_type = "concave", buffer_distance = 
       }
     }
     if (hull_type == "concave") {
-      hulls
+      hulls <- list()
+
+      for (i in 1:length(occ_prs)) {
+        coord <- as.data.frame(sp::coordinates(occ_prs@coords[[i]])) # spatial point dataframe to data frame keeping only coordinates
+
+        if (dim(coord)[1] > 2) {
+          sppoints <- sf::st_multipoint(as.matrix(coord)) #sf_multipoints from multypoints
+          sf_points <- sf::st_sf(sf::st_sfc(sppoints, crs = AEQD@projargs))
+          concavehull <- concaveman::concaveman(sf_points, length_threshold = 5000) # concave hull from points
+          hulls[[i]] <- sf::as_Spatial(sf::st_zm(concavehull$polygons)) # into SpatialPolygons
+        }else {
+          hulls[[i]] <- sp::SpatialPointsDataFrame(coords = coord, data = coord,
+                                                   proj4string = AEQD)
+        }
+      }
     }
     if (hull_type == "alpha") {
       hulls
