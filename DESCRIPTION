@@ -1,7 +1,7 @@
 Package: rangemap
 Type: Package
 Title: Species distributional ranges
-Version: 0.0.10
+Version: 0.0.11
 Authors@R: c(
     person("Marlon E.", "Cobos", email = "manubio13@gmail.com", role = c("aut", "cre")),
     person("Vijay", "Barve", email = "vijay.barve@gmail.com", role = "aut"),
@@ -14,6 +14,8 @@ Description: This package presents various tools to create species
     environmental characteristics of the species ranges and to 
     create high quality figures for publication.
 Imports:
+    alphahull (>= 2.1),
+    concaveman (>= 1.0),
     maps (>= 3.3),
     maptools (>= 0.9),
     raster (>= 2.6),
