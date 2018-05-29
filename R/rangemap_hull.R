@@ -8,10 +8,25 @@
 #' Species, Longitude, and Latitude.
 #' @param hull_type (character) type of hull polygons to be created. Available options are: "convex",
 #' "concave", and "alpha" hulls.
+#' @param concave_distance_lim (numeric) distance, in meters, to be passed to the length_threshold
+#' parameter of the \code{\link[concaveman]{concaveman}} funcion. Default = 5000. Ignored if hull_type
+#' is not "concave".
+#' @param alpha (numeric) α value to be passed to the parameter alpha of the \code{\link[alphahull]{ahull}}
+#' funcion. Default = 2. Ignored if hull_type is not "alpha".
+#' @param rnd (numeric) value to be used for .... Default = 2. Ignored if hull_type is not "alpha".
 #' @param buffer_distance (numeric) distance, in meters, to be used for creating the buffer areas
 #' around occurrences, default = 50000.
+#' @param split (logical) if TRUE a distance (for hierarchical clustering) or a number (for K-means
+#' clustering) is used to separate distinct chunks of occurrences. Recommended when the species of
+#' interest has a disjunct distribution. Default = FALSE.
+#' @param cluster_method (character) name of the method to be used for clustering the occurrences. Options
+#' are "hierarchical" and "k-means"; default = "hierarchical". Note that this parameter is ignored when
+#' split = FALSE.
 #' @param split_distance (numeric) distance in meters that will limit connectivity among
-#' hull polygons created with chunks of points separated by long distances, , default = 250000.
+#' hull polygons created with chunks of points separated by long distances. This parameter is used when
+#' cluster method = "hierarchical".
+#' @param n_k_means (numeric) number of clusters in which the species occurrences will be grouped when
+#' using the "k-means" cluster_method.
 #' @param polygons (optional) a SpatialPolygon object that will be clipped with the buffer areas
 #' to create species ranges based on actual limits. Projection must be Geographic (longitude, latitude).
 #' If not defined, a default, simple world map will be used.
@@ -45,19 +60,24 @@
 #'
 #' dist <- 100000
 #' hull <- "convex" # try also, "concave" or "alpha"
-#' split <- 1500000
+#' split <- TRUE
+#' c_method <- "hierarchical"
+#' split_d <- 1500000
 #' save <- TRUE
 #' name <- "test"
 #'
 #' hull_range <- rangemap_hull(occurrences = occ_g, hull_type = hull, buffer_distance = dist,
-#'                             split_distance = split, save_shp = save, name = name)
+#'                             cluster_method = c_method, split = split, split_distance = split_d,
+#'                             save_shp = save, name = name)
 
 # Dependencies: sp (SpatialPointsDataFrame, spTransform),
 #               raster (buffer, area), maps (map), maptools (map2SpatialPolygons),
 #               rgeos (gIntersection, gCentroid),
 
 rangemap_hull <- function(occurrences, hull_type = "concave", buffer_distance = 50000,
-                          split_distance = 250000, polygons, save_shp = FALSE, name) {
+                          concave_distance_lim = 5000, alpha = 2, rnd = 2, split = FALSE,
+                          cluster_method = "hierarchical", split_distance, n_k_means,
+                          polygons, save_shp = FALSE, name) {
   # testing potential issues
   if (missing(occurrences)) {
     stop("Argument occurrences is necessary to perform the analysis")
@@ -98,16 +118,24 @@ rangemap_hull <- function(occurrences, hull_type = "concave", buffer_distance = 
   # project polygons
   polygons <- sp::spTransform(polygons, AEQD)
 
-  #split groups of points based on the split distance
-  ## defining a hierarchical cluster method for the occurrences
-  cluster_method <- hclust(dist(data.frame(rownames = 1:length(occ_pr@data[,1]), x = sp::coordinates(occ_pr)[,1],
-                                y = sp::coordinates(occ_pr)[,2])), method = "complete")
+  if (split == TRUE) {
+    if (cluster_method == "hierarchical") {
+      #split groups of points based on the split distance
+      ## defining a hierarchical cluster method for the occurrences
+      cluster_method <- hclust(dist(data.frame(rownames = 1:length(occ_pr@data[,1]), x = sp::coordinates(occ_pr)[,1],
+                                               y = sp::coordinates(occ_pr)[,2])), method = "complete")
 
-  ## defining wich points are clustered based on the user-defined distance
-  cluster_vector <- cutree(cluster_method, h = split_distance)
+      ## defining wich points are clustered based on the user-defined distance
+      cluster_vector <- cutree(cluster_method, h = split_distance)
+    }else {
+      stop("k-means method not ready yet.")
+    }
 
-  ## Join results to meuse sp points
-  occ_pr@data <- data.frame(occ_pr@data, clusters = cluster_vector)
+    ## Join results to meuse sp points
+    occ_pr@data <- data.frame(occ_pr@data, clusters = cluster_vector)
+  }else {
+    occ_pr@data <- data.frame(occ_pr@data, clusters = 1)
+  }
 
   ## splitting points
   if (sum(unique(occ_pr@data$clusters)) > 1) {
@@ -146,7 +174,7 @@ rangemap_hull <- function(occurrences, hull_type = "concave", buffer_distance = 
         if (dim(coord)[1] > 2) {
           sppoints <- sf::st_multipoint(as.matrix(coord)) #sf_multipoints from multypoints
           sf_points <- sf::st_sf(sf::st_sfc(sppoints, crs = AEQD@projargs))
-          concavehull <- concaveman::concaveman(sf_points, length_threshold = 5000) # concave hull from points
+          concavehull <- concaveman::concaveman(sf_points, length_threshold = concave_distance_lim) # concave hull from points
           hulls[[i]] <- sf::as_Spatial(sf::st_zm(concavehull$polygons)) # into SpatialPolygons
         }else {
           hulls[[i]] <- sp::SpatialPointsDataFrame(coords = coord, data = coord,
@@ -155,7 +183,108 @@ rangemap_hull <- function(occurrences, hull_type = "concave", buffer_distance = 
       }
     }
     if (hull_type == "alpha") {
-      hulls
+      # funtion to turn ahull polygons to Spatialpolygons
+      ah2sp <- function(x, increment = 360, rnd = 10, proj4string = AEQD) {
+        require(alphahull)
+        require(maptools)
+
+        xdf <- as.data.frame(x$arcs) # extract the edges from the ahull
+
+        # remove all cases where the coordinates are all the same
+        xdf <- subset(xdf, xdf$r > 0)
+        res <- NULL
+        if (nrow(xdf) > 0) {
+          # convert each arc to a line segment
+          linesj <- list()
+          prevx <- NULL
+          prevy <- NULL
+          j <- 1
+          for(i in 1:nrow(xdf)) {
+            rowi <- xdf[i, ]
+            v <- c(rowi$v.x, rowi$v.y)
+            theta <- rowi$theta
+            r <- rowi$r
+            cc <- c(rowi$c1, rowi$c2)
+            # arcs need to be redefined as strings of points. Work out the number of points to allocate in this arc segment.
+            ipoints <- 2 + round(increment * (rowi$theta / 2), 0)
+            # calculate coordinates from arc() description for ipoints along the arc.
+            angles <- alphahull::anglesArc(v, theta)
+            seqang <- seq(angles[1], angles[2], length = ipoints)
+            x <- round(cc[1] + r * cos(seqang), rnd)
+            y <- round(cc[2] + r * sin(seqang), rnd)
+            # check for line segments that should be joined up and combine their coordinates
+            if (is.null(prevx)) {
+              prevx <- x
+              prevy <- y
+            } else if (x[1] == round(prevx[length(prevx)], rnd) && y[1] == round(prevy[length(prevy)], rnd)) {
+              if (i == nrow(xdf)) {
+                # we have got to the end of the dataset
+                prevx <- append(prevx, x[2:ipoints])
+                prevy <- append(prevy, y[2:ipoints])
+                prevx[length(prevx)] <- prevx[1]
+                prevy[length(prevy)] <- prevy[1]
+                coordsj <- cbind(prevx, prevy)
+                colnames(coordsj) <- NULL
+                # build as Line and then Lines class
+                linej <- sp::Line(coordsj)
+                linesj[[j]] <- sp::Lines(linej, ID = as.character(j))
+              } else {
+                prevx <- append(prevx, x[2:ipoints])
+                prevy <- append(prevy, y[2:ipoints])
+              }
+            } else {
+
+              # we have got to the end of a set of lines, and there are several such sets, so convert the whole of this one to a line segment and reset.
+              prevx[length(prevx)] <- prevx[1]
+              prevy[length(prevy)] <- prevy[1]
+              coordsj <- cbind(prevx, prevy)
+              colnames(coordsj) <- NULL
+
+              # build as Line and then Lines class
+              linej <- sp::Line(coordsj)
+              linesj[[j]] <- sp::Lines(linej, ID = as.character(j))
+              j <- j + 1
+              prevx <- NULL
+              prevy <- NULL
+            }
+          }
+
+          # promote to SpatialLines
+          lspl <- sp::SpatialLines(linesj)
+
+          # convert lines to polygons
+          # pull out Lines slot and check which lines have start and end points that are the same
+          lns <- slot(lspl, "lines")
+          polys <- sapply(lns, function(x) {
+            crds <- slot(slot(x, "Lines")[[1]], "coords")
+            identical(crds[1, ], crds[nrow(crds), ])
+          })
+
+          # select those that do and convert to SpatialPolygons
+          polyssl <- lspl[polys]
+          list_of_Lines <- slot(polyssl, "lines")
+          res <- sp::SpatialPolygons(list(Polygons(lapply(list_of_Lines,
+                                                          function(x) {sp::Polygon(slot(slot(x, "Lines")[[1]],
+                                                                                        "coords"))}),
+                                                   ID = "1")), proj4string = proj4string)
+        }
+        return(res)
+      }
+
+      # getting the alpha hull SpatialPolygons
+      hulls <- list()
+
+      for (i in 1:length(occ_prs)) {
+        coord <- as.data.frame(sp::coordinates(occ_prs@coords[[i]])) # spatial point dataframe to data frame keeping only coordinates
+
+        if (dim(coord)[1] > 2) {
+          alphahulls <- alphahull::ahull(coords, alpha = alpha) # alpha hull from points
+          hulls[[i]] <- ah2sp(alphahulls, rnd = rnd) # into SpatialPolygons
+        }else {
+          hulls[[i]] <- sp::SpatialPointsDataFrame(coords = coord, data = coord,
+                                                   proj4string = AEQD)
+        }
+      }
     }
   }else {
     stop(paste("hull_type is not a valid option, potential options are:",
