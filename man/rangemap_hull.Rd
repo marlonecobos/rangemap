@@ -5,7 +5,9 @@
 \title{Species distributional ranges based on distinct hull polygons}
 \usage{
 rangemap_hull(occurrences, hull_type = "concave", buffer_distance = 50000,
-  split_distance = 250000, polygons, save_shp = FALSE, name)
+  concave_distance_lim = 5000, alpha = 2, rnd = 2, split = FALSE,
+  cluster_method = "hierarchical", split_distance, n_k_means, polygons,
+  save_shp = FALSE, name)
 }
 \arguments{
 \item{occurrences}{a data.frame containing species occurrences, columns must be:
@@ -17,8 +19,29 @@ Species, Longitude, and Latitude.}
 \item{buffer_distance}{(numeric) distance, in meters, to be used for creating the buffer areas
 around occurrences, default = 50000.}
 
+\item{concave_distance_lim}{(numeric) distance, in meters, to be passed to the length_threshold
+parameter of the \code{\link[concaveman]{concaveman}} funcion. Default = 5000. Ignored if hull_type
+is not "concave".}
+
+\item{alpha}{(numeric) α value to be passed to the parameter alpha of the \code{\link[alphahull]{ahull}}
+funcion. Default = 2. Ignored if hull_type is not "alpha".}
+
+\item{rnd}{(numeric) value to be used for .... Default = 2. Ignored if hull_type is not "alpha".}
+
+\item{split}{(logical) if TRUE a distance (for hierarchical clustering) or a number (for K-means
+clustering) is used to separate distinct chunks of occurrences. Recommended when the species of
+interest has a disjunct distribution. Default = FALSE.}
+
+\item{cluster_method}{(character) name of the method to be used for clustering the occurrences. Options
+are "hierarchical" and "k-means"; default = "hierarchical". Note that this parameter is ignored when
+split = FALSE.}
+
 \item{split_distance}{(numeric) distance in meters that will limit connectivity among
-hull polygons created with chunks of points separated by long distances, , default = 250000.}
+hull polygons created with chunks of points separated by long distances. This parameter is used when
+cluster method = "hierarchical".}
+
+\item{n_k_means}{(numeric) number of clusters in which the species occurrences will be grouped when
+using the "k-means" cluster_method.}
 
 \item{polygons}{(optional) a SpatialPolygon object that will be clipped with the buffer areas
 to create species ranges based on actual limits. Projection must be Geographic (longitude, latitude).
@@ -61,10 +84,13 @@ occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
 
 dist <- 100000
 hull <- "convex" # try also, "concave" or "alpha"
-split <- 1500000
+split <- TRUE
+c_method <- "hierarchical"
+split_d <- 1500000
 save <- TRUE
 name <- "test"
 
 hull_range <- rangemap_hull(occurrences = occ_g, hull_type = hull, buffer_distance = dist,
-                            split_distance = split, save_shp = save, name = name)
+                            cluster_method = c_method, split = split, split_distance = split_d,
+                            save_shp = save, name = name)
 }
