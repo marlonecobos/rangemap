@@ -278,7 +278,7 @@ rangemap_hull <- function(occurrences, hull_type = "concave", buffer_distance = 
         coord <- as.data.frame(sp::coordinates(occ_prs@coords[[i]])) # spatial point dataframe to data frame keeping only coordinates
 
         if (dim(coord)[1] > 2) {
-          alphahulls <- alphahull::ahull(coords, alpha = alpha) # alpha hull from points
+          alphahulls <- alphahull::ahull(coord, alpha = alpha) # alpha hull from points
           hulls[[i]] <- ah2sp(alphahulls, rnd = rnd) # into SpatialPolygons
         }else {
           hulls[[i]] <- sp::SpatialPointsDataFrame(coords = coord, data = coord,
