@@ -25,7 +25,7 @@ if(!require(devtools)){
 }
 
 if(!require(rangemap)){
-    devtools::install_github("manubio13/rangemap")
+    devtools::install_github("marlonecobos/rangemap")
     library(rangemap)
 }
 ```
