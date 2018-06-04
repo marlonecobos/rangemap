@@ -44,7 +44,7 @@
 #' occ_sp <- data.frame("A_americanum", sp_train)
 #' thres <- 5
 #' save <- TRUE
-#' name <- "test
+#' name <- "test"
 #'
 #' enm_range <- rangemap_enm(occurrences = occ_sp, model = sp_mod,  threshold = thres,
 #'                           save_shp = save, name = name)

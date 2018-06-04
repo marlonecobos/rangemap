@@ -44,3 +44,25 @@ the working directory if it is needed.
 \details{
 If threshold_value is provided, argument threshold is ignored.
 }
+\examples{
+if(!require(devtools)){
+install.packages("devtools")
+library(devtools)
+}
+
+if(!require(kuenm)){
+install_github("marlonecobos/kuenm")
+library(kuenm)
+}
+
+# parameters
+data(sp_mod)
+data(sp_train)
+occ_sp <- data.frame("A_americanum", sp_train)
+thres <- 5
+save <- TRUE
+name <- "test"
+
+enm_range <- rangemap_enm(occurrences = occ_sp, model = sp_mod,  threshold = thres,
+                          save_shp = save, name = name)
+}
