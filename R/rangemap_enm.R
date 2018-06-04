@@ -8,7 +8,7 @@
 #'
 #' @param occurrences a data.frame containing species occurrences, columns must be:
 #' Species, Longitude, and Latitude.
-#' @param model a RasterLayer object that will binarized using the threshold value defined
+#' @param model a RasterLayer object that will be binarized using the threshold value defined
 #' by the user or a value calculated based on a threshold (from 0 - 100) defined in threshold.
 #' @param threshold_value (numeric) decimal value used for reclasifying the model. This value will
 #' be the lowest considered as suitable for the species.
@@ -97,6 +97,8 @@ rangemap_enm <- function(occurrences, model, threshold_value, threshold,
   WGS84 <- sp::CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
   raster::crs(presence) <- WGS84@projargs
   enm_range <- raster::rasterToPolygons(presence)
+  enm_range@data$union_field <- rep("Union", length(enm_range@data[, 1])) # new field for union
+  enm_range <- rgeos::gUnaryUnion(enm_range, id = enm_range@data$union_field) # now dissolve
 
   # world map or user map for creating extent of occurrence
   if (missing(polygons)) {
@@ -147,7 +149,7 @@ rangemap_enm <- function(occurrences, model, threshold_value, threshold,
 
   # adding characteristics to spatial polygons
   species <- as.character(occurrences[1, 1])
-  clip_area <- sp::SpatialPolygonsDataFrame(clip_area, data = data.frame(species, areakm2, # species range
+  clip_area <- sp::SpatialPolygonsDataFrame(enm_range_pr, data = data.frame(species, areakm2, # species range
                                                                          eocckm2, aocckm2),
                                             match.ID = FALSE)
 
