@@ -2,8 +2,9 @@
 #'
 #' @description rangemap_bound generates a species range polygon for a given species
 #' by considering all the polygons of political entities in which the species has
-#' been detected. The species extent of occurrence and area of occupancy according to
-#' the IUCN are also generated. Shape files can be saved in the working directory if it is needed.
+#' been detected. An approach to the species extent of occurrence (using convex hulls) and the
+#' area of occupancy according to the IUCN criteria are also generated. Shape files can be saved
+#' in the working directory if it is needed.
 #'
 #' @param occurrences a data.frame containing species occurrences, columns must be:
 #' Species, Longitude, and Latitude.
