@@ -4,7 +4,7 @@
 \alias{rangemap_hull}
 \title{Species distributional ranges based on distinct hull polygons}
 \usage{
-rangemap_hull(occurrences, hull_type = "concave", buffer_distance = 50000,
+rangemap_hull(occurrences, hull_type = "convex", buffer_distance = 50000,
   concave_distance_lim = 5000, alpha = 2, rnd = 2, split = FALSE,
   cluster_method = "hierarchical", split_distance, n_k_means, polygons,
   save_shp = FALSE, name)
@@ -13,8 +13,8 @@ rangemap_hull(occurrences, hull_type = "concave", buffer_distance = 50000,
 \item{occurrences}{a data.frame containing species occurrences, columns must be:
 Species, Longitude, and Latitude.}
 
-\item{hull_type}{(character) type of hull polygons to be created. Available options are: "convex",
-"concave", and "alpha" hulls.}
+\item{hull_type}{(character) type of hull polygons to be created. Available options are: "convex"
+or "concave" hulls. Default = "convex".}
 
 \item{buffer_distance}{(numeric) distance, in meters, to be used for creating the buffer areas
 around occurrences, default = 50000.}
@@ -22,11 +22,6 @@ around occurrences, default = 50000.}
 \item{concave_distance_lim}{(numeric) distance, in meters, to be passed to the length_threshold
 parameter of the \code{\link[concaveman]{concaveman}} funcion. Default = 5000. Ignored if hull_type
 is not "concave".}
-
-\item{alpha}{(numeric) α value to be passed to the parameter alpha of the \code{\link[alphahull]{ahull}}
-funcion. Default = 2. Ignored if hull_type is not "alpha".}
-
-\item{rnd}{(numeric) value to be used for .... Default = 2. Ignored if hull_type is not "alpha".}
 
 \item{split}{(logical) if TRUE a distance (for hierarchical clustering) or a number (for K-means
 clustering) is used to separate distinct chunks of occurrences. Recommended when the species of
@@ -59,8 +54,10 @@ object projected to the Azimuthal equal area projection.
 }
 \description{
 rangemap_hull generates a species range polygon for a given species
-by considering all the polygons of political entities in which the species has
-been detected. Shape files can be saved in the working directory if it is needed.
+by creating convex or concave hull polygons based on occurrence data.
+An approach to the species extent of occurrence (using convex hulls) and the
+area of occupancy according to the IUCN criteria are also generated. Shape files can be saved
+in the working directory if it is needed.
 }
 \examples{
 if(!require(rgbif)){
@@ -83,7 +80,7 @@ occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
              c("name", "decimalLongitude", "decimalLatitude")]
 
 dist <- 100000
-hull <- "convex" # try also, "concave" or "alpha"
+hull <- "convex" # try also "concave"
 split <- TRUE
 c_method <- "hierarchical"
 split_d <- 1500000

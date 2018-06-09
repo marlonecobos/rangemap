@@ -12,7 +12,7 @@ rangemap_enm(occurrences, model, threshold_value, threshold, polygons,
 Species, Longitude, and Latitude.}
 
 \item{model}{a RasterLayer object that will be binarized using the threshold value defined
-by the user or a value calculated based on a threshold (from 0 - 100) defined in threshold.}
+by the user or a value calculated based on a threshold (from 0 - 100%) defined in threshold.}
 
 \item{threshold_value}{(numeric) decimal value used for reclasifying the model. This value will
 be the lowest considered as suitable for the species.}
@@ -38,8 +38,10 @@ object projected to the Azimuthal equal area projection.
 rangemap_enm generates species range polygons for a given species
 using a continuous raster layer produced with an ecological niche modeling tool.
 This function split the model in suitable and unsuitable habitats using a user
-specified level of error or a given threshold value. Shape files can be saved in
-the working directory if it is needed.
+specified level of error or a given threshold value. An approach to the species
+extent of occurrence (using convex hulls) and the area of occupancy according
+to the IUCN criteria are also generated. Shape files can be saved in the working
+directory if it is needed.
 }
 \details{
 If threshold_value is provided, argument threshold is ignored.

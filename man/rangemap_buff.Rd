@@ -30,10 +30,10 @@ all in Azimuthal equal area projection. If save_shp = TRUE, written shapefiles' 
 will be the same as the SpatialPolygonDataFrame objects.
 }
 \description{
-rangemap_buff generates SpatialPolygonsDataFrame objects of a species range, and
-extent of occurrence and area of occupancy according to the UICN criteria. The species
-range is calculated by buffering provided occurrences using a defined distance. Shapefiles
-of the results can be saved in the working directory if it is needed.
+rangemap_buff generates a species range for a given species by
+buffering provided occurrences using a defined distance. An approach to the species extent
+of occurrence (using convex hulls) and the area of occupancy according to the IUCN criteria
+are also generated. Shape files can be saved in the working directory if it is needed.
 }
 \examples{
 if(!require(rgbif)){
