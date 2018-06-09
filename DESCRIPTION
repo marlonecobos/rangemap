@@ -14,7 +14,6 @@ Description: This package presents various tools to create species
     environmental characteristics of the species ranges and to 
     create high quality figures for publication.
 Imports:
-    alphahull (>= 2.1),
     concaveman (>= 1.0),
     maps (>= 3.3),
     maptools (>= 0.9),
