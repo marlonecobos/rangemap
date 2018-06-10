@@ -66,6 +66,9 @@
 #' # creating the species range figure
 #' range_map <- rangemap_fig(range, add_extent = extent, add_occurrences = occ,
 #'                           grid = grid, sides = sides)
+#'
+#' dev.off() # for returning to default par settings
+
 
 # Dependencies: maptools (data(wrld_simpl)),
 #               scales (alpha),
