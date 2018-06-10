@@ -118,19 +118,30 @@ rangemap_hull <- function(occurrences, hull_type = "convex", buffer_distance = 5
   polygons <- sp::spTransform(polygons, AEQD)
 
   if (split == TRUE) {
-    if (cluster_method == "hierarchical") {
+    if (cluster_method == "hierarchical" | cluster_method == "k-means") {
       #split groups of points based on the split distance
-      ## defining a hierarchical cluster method for the occurrences
-      cluster_method <- hclust(dist(data.frame(rownames = 1:length(occ_pr@data[,1]), x = sp::coordinates(occ_pr)[,1],
-                                               y = sp::coordinates(occ_pr)[,2])), method = "complete")
 
-      ## defining wich points are clustered based on the user-defined distance
-      cluster_vector <- cutree(cluster_method, h = split_distance)
+      if (cluster_method == "hierarchical") {
+        ## defining a hierarchical cluster method for the occurrences
+        cluster_method <- hclust(dist(data.frame(rownames = 1:length(occ_pr@data[,1]), x = sp::coordinates(occ_pr)[,1],
+                                                 y = sp::coordinates(occ_pr)[,2])), method = "complete")
+
+        ## defining wich points are clustered based on the user-defined distance
+        cluster_vector <- cutree(cluster_method, h = split_distance)
+      }else {
+        set.seed(1) # to get always the same answer with using the same data
+        ## identifying clusters from occurrences
+        cluster_method <- kmeans(as.matrix(sp::coordinates(occ_pr)), n_k_means)
+
+        # vector for cluster separation
+        cluster_vector <- cluster_method$cluster
+      }
+
     }else {
-      stop("k-means method not ready yet.")
+      stop("No valid clustering method has been defined, options are: \n \"hierarchical\" or \"k-means\"")
     }
 
-    ## Join results to meuse sp points
+    ## Join results to occurrences
     occ_pr@data <- data.frame(occ_pr@data, clusters = cluster_vector)
   }else {
     occ_pr@data <- data.frame(occ_pr@data, clusters = 1)
