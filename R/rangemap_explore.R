@@ -32,7 +32,7 @@
 #'              c("name", "decimalLongitude", "decimalLatitude")]
 #'
 #' # simple figure of the species occurrence data
-#' explore_map<- rangemap_explore(occ_g)
+#' explore_map <- rangemap_explore(occurrences = occ_g)
 #'
 #' dev.off() # for returning to default par settings
 
@@ -70,7 +70,12 @@ rangemap_explore <- function(occurrences, polygons) {
   rm("wrld_simpl", pos = ".GlobalEnv")
 
   # keeping only records in land
-  occ_sp <- occ_sp[!is.na(sp::over(occ_sp, polygons)), ]
+  w_map <- maps::map(database = "world", fill = TRUE, plot = FALSE) # map of the world
+
+  w_po <- sapply(strsplit(w_map$names, ":"), function(x) x[1]) # preparing data to create polygon
+  poly <- maptools::map2SpatialPolygons(w_map, IDs = w_po, proj4string = WGS84) # map to polygon
+
+  occ_sp <- occ_sp[!is.na(sp::over(occ_sp, poly)), ]
 
   # projecting polygons and occurrences
   ROBIN <- sp::CRS("+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs") # for pretty maps
@@ -86,7 +91,7 @@ rangemap_explore <- function(occurrences, polygons) {
   ## generic plot
   par(mar = c(0, 0, 0, 0), tcl = 0.25)
   sp::plot(polygons, xlim = xlim, ylim = ylim, col = "grey90") # base map
-  points(occ_sp, pch = 21, bg = scales::alpha("blue", 0.6), cex = 0.95)  #plot my sample sites
+  points(occ_pr, pch = 21, bg = scales::alpha("blue", 0.6), cex = 0.95)  #plot my sample sites
   box()
 }
 

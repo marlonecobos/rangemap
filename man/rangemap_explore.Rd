@@ -42,7 +42,7 @@ occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
              c("name", "decimalLongitude", "decimalLatitude")]
 
 # simple figure of the species occurrence data
-explore_map<- rangemap_explore(occ_g)
+explore_map <- rangemap_explore(occurrences = occ_g)
 
 dev.off() # for returning to default par settings
 }
