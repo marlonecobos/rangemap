@@ -12,7 +12,7 @@ rangemap_enm(occurrences, model, threshold_value, threshold, polygons,
 Species, Longitude, and Latitude.}
 
 \item{model}{a RasterLayer object that will be binarized using the threshold value defined
-by the user or a value calculated based on a threshold (from 0 - 100%) defined in threshold.}
+by the user or a value calculated based on a value (from 0 - 100) defined in threshold.}
 
 \item{threshold_value}{(numeric) decimal value used for reclasifying the model. This value will
 be the lowest considered as suitable for the species.}

@@ -11,7 +11,7 @@
 #' @param occurrences a data.frame containing species occurrences, columns must be:
 #' Species, Longitude, and Latitude.
 #' @param model a RasterLayer object that will be binarized using the threshold value defined
-#' by the user or a value calculated based on a threshold (from 0 - 100%) defined in threshold.
+#' by the user or a value calculated based on a value (from 0 - 100) defined in threshold.
 #' @param threshold_value (numeric) decimal value used for reclasifying the model. This value will
 #' be the lowest considered as suitable for the species.
 #' @param threshold (numeric) percentage of occurrence records to be excluded from suitable areas
