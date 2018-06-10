@@ -5,7 +5,7 @@
 \title{Species distributional ranges based on distinct hull polygons}
 \usage{
 rangemap_hull(occurrences, hull_type = "convex", buffer_distance = 50000,
-  concave_distance_lim = 5000, alpha = 2, rnd = 2, split = FALSE,
+  concave_distance_lim = 5000, split = FALSE,
   cluster_method = "hierarchical", split_distance, n_k_means, polygons,
   save_shp = FALSE, name)
 }
@@ -88,6 +88,6 @@ save <- TRUE
 name <- "test"
 
 hull_range <- rangemap_hull(occurrences = occ_g, hull_type = hull, buffer_distance = dist,
-                            cluster_method = c_method, split = split, split_distance = split_d,
+                            split = split, cluster_method = c_method, split_distance = split_d,
                             save_shp = save, name = name)
 }

@@ -66,7 +66,7 @@
 #' name <- "test"
 #'
 #' hull_range <- rangemap_hull(occurrences = occ_g, hull_type = hull, buffer_distance = dist,
-#'                             cluster_method = c_method, split = split, split_distance = split_d,
+#'                             split = split, cluster_method = c_method, split_distance = split_d,
 #'                             save_shp = save, name = name)
 
 # Dependencies: sp (SpatialPointsDataFrame, spTransform),
@@ -74,9 +74,8 @@
 #               rgeos (gIntersection, gCentroid),
 
 rangemap_hull <- function(occurrences, hull_type = "convex", buffer_distance = 50000,
-                          concave_distance_lim = 5000, alpha = 2, rnd = 2, split = FALSE,
-                          cluster_method = "hierarchical", split_distance, n_k_means,
-                          polygons, save_shp = FALSE, name) {
+                          concave_distance_lim = 5000, split = FALSE, cluster_method = "hierarchical",
+                          split_distance, n_k_means, polygons, save_shp = FALSE, name) {
   # testing potential issues
   if (missing(occurrences)) {
     stop("Argument occurrences is necessary to perform the analysis")
@@ -123,12 +122,16 @@ rangemap_hull <- function(occurrences, hull_type = "convex", buffer_distance = 5
 
       if (cluster_method == "hierarchical") {
         ## defining a hierarchical cluster method for the occurrences
+        cat("\nClustering method: hierarchical\n")
+
         cluster_method <- hclust(dist(data.frame(rownames = 1:length(occ_pr@data[,1]), x = sp::coordinates(occ_pr)[,1],
                                                  y = sp::coordinates(occ_pr)[,2])), method = "complete")
 
         ## defining wich points are clustered based on the user-defined distance
         cluster_vector <- cutree(cluster_method, h = split_distance)
       }else {
+        cat("\nClustering method: k-means\n")
+
         set.seed(1) # to get always the same answer with using the same data
         ## identifying clusters from occurrences
         cluster_method <- kmeans(as.matrix(sp::coordinates(occ_pr)), n_k_means)
@@ -151,18 +154,23 @@ rangemap_hull <- function(occurrences, hull_type = "convex", buffer_distance = 5
   if (sum(unique(occ_pr@data$clusters)) > 1) {
     occ_prs <- split(occ_pr, occ_pr@data$clusters)
   }else {
-    occ_prs <- occ_pr
+    occ_prs <- list(occ_pr)
   }
 
   # create hulls depending in the user-defined argument (convex, concave, and alpha)
   # and per each group of points if they were clustered
   if (hull_type == "convex" | hull_type == "concave") {
     if (hull_type == "convex") {
+      cat("\nHull type: convex\n")
 
       hulls <- list()
 
       for (i in 1:length(occ_prs)) {
-        coord <- as.data.frame(sp::coordinates(occ_prs@coords[[i]])) # spatial point dataframe to data frame keeping only coordinates
+        if (length(occ_prs) > 1) {
+          coord <- as.data.frame(sp::coordinates(occ_prs@coords[[i]])) # spatial point dataframe to data frame keeping only coordinates
+        }else {
+          coord <- as.data.frame(sp::coordinates(occ_prs[[i]])) # spatial point dataframe to data frame keeping only coordinates
+        }
 
         if (dim(coord)[1] > 2) {
           covexhull <- chull(coord) # convex hull from points
@@ -176,10 +184,16 @@ rangemap_hull <- function(occurrences, hull_type = "convex", buffer_distance = 5
       }
     }
     if (hull_type == "concave") {
+      cat("\nHull type: concave\n")
+
       hulls <- list()
 
       for (i in 1:length(occ_prs)) {
-        coord <- as.data.frame(sp::coordinates(occ_prs@coords[[i]])) # spatial point dataframe to data frame keeping only coordinates
+        if (length(occ_prs) > 1) {
+          coord <- as.data.frame(sp::coordinates(occ_prs@coords[[i]])) # spatial point dataframe to data frame keeping only coordinates
+        }else {
+          coord <- as.data.frame(sp::coordinates(occ_prs[[i]])) # spatial point dataframe to data frame keeping only coordinates
+        }
 
         if (dim(coord)[1] > 2) {
           sppoints <- sf::st_multipoint(as.matrix(coord)) #sf_multipoints from multypoints
