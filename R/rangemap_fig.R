@@ -53,14 +53,17 @@
 #' save <- FALSE
 #' countries <- c("PER", "BRA", "COL", "VEN", "ECU", "GUF", "GUY", "SUR", "BOL")
 #'
+#' # creating the species range map
 #' range <- rangemap::rangemap_bound(occurrences = occ_g, country_code = countries, boundary_level = level,
 #'                                 dissolve = FALSE, save_shp = FALSE)
 #'
+#' # arguments for the species range figure
 #' extent <- TRUE
 #' occ <- TRUE
 #' grid <- TRUE
 #' sides <- "bottomleft"
 #'
+#' # creating the species range figure
 #' range_map <- rangemap_fig(range, add_extent = extent, add_occurrences = occ,
 #'                           grid = grid, sides = sides)
 
