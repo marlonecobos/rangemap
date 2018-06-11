@@ -4,20 +4,26 @@
 \alias{rangemap_tsa}
 \title{Species distributional ranges based on a trend surface analysis}
 \usage{
-rangemap_tsa(occurrences, variables, threshold = 5, export = FALSE)
+rangemap_tsa(occurrences, region_of_interest, threshold = 0,
+  save_shp = FALSE, name)
 }
 \arguments{
 \item{occurrences}{a data.frame containing species occurrences, columns must be:
 Species, Longitude, and Latitude.}
 
-\item{variables}{a RasterStack object of environmental variables that will be used for
-performing the trend surface analysis.}
+\item{region_of_interest}{a SpatialPolygon object on which the trend surface analysis
+will be performed.}
 
 \item{threshold}{(numeric) percentage of occurrence records to be excluded when deciding
-the minimum surface value to be considered part of the species range, default = 5.}
+the minimum surface value to be considered part of the species range, default = 0.}
 
-\item{export}{(logical) if TRUE a shapefile of the species range will be written in the working
-directory, appart of the returned object.}
+\item{save_shp}{(logical) if TRUE shapefiles of the species range, extent of occurrence and area of
+occupancy will be written in the working directory.}
+
+\item{name}{(character) valid if save_shp TRUE. The name of the shapefile to be exported.}
+
+\item{resolution}{(numeric) resolution in km in which the resultant surface will be created,
+default = 5.}
 }
 \value{
 A named list containing a data.frame with information about the species range, a
@@ -30,5 +36,7 @@ using .
 }
 \details{
 Trend surface analysis Is a method based on low-order polynomials of spatial coordinates
-for estimating a regular grid of points from scattered observations.
+for estimating a regular grid of points from scattered observations. This method assumes that all
+cells not occupied by occurrences are absences; hence its use depends on the quality of data and
+the certainty of having or not a complete sampling of the regiong_of_interest.
 }
