@@ -4,15 +4,19 @@
 \alias{rangemap_tsa}
 \title{Species distributional ranges based on a trend surface analysis}
 \usage{
-rangemap_tsa(occurrences, region_of_interest, threshold = 0,
-  save_shp = FALSE, name)
+rangemap_tsa(occurrences, region_of_interest, resolution = 2.5,
+  threshold = 0, save_shp = FALSE, name)
 }
 \arguments{
 \item{occurrences}{a data.frame containing species occurrences, columns must be:
 Species, Longitude, and Latitude.}
 
 \item{region_of_interest}{a SpatialPolygon object on which the trend surface analysis
-will be performed.}
+will be performed. For instance, a country, an ecoregion, or a biogeogeographical region.}
+
+\item{resolution}{(numeric) resolution in minutes in which the resultant surface will be created,
+default = 2.5. It can be 0.5, 2.5, 5, and 10, for correspondence with the bioclimatic variables from
+the WorldClim database \url{http://www.worldclim.org/}.}
 
 \item{threshold}{(numeric) percentage of occurrence records to be excluded when deciding
 the minimum surface value to be considered part of the species range, default = 0.}
@@ -21,9 +25,6 @@ the minimum surface value to be considered part of the species range, default = 
 occupancy will be written in the working directory.}
 
 \item{name}{(character) valid if save_shp TRUE. The name of the shapefile to be exported.}
-
-\item{resolution}{(numeric) resolution in km in which the resultant surface will be created,
-default = 5.}
 }
 \value{
 A named list containing a data.frame with information about the species range, a
@@ -32,7 +33,9 @@ object projected to the Azimuthal equal area projection.
 }
 \description{
 rangemap_tsa generates species range polygons for a given species
-using .
+using a trend surface analysis. An approach to the species extent of occurrence
+(using convex hulls) and the area of occupancy according to the IUCN criteria
+are also generated. Shape files can be saved in the working directory if it is needed.
 }
 \details{
 Trend surface analysis Is a method based on low-order polynomials of spatial coordinates
