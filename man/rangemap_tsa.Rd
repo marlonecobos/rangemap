@@ -49,6 +49,14 @@ if(!require(rgbif)){
 install.packages("rgbif")
 library(rgbif)
 }
+if(!require(maps)){
+install.packages("maps")
+library(maps)
+}
+if(!require(maptools)){
+install.packages("maptools")
+library(maptools)
+}
 
 # getting the data from GBIF
 species <- name_lookup(query = "Peltophryne fustiger",
@@ -64,11 +72,19 @@ occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
 occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
             c("name", "decimalLongitude", "decimalLatitude")]
 
-# buffer distance
-dist <- 100000
+# region of interest
+WGS84 <- CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
+w_map <- map(database = "world", regions = "Cuba", fill = TRUE, plot = FALSE) # map of the world
+w_po <- sapply(strsplit(w_map$names, ":"), function(x) x[1]) # preparing data to create polygon
+reg <- map2SpatialPolygons(w_map, IDs = w_po, proj4string = WGS84) # map to polygon
+
+# other data
+res <- 5
+thr <- 0
 save <- TRUE
 name <- "test"
 
-buff_range <- rangemap_buff(occurrences = occ_g, buffer_distance = dist,
-                            save_shp = save, name = name)
+buff_range <- rangemap_tsa(occurrences = occ_g, region_of_interest = reg,
+                           threshold = thr, resolution = res, save_shp = save,
+                           name = name)
 }

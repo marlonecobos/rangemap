@@ -33,6 +33,14 @@
 #' install.packages("rgbif")
 #' library(rgbif)
 #' }
+#' if(!require(maps)){
+#' install.packages("maps")
+#' library(maps)
+#' }
+#' if(!require(maptools)){
+#' install.packages("maptools")
+#' library(maptools)
+#' }
 #'
 #' # getting the data from GBIF
 #' species <- name_lookup(query = "Peltophryne fustiger",
@@ -48,13 +56,21 @@
 #' occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
 #'             c("name", "decimalLongitude", "decimalLatitude")]
 #'
-#' # buffer distance
-#' dist <- 100000
+#' # region of interest
+#' WGS84 <- CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
+#' w_map <- map(database = "world", regions = "Cuba", fill = TRUE, plot = FALSE) # map of the world
+#' w_po <- sapply(strsplit(w_map$names, ":"), function(x) x[1]) # preparing data to create polygon
+#' reg <- map2SpatialPolygons(w_map, IDs = w_po, proj4string = WGS84) # map to polygon
+#'
+#' # other data
+#' res <- 5
+#' thr <- 0
 #' save <- TRUE
 #' name <- "test"
 #'
-#' buff_range <- rangemap_buff(occurrences = occ_g, buffer_distance = dist,
-#'                             save_shp = save, name = name)
+#' buff_range <- rangemap_tsa(occurrences = occ_g, region_of_interest = reg,
+#'                            threshold = thr, resolution = res, save_shp = save,
+#'                            name = name)
 
 # Dependencies: maps (map),
 #               maptools (map2SpatialPolygons),
@@ -109,39 +125,69 @@ rangemap_tsa <- function(occurrences, region_of_interest, resolution = 5,
   ## creating a grid
   grid <- raster::raster(raster::extent(region))
 
-  ## grid resolution
+  ## grid resolution and values
   raster::res(grid) <- resolution * 1000
+  raster::values(grid) <- 0
 
   ## grid projection
   sp::proj4string(grid) <- sp::proj4string(region)
 
   ## extract grid with region
-  gird_reg <- raster::mask(grid, region)
+  grid_reg <- raster::mask(grid, region)
 
   ## grid for region of interest
-  grid_r_pol <- raster::rasterToPolygons(gird_reg)
+  grid_r_pol <- raster::rasterToPolygons(grid_reg)
 
   ## points for region of interest
-  points_reg <- raster::rasterToPoints(gird_reg)
+  matrix_a <- raster::rasterToPoints(grid_reg)
 
-  ## asigning 1 to cells occupied by occurrenes
+  ## selecting grids with occurrences
+  grid_pres <- grid_r_pol[!is.na(sp::over(grid_r_pol, as(occ_pr, "SpatialPoints"))), ]
 
   ## grid to points
+  ras_grid <- raster::rasterize(grid_pres, gird_reg, "layer")
+  point_pres <- raster::rasterToPoints(ras_grid)[, 1:2]
+
+  ## asigning 1 to cells occupied by occurrenes
+  matrix_pa <- matrix_a
+  matrix_pa[, 3] <- ifelse(paste(matrix_pa[, 1], matrix_pa[, 2], sep = "_") %in%
+                             paste(point_pres[, 1], point_pres[, 2], sep = "_"),  1, 0)
+
+  ## data for models
+  if (dim(matrix_pa)[1] > 10000 + dim(point_pres)[1]) {
+    ma_p <- matrix_pa[matrix_pa[, 3] == 0, ]
+    ma_p <- ma_p[sample(nrow(ma_p), 10000), ]
+    ma_a <- matrix_pa[matrix_pa[, 3] == 1, ]
+
+    matrix_spa <- rbind(ma_p, ma_a)
+  }else {
+    matrix_spa <- matrix_pa
+  }
 
   ## variables
-  longitude <- ...
-  latitude <- ...
-  pres_abs <- ...
+  longitude <- matrix_spa[, 1]
+  latitude <- matrix_spa[, 2]
+  pres_abs <- matrix_spa[, 3]
+
+  project_matrix1 <- data.frame(matrix_pa[, 1:2], matrix_pa[, 1:2])
+  names(project_matrix1) <- c("x", "y", "longitude", "latitude")
+  sp::coordinates(project_matrix1) <- ~ x + y
+
+  project_zone <- raster::raster(project_matrix1)
 
   # tsa
   ## tsa model
   tsa <- spatial::surf.ls(np = 3, x = longitude, y = latitude, z = pres_abs)
 
-  ## tsa thresholded
-  tsa_t <- tsa
+  # tsa prediction to region of insterest
+  tsa_reg <- spatial::predict.trls(tsa, project_zone) # try with raster stack x, y, ...
+
+  # tsa thresholded
+  tsa_t <- tsa_reg
+  thres <- threshold / 100
+
   raster::values(tsa_t)[raster::values(tsa_t) < thres] <- 0
   raster::values(tsa_t)[raster::values(tsa_t) >= thres] <- 1
-  tsa_t <-
 
   # tsa to spatial polygon
   tsa_pol <- raster::rasterToPolygons(tsa_t)
