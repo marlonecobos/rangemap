@@ -9,9 +9,10 @@
 #' Species, Longitude, and Latitude.
 #' @param region_of_interest a SpatialPolygon object on which the trend surface analysis
 #' will be performed. For instance, a country, an ecoregion, or a biogeogeographical region.
-#' @param resolution (numeric) resolution in minutes in which the resultant surface will be created,
-#' default = 2.5. It can be 0.5, 2.5, 5, and 10, for correspondence with the bioclimatic variables from
-#' the WorldClim database \url{http://www.worldclim.org/}.
+#' Projection must be Geographic (longitude, latitude).
+#' @param resolution (numeric) resolution in kilometers in which the resultant surface will be created,
+#' default = 5. Rsolution will depend on the size of the area in wich the species is distributed
+#' and values lower than 1 are only recomended when the species is narrowly distributed.
 #' @param threshold (numeric) percentage of occurrence records to be excluded when deciding
 #' the minimum surface value to be considered part of the species range, default = 0.
 #' @param save_shp (logical) if TRUE shapefiles of the species range, extent of occurrence and area of
@@ -28,12 +29,42 @@
 #' the certainty of having or not a complete sampling of the regiong_of_interest.
 #'
 #' @examples
+#' if(!require(rgbif)){
+#' install.packages("rgbif")
+#' library(rgbif)
+#' }
+#'
+#' # getting the data from GBIF
+#' species <- name_lookup(query = "Peltophryne fustiger",
+#'                        rank="species", return = "data") # information about the species
+#'
+#' occ_count(taxonKey = species$key[1], georeferenced = TRUE) # testing if keys return records
+#'
+#' key <- species$key[1] # using species key that return information
+#'
+#' occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
+#'
+#' # keeping only georeferenced records
+#' occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
+#'             c("name", "decimalLongitude", "decimalLatitude")]
+#'
+#' # buffer distance
+#' dist <- 100000
+#' save <- TRUE
+#' name <- "test"
+#'
+#' buff_range <- rangemap_buff(occurrences = occ_g, buffer_distance = dist,
+#'                             save_shp = save, name = name)
 
-# Dependencies: sp (SpatialPointsDataFrame, spTransform), rgdal?,
-#               raster (buffer, area), maps (map), maptools (map2SpatialPolygons),
-#               rgeos (gUnaryUnion, gIntersection, gCentroid), saptial?
+# Dependencies: maps (map),
+#               maptools (map2SpatialPolygons),
+#               raster (area, rasterize, extent),
+#               rgdal (writeOGR),
+#               rgeos (gIntersection, gCentroid, gBuffer),
+#               sp (SpatialPointsDataFrame, spTransform, SpatialPolygonsDataFrame,
+#                   CRS, over, Polygons, Polygon, SpatialPolygons, proj4string)
 
-rangemap_tsa <- function(occurrences, region_of_interest, resolution = 2.5,
+rangemap_tsa <- function(occurrences, region_of_interest, resolution = 5,
                          threshold = 0, save_shp = FALSE, name) {
   # testing potential issues
   if (missing(occurrences)) {
@@ -44,24 +75,78 @@ rangemap_tsa <- function(occurrences, region_of_interest, resolution = 2.5,
     stop("occurrences data.frame must have the following columns: \nSpecies, Longitude, and Latitude")
   }
 
+  if (missing(region_of_interest)) {
+    stop("Argument region_of_interest is necessary to perform the analysis")
+  }
+
   # erase duplicate records
   occ <- as.data.frame(unique(occurrences))[, 1:3]
   colnames(occ) <- c("Species", "Longitude", "Latitude")
 
-  # getting one variable from WC
-  ## getting data
-  if (resolution == 0.5) {
-    # tiles for the region of interest
-    ## create a fishnet equal to the one of  worldclim
-    #
-    var <- raster::getData("worldclim", var = "bio", download = FALSE,
-                           res = resolution, long = , lat = )[[1]]
+  # making spatial points
+  WGS84 <- sp::CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
+  occ_sp <- sp::SpatialPointsDataFrame(coords = occ[, 2:3], data = occ,
+                                       proj4string = WGS84)
 
-  }else {
-    var <- raster::getData("worldclim", var = "bio", download = FALSE, res = resolution)[[1]]
-  }
+  # region of interest
+  region <- region_of_interest
 
-  # give a value to get the area
+  # keeping only records in land
+  occ_sp <- occ_sp[!is.na(sp::over(occ_sp, region)), ]
+
+  # project the points using their centriods as reference
+  centroid <- rgeos::gCentroid(occ_sp, byid = FALSE)
+
+  AEQD <- sp::CRS(paste("+proj=aeqd +lat_0=", centroid@coords[2], " +lon_0=", centroid@coords[1],
+                        " +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs", sep = ""))
+
+  occ_pr <- sp::spTransform(occ_sp, AEQD)
+
+  # region of interest projected
+  region <- sp::spTransform(region, AEQD)
+
+  # preparing variables
+  ## creating a grid
+  grid <- raster::raster(raster::extent(region))
+
+  ## grid resolution
+  raster::res(grid) <- resolution * 1000
+
+  ## grid projection
+  sp::proj4string(grid) <- sp::proj4string(region)
+
+  ## extract grid with region
+  gird_reg <- raster::mask(grid, region)
+
+  ## grid for region of interest
+  grid_r_pol <- raster::rasterToPolygons(gird_reg)
+
+  ## points for region of interest
+  points_reg <- raster::rasterToPoints(gird_reg)
+
+  ## asigning 1 to cells occupied by occurrenes
+
+  ## grid to points
+
+  ## variables
+  longitude <- ...
+  latitude <- ...
+  pres_abs <- ...
+
+  # tsa
+  ## tsa model
+  tsa <- spatial::surf.ls(np = 3, x = longitude, y = latitude, z = pres_abs)
+
+  ## tsa thresholded
+  tsa_t <- tsa
+  raster::values(tsa_t)[raster::values(tsa_t) < thres] <- 0
+  raster::values(tsa_t)[raster::values(tsa_t) >= thres] <- 1
+  tsa_t <-
+
+  # tsa to spatial polygon
+  tsa_pol <- raster::rasterToPolygons(tsa_t)
+  tsa_pol@data$union_field <- rep("Union", length(tsa_pol@data[, 1])) # new field for union
+  tsa_pol <- rgeos::gUnaryUnion(tsa_pol, id = tsa_pol@data$union_field) # now dissolve
 
   # calculate areas in km2
   area <- raster::area(hulls_buff_un) / 1000000

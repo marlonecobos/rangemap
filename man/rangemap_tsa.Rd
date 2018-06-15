@@ -4,19 +4,20 @@
 \alias{rangemap_tsa}
 \title{Species distributional ranges based on a trend surface analysis}
 \usage{
-rangemap_tsa(occurrences, region_of_interest, resolution = 2.5,
-  threshold = 0, save_shp = FALSE, name)
+rangemap_tsa(occurrences, region_of_interest, resolution = 5, threshold = 0,
+  save_shp = FALSE, name)
 }
 \arguments{
 \item{occurrences}{a data.frame containing species occurrences, columns must be:
 Species, Longitude, and Latitude.}
 
 \item{region_of_interest}{a SpatialPolygon object on which the trend surface analysis
-will be performed. For instance, a country, an ecoregion, or a biogeogeographical region.}
+will be performed. For instance, a country, an ecoregion, or a biogeogeographical region.
+Projection must be Geographic (longitude, latitude).}
 
-\item{resolution}{(numeric) resolution in minutes in which the resultant surface will be created,
-default = 2.5. It can be 0.5, 2.5, 5, and 10, for correspondence with the bioclimatic variables from
-the WorldClim database \url{http://www.worldclim.org/}.}
+\item{resolution}{(numeric) resolution in kilometers in which the resultant surface will be created,
+default = 5. Rsolution will depend on the size of the area in wich the species is distributed
+and values lower than 1 are only recomended when the species is narrowly distributed.}
 
 \item{threshold}{(numeric) percentage of occurrence records to be excluded when deciding
 the minimum surface value to be considered part of the species range, default = 0.}
@@ -42,4 +43,32 @@ Trend surface analysis Is a method based on low-order polynomials of spatial coo
 for estimating a regular grid of points from scattered observations. This method assumes that all
 cells not occupied by occurrences are absences; hence its use depends on the quality of data and
 the certainty of having or not a complete sampling of the regiong_of_interest.
+}
+\examples{
+if(!require(rgbif)){
+install.packages("rgbif")
+library(rgbif)
+}
+
+# getting the data from GBIF
+species <- name_lookup(query = "Peltophryne fustiger",
+                       rank="species", return = "data") # information about the species
+
+occ_count(taxonKey = species$key[1], georeferenced = TRUE) # testing if keys return records
+
+key <- species$key[1] # using species key that return information
+
+occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
+
+# keeping only georeferenced records
+occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
+            c("name", "decimalLongitude", "decimalLatitude")]
+
+# buffer distance
+dist <- 100000
+save <- TRUE
+name <- "test"
+
+buff_range <- rangemap_buff(occurrences = occ_g, buffer_distance = dist,
+                            save_shp = save, name = name)
 }
