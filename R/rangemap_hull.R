@@ -116,6 +116,7 @@ rangemap_hull <- function(occurrences, hull_type = "convex", buffer_distance = 5
   # project polygons
   polygons <- sp::spTransform(polygons, AEQD)
 
+  # clustering
   if (split == TRUE) {
     if (cluster_method == "hierarchical" | cluster_method == "k-means") {
       #split groups of points based on the split distance
