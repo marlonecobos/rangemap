@@ -54,23 +54,23 @@ install.packages("maps")
 library(maps)
 }
 if(!require(maptools)){
-install.packages("maptools")
-library(maptools)
+ install.packages("maptools")
+ library(maptools)
 }
 
 # getting the data from GBIF
 species <- name_lookup(query = "Peltophryne fustiger",
                        rank="species", return = "data") # information about the species
 
-occ_count(taxonKey = species$key[1], georeferenced = TRUE) # testing if keys return records
+occ_count(taxonKey = species$key[5], georeferenced = TRUE) # testing if keys return records
 
-key <- species$key[1] # using species key that return information
+key <- species$key[5] # using species key that return information
 
 occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
 
 # keeping only georeferenced records
 occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
-            c("name", "decimalLongitude", "decimalLatitude")]
+             c("name", "decimalLongitude", "decimalLatitude")]
 
 # region of interest
 WGS84 <- CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
@@ -79,12 +79,12 @@ w_po <- sapply(strsplit(w_map$names, ":"), function(x) x[1]) # preparing data to
 reg <- map2SpatialPolygons(w_map, IDs = w_po, proj4string = WGS84) # map to polygon
 
 # other data
-res <- 5
+res <- 1
 thr <- 0
 save <- TRUE
 name <- "test"
 
-buff_range <- rangemap_tsa(occurrences = occ_g, region_of_interest = reg,
-                           threshold = thr, resolution = res, save_shp = save,
-                           name = name)
+tsa <- rangemap_tsa(occurrences = occ_g, region_of_interest = reg,
+                    threshold = thr, resolution = res, save_shp = save,
+                    name = name)
 }

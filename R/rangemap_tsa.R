@@ -38,23 +38,23 @@
 #' library(maps)
 #' }
 #' if(!require(maptools)){
-#' install.packages("maptools")
-#' library(maptools)
+#'  install.packages("maptools")
+#'  library(maptools)
 #' }
 #'
 #' # getting the data from GBIF
 #' species <- name_lookup(query = "Peltophryne fustiger",
 #'                        rank="species", return = "data") # information about the species
 #'
-#' occ_count(taxonKey = species$key[1], georeferenced = TRUE) # testing if keys return records
+#' occ_count(taxonKey = species$key[5], georeferenced = TRUE) # testing if keys return records
 #'
-#' key <- species$key[1] # using species key that return information
+#' key <- species$key[5] # using species key that return information
 #'
 #' occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
 #'
 #' # keeping only georeferenced records
 #' occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
-#'             c("name", "decimalLongitude", "decimalLatitude")]
+#'              c("name", "decimalLongitude", "decimalLatitude")]
 #'
 #' # region of interest
 #' WGS84 <- CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
@@ -63,22 +63,23 @@
 #' reg <- map2SpatialPolygons(w_map, IDs = w_po, proj4string = WGS84) # map to polygon
 #'
 #' # other data
-#' res <- 5
+#' res <- 1
 #' thr <- 0
 #' save <- TRUE
 #' name <- "test"
 #'
-#' buff_range <- rangemap_tsa(occurrences = occ_g, region_of_interest = reg,
-#'                            threshold = thr, resolution = res, save_shp = save,
-#'                            name = name)
+#' tsa <- rangemap_tsa(occurrences = occ_g, region_of_interest = reg,
+#'                     threshold = thr, resolution = res, save_shp = save,
+#'                     name = name)
 
 # Dependencies: maps (map),
 #               maptools (map2SpatialPolygons),
-#               raster (area, rasterize, extent),
+#               raster (area, rasterize, extent, raster),
 #               rgdal (writeOGR),
 #               rgeos (gIntersection, gCentroid, gBuffer),
 #               sp (SpatialPointsDataFrame, spTransform, SpatialPolygonsDataFrame,
 #                   CRS, over, Polygons, Polygon, SpatialPolygons, proj4string)
+#               spatial(surf.ls, predict.trls)
 
 rangemap_tsa <- function(occurrences, region_of_interest, resolution = 5,
                          threshold = 0, save_shp = FALSE, name) {
@@ -145,7 +146,7 @@ rangemap_tsa <- function(occurrences, region_of_interest, resolution = 5,
   grid_pres <- grid_r_pol[!is.na(sp::over(grid_r_pol, as(occ_pr, "SpatialPoints"))), ]
 
   ## grid to points
-  ras_grid <- raster::rasterize(grid_pres, gird_reg, "layer")
+  ras_grid <- raster::rasterize(grid_pres, grid_reg, "layer")
   point_pres <- raster::rasterToPoints(ras_grid)[, 1:2]
 
   ## asigning 1 to cells occupied by occurrenes
@@ -172,22 +173,31 @@ rangemap_tsa <- function(occurrences, region_of_interest, resolution = 5,
   project_matrix1 <- data.frame(matrix_pa[, 1:2], matrix_pa[, 1:2])
   names(project_matrix1) <- c("x", "y", "longitude", "latitude")
   sp::coordinates(project_matrix1) <- ~ x + y
-
-  project_zone <- raster::raster(project_matrix1)
+  rast_r <- raster::raster(ncol = dim(grid_reg)[2],
+                           nrow = dim(grid_reg)[1])
+  raster::extent(rast_r) <- raster::extent(grid_reg)
+  sp::proj4string(rast_r) <- sp::proj4string(region)
 
   # tsa
   ## tsa model
   tsa <- spatial::surf.ls(np = 3, x = longitude, y = latitude, z = pres_abs)
 
   # tsa prediction to region of insterest
-  tsa_reg <- spatial::predict.trls(tsa, project_zone) # try with raster stack x, y, ...
+  tsa_reg <- spatial::predict.trls(tsa, project_matrix1$longitude, project_matrix1$latitude) # try with raster stack x, y, ...
+
+  tsa_model <- raster::rasterize(project_matrix1, rast_r, tsa_reg)
 
   # tsa thresholded
-  tsa_t <- tsa_reg
-  thres <- threshold / 100
+  tsa_t <- tsa_model
+  occ_val <- na.omit(raster::extract(tsa_t, occ_pr@coords))
+  val <- ceiling(length(occ[, 1]) * threshold / 100) + 1
+  thres <- sort(occ_val)[val]
 
   raster::values(tsa_t)[raster::values(tsa_t) < thres] <- 0
   raster::values(tsa_t)[raster::values(tsa_t) >= thres] <- 1
+
+  # only presence
+  raster::values(tsa_t)[raster::values(tsa_t) == 0] <- NA
 
   # tsa to spatial polygon
   tsa_pol <- raster::rasterToPolygons(tsa_t)
@@ -195,7 +205,7 @@ rangemap_tsa <- function(occurrences, region_of_interest, resolution = 5,
   tsa_pol <- rgeos::gUnaryUnion(tsa_pol, id = tsa_pol@data$union_field) # now dissolve
 
   # calculate areas in km2
-  area <- raster::area(hulls_buff_un) / 1000000
+  area <- raster::area(tsa_pol) / 1000000
   areakm2 <- sum(area) # total area of the species range
 
   ## extent of occurrence
@@ -220,8 +230,8 @@ rangemap_tsa <- function(occurrences, region_of_interest, resolution = 5,
 
   # adding characteristics to spatial polygons
   species <- as.character(occurrences[1, 1])
-  clip_area <- sp::SpatialPolygonsDataFrame(hulls_buff_un, data = data.frame(species, area, # species range
-                                                                             eocckm2, aocckm2),
+  clip_area <- sp::SpatialPolygonsDataFrame(tsa_pol, data = data.frame(species, areakm2, # species range
+                                                                       eocckm2, aocckm2),
                                             match.ID = FALSE)
 
   extent_occurrence <- sp::SpatialPolygonsDataFrame(covexhull_polygon_pr, # extent of occurrence
