@@ -5,7 +5,7 @@
 \title{Species distributional ranges based on a trend surface analysis}
 \usage{
 rangemap_tsa(occurrences, region_of_interest, resolution = 5, threshold = 0,
-  save_shp = FALSE, name)
+  save_shp = FALSE, save_tsmodel = FALSE, name)
 }
 \arguments{
 \item{occurrences}{a data.frame containing species occurrences, columns must be:
@@ -23,9 +23,13 @@ and values lower than 1 are only recomended when the species is narrowly distrib
 the minimum surface value to be considered part of the species range, default = 0.}
 
 \item{save_shp}{(logical) if TRUE shapefiles of the species range, extent of occurrence and area of
-occupancy will be written in the working directory.}
+occupancy will be written in the working directory. Default = FALSE.}
 
-\item{name}{(character) valid if save_shp TRUE. The name of the shapefile to be exported.}
+\item{save_tsmodel}{(logical) if TRUE a GeoTif file of the species tsa model will be written in
+the working directory. Default = FALSE.}
+
+\item{name}{(character) valid if save_shp TRUE. The name of the shapefile and GeoTif (if save_tsmodel
+= TRUE) to be exported.}
 }
 \value{
 A named list containing a data.frame with information about the species range, a

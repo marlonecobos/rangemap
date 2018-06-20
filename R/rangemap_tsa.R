@@ -16,8 +16,11 @@
 #' @param threshold (numeric) percentage of occurrence records to be excluded when deciding
 #' the minimum surface value to be considered part of the species range, default = 0.
 #' @param save_shp (logical) if TRUE shapefiles of the species range, extent of occurrence and area of
-#' occupancy will be written in the working directory.
-#' @param name (character) valid if save_shp TRUE. The name of the shapefile to be exported.
+#' occupancy will be written in the working directory. Default = FALSE.
+#' @param save_tsmodel (logical) if TRUE a GeoTif file of the species tsa model will be written in
+#' the working directory. Default = FALSE.
+#' @param name (character) valid if save_shp TRUE. The name of the shapefile and GeoTif (if save_tsmodel
+#' = TRUE) to be exported.
 #'
 #' @return A named list containing a data.frame with information about the species range, a
 #' SpatialPolygon object of the species range in Geographic projection, and the same SpatialPolygon
@@ -81,8 +84,8 @@
 #                   CRS, over, Polygons, Polygon, SpatialPolygons, proj4string)
 #               spatial(surf.ls, predict.trls)
 
-rangemap_tsa <- function(occurrences, region_of_interest, resolution = 5,
-                         threshold = 0, save_shp = FALSE, name) {
+rangemap_tsa <- function(occurrences, region_of_interest, resolution = 5, threshold = 0,
+                         save_shp = FALSE, save_tsmodel = FALSE, name) {
   # testing potential issues
   if (missing(occurrences)) {
     stop("Argument occurrences is necessary to perform the analysis")
@@ -252,13 +255,25 @@ rangemap_tsa <- function(occurrences, region_of_interest, resolution = 5,
     rgdal::writeOGR(occ_pr, ".", paste(name, "unique_records", sep = "_"), driver = "ESRI Shapefile")
   }
 
+  if (save_tsmodel == TRUE) {
+    cat("Writing trend surface model in the working directory.")
+    raster::writeRaster(tsa_model, paste(name, "_tsa.tif", sep = ""), format = "GTiff")
+  }
+
   # return results (list or a different object?)
   sp_dat <- data.frame(occ[1, 1], dim(occ_pr)[1], areakm2, eocckm2, aocckm2) # extent of occ = total area?
   colnames(sp_dat) <- c("Species", "Unique records", "Range area", "Extent of occurrence", "Area of occupancy")
 
-  results <- list(sp_dat, occ_pr, clip_area, extent_occurrence, area_occupancy)
-  names(results) <- c("Summary", "Species unique records", "Species range", "Extent of occurrence",
-                      "Area of occupancy")
+  if (save_tsmodel == TRUE) {
+    results <- list(sp_dat, occ_pr, clip_area, extent_occurrence, area_occupancy, tsa_model)
+    names(results) <- c("Summary", "Species unique records", "Species range", "Extent of occurrence",
+                        "Area of occupancy", "Trend surface model")
+  }else {
+    results <- list(sp_dat, occ_pr, clip_area, extent_occurrence, area_occupancy)
+    names(results) <- c("Summary", "Species unique records", "Species range", "Extent of occurrence",
+                        "Area of occupancy")
+  }
+
   return(results)
 }
 
