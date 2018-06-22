@@ -16,6 +16,10 @@
 #' be the lowest considered as suitable for the species.
 #' @param threshold (numeric) percentage of occurrence records to be excluded from suitable areas
 #' considering their values of suitability in the continuous model (e.g., 0, 5, or 10).
+#' @param simplify_level (numeric) tolerance at the moment of simplifying polygons created from
+#' the suitable areas derived from the ecological niche model. Lower values will produce polygons
+#' more similar to the original geometry. Default = 0. If simplify is needed, try numbers between
+#' 0 and 1 first.
 #' @param polygons (optional) a SpatialPolygon object that will be clipped with the buffer areas
 #' to create species ranges based on actual limits. Projection must be Geographic (longitude, latitude).
 #' If not defined, a default, simple world map will be used.
@@ -56,7 +60,7 @@
 #               rgeos (gUnaryUnion, gIntersection, gCentroid)
 
 rangemap_enm <- function(occurrences, model, threshold_value, threshold,
-                         polygons, save_shp = FALSE, name) {
+                         simplify_level = 0, polygons, save_shp = FALSE, name) {
 
   # check for errors
   if (missing("model")) {
@@ -98,9 +102,20 @@ rangemap_enm <- function(occurrences, model, threshold_value, threshold,
   # convert raster to polygons
   WGS84 <- sp::CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
   raster::crs(presence) <- WGS84@projargs
-  enm_range <- raster::rasterToPolygons(presence)
-  enm_range@data$union_field <- rep("Union", length(enm_range@data[, 1])) # new field for union
-  enm_range <- rgeos::gUnaryUnion(enm_range, id = enm_range@data$union_field) # now dissolve
+  enm_range <- raster::rasterToPolygons(presence, dissolve = TRUE)
+
+  # erasing small polygons
+  areas <- lapply(enm_range@polygons, function(x) sapply(x@Polygons, function(y) y@area))
+
+  bigpolys <- unlist(lapply(areas, function(x) which(x > 0.1)))
+
+  enm_range@polygons[[1]]@Polygons <- enm_range@polygons[[1]]@Polygons[bigpolys]
+  enm_range@polygons[[1]]@plotOrder <- enm_range@polygons[[1]]@plotOrder[enm_range@polygons[[1]]@plotOrder %in% bigpolys]
+
+  slot(enm_range, "polygons") <- lapply(slot(enm_range, "polygons"),
+                                        "comment<-", NULL)
+
+  enm_range <- suppressWarnings(rgeos::gSimplify(enm_range, tol = simplify_level)) # simplify polygons
 
   # world map or user map for creating extent of occurrence
   if (missing(polygons)) {
@@ -182,5 +197,3 @@ rangemap_enm <- function(occurrences, model, threshold_value, threshold,
                       "Area of occupancy")
   return(results)
 }
-
-

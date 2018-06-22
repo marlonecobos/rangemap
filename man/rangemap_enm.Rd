@@ -4,8 +4,8 @@
 \alias{rangemap_enm}
 \title{Species distributional ranges based on ecological niche models}
 \usage{
-rangemap_enm(occurrences, model, threshold_value, threshold, polygons,
-  save_shp = FALSE, name)
+rangemap_enm(occurrences, model, threshold_value, threshold,
+  simplify_level = 0, polygons, save_shp = FALSE, name)
 }
 \arguments{
 \item{occurrences}{a data.frame containing species occurrences, columns must be:
@@ -19,6 +19,11 @@ be the lowest considered as suitable for the species.}
 
 \item{threshold}{(numeric) percentage of occurrence records to be excluded from suitable areas
 considering their values of suitability in the continuous model (e.g., 0, 5, or 10).}
+
+\item{simplify_level}{(numeric) tolerance at the moment of simplifying polygons created from
+the suitable areas derived from the ecological niche model. Lower values will produce polygons
+more similar to the original geometry. Default = 0. If simplify is needed, try numbers between
+0 and 1 first.}
 
 \item{polygons}{(optional) a SpatialPolygon object that will be clipped with the buffer areas
 to create species ranges based on actual limits. Projection must be Geographic (longitude, latitude).
