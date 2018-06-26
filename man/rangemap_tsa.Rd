@@ -5,7 +5,7 @@
 \title{Species distributional ranges based on a trend surface analysis}
 \usage{
 rangemap_tsa(occurrences, region_of_interest, resolution = 5, threshold = 0,
-  save_shp = FALSE, save_tsmodel = FALSE, name)
+  simplify_level = 0, save_shp = FALSE, save_tsmodel = FALSE, name)
 }
 \arguments{
 \item{occurrences}{a data.frame containing species occurrences, columns must be:
@@ -21,6 +21,10 @@ and values lower than 1 are only recomended when the species is narrowly distrib
 
 \item{threshold}{(numeric) percentage of occurrence records to be excluded when deciding
 the minimum surface value to be considered part of the species range, default = 0.}
+
+\item{simplify_level}{(numeric) tolerance at the moment of simplifying polygons created with
+the trend surface model. Lower values will produce polygons more similar to the original geometry.
+Default = 0. If simplify is needed, try numbers between 0 and 1 first.}
 
 \item{save_shp}{(logical) if TRUE shapefiles of the species range, extent of occurrence and area of
 occupancy will be written in the working directory. Default = FALSE.}

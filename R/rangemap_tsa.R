@@ -15,6 +15,9 @@
 #' and values lower than 1 are only recomended when the species is narrowly distributed.
 #' @param threshold (numeric) percentage of occurrence records to be excluded when deciding
 #' the minimum surface value to be considered part of the species range, default = 0.
+#' @param simplify_level (numeric) tolerance at the moment of simplifying polygons created with
+#' the trend surface model. Lower values will produce polygons more similar to the original geometry.
+#' Default = 0. If simplify is needed, try numbers between 0 and 1 first.
 #' @param save_shp (logical) if TRUE shapefiles of the species range, extent of occurrence and area of
 #' occupancy will be written in the working directory. Default = FALSE.
 #' @param save_tsmodel (logical) if TRUE a GeoTif file of the species tsa model will be written in
@@ -85,7 +88,7 @@
 #               spatial(surf.ls, predict.trls)
 
 rangemap_tsa <- function(occurrences, region_of_interest, resolution = 5, threshold = 0,
-                         save_shp = FALSE, save_tsmodel = FALSE, name) {
+                         simplify_level = 0, save_shp = FALSE, save_tsmodel = FALSE, name) {
   # testing potential issues
   if (missing(occurrences)) {
     stop("Argument occurrences is necessary to perform the analysis")
@@ -206,6 +209,8 @@ rangemap_tsa <- function(occurrences, region_of_interest, resolution = 5, thresh
   tsa_pol <- raster::rasterToPolygons(tsa_t)
   tsa_pol@data$union_field <- rep("Union", length(tsa_pol@data[, 1])) # new field for union
   tsa_pol <- rgeos::gUnaryUnion(tsa_pol, id = tsa_pol@data$union_field) # now dissolve
+
+  tsa_pol <- suppressWarnings(rgeos::gSimplify(tsa_pol, tol = simplify_level)) # simplify polygons
 
   # calculate areas in km2
   area <- raster::area(tsa_pol) / 1000000
