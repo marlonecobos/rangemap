@@ -218,9 +218,9 @@ rangemap_tsa <- function(occurrences, region_of_interest, resolution = 5, thresh
   covexhull_polygon <- sp::SpatialPolygons(list(sp::Polygons(list(sp::Polygon(coord_pol)), ID = 1))) # into SpatialPolygons
   sp::proj4string(covexhull_polygon) <- WGS84 # project
   covexhull_polygon_pr <- sp::spTransform(covexhull_polygon, AEQD) # reproject
-  #c_hull_extent <- rgeos::gIntersection(polygons, covexhull_polygon_pr, byid = TRUE, drop_lower_td = TRUE) # area of interest
+  c_hull_extent <- rgeos::gIntersection(region, covexhull_polygon_pr, byid = TRUE, drop_lower_td = TRUE) # area of interest
 
-  eockm2 <- raster::area(covexhull_polygon_pr) / 1000000
+  eockm2 <- raster::area(c_hull_extent) / 1000000
   eocckm2 <- sum(eockm2) # total area of the species range
 
   ## area of occupancy
@@ -237,7 +237,7 @@ rangemap_tsa <- function(occurrences, region_of_interest, resolution = 5, thresh
                                                                        eocckm2, aocckm2),
                                             match.ID = FALSE)
 
-  extent_occurrence <- sp::SpatialPolygonsDataFrame(covexhull_polygon_pr, # extent of occurrence
+  extent_occurrence <- sp::SpatialPolygonsDataFrame(c_hull_extent, # extent of occurrence
                                                     data = data.frame(species,
                                                                       eockm2),
                                                     match.ID = FALSE)
