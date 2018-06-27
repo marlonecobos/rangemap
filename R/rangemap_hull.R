@@ -168,7 +168,7 @@ rangemap_hull <- function(occurrences, hull_type = "convex", buffer_distance = 5
 
       for (i in 1:length(occ_prs)) {
         if (length(occ_prs) > 1) {
-          coord <- as.data.frame(sp::coordinates(occ_prs@coords[[i]])) # spatial point dataframe to data frame keeping only coordinates
+          coord <- as.data.frame(sp::coordinates(occ_prs[[i]])) # spatial point dataframe to data frame keeping only coordinates
         }else {
           coord <- as.data.frame(sp::coordinates(occ_prs[[i]])) # spatial point dataframe to data frame keeping only coordinates
         }
@@ -191,7 +191,7 @@ rangemap_hull <- function(occurrences, hull_type = "convex", buffer_distance = 5
 
       for (i in 1:length(occ_prs)) {
         if (length(occ_prs) > 1) {
-          coord <- as.data.frame(sp::coordinates(occ_prs@coords[[i]])) # spatial point dataframe to data frame keeping only coordinates
+          coord <- as.data.frame(sp::coordinates(occ_prs[[i]])) # spatial point dataframe to data frame keeping only coordinates
         }else {
           coord <- as.data.frame(sp::coordinates(occ_prs[[i]])) # spatial point dataframe to data frame keeping only coordinates
         }
@@ -223,7 +223,11 @@ rangemap_hull <- function(occurrences, hull_type = "convex", buffer_distance = 5
   hulls_buff_un <- do.call(sp::rbind.SpatialPolygons, c(hulls_buffer, list(makeUniqueIDs = TRUE)))
 
   # Clipping with the world
-  #hulls_buf_world <- rgeos::gIntersection(hulls_buff_un, polygons, byid = FALSE, drop_lower_td = TRUE) # area of interest
+  polygons <- suppressWarnings(rgeos::gBuffer(polygons, byid = TRUE, width = 0)) # to avoid topology problems
+  polygons <- rgeos::gUnaryUnion(polygons)
+
+  hulls_buff_un <- rgeos::gIntersection(hulls_buff_un, polygons,
+                                        byid = TRUE, drop_lower_td = TRUE) # area of interest
 
   # calculate areas in km2
   area <- raster::area(hulls_buff_un) / 1000000
@@ -236,9 +240,10 @@ rangemap_hull <- function(occurrences, hull_type = "convex", buffer_distance = 5
   covexhull_polygon <- sp::SpatialPolygons(list(sp::Polygons(list(sp::Polygon(coord_pol)), ID = 1))) # into SpatialPolygons
   sp::proj4string(covexhull_polygon) <- WGS84 # project
   covexhull_polygon_pr <- sp::spTransform(covexhull_polygon, AEQD) # reproject
-  #c_hull_extent <- rgeos::gIntersection(polygons, covexhull_polygon_pr, byid = TRUE, drop_lower_td = TRUE) # area of interest
+  c_hull_extent <- rgeos::gIntersection(covexhull_polygon_pr, polygons,
+                                        byid = TRUE, drop_lower_td = TRUE) # area of interest
 
-  eockm2 <- raster::area(covexhull_polygon_pr) / 1000000
+  eockm2 <- raster::area(c_hull_extent) / 1000000
   eocckm2 <- sum(eockm2) # total area of the species range
 
   ## area of occupancy
@@ -251,17 +256,16 @@ rangemap_hull <- function(occurrences, hull_type = "convex", buffer_distance = 5
 
   # adding characteristics to spatial polygons
   species <- as.character(occurrences[1, 1])
-  clip_area <- sp::SpatialPolygonsDataFrame(hulls_buff_un, data = data.frame(species, area, # species range
-                                                                         eocckm2, aocckm2),
+  clip_area <- sp::SpatialPolygonsDataFrame(hulls_buff_un, # species range
+                                            data = data.frame(species, area),
                                             match.ID = FALSE)
 
-  extent_occurrence <- sp::SpatialPolygonsDataFrame(covexhull_polygon_pr, # extent of occurrence
-                                                    data = data.frame(species,
-                                                                      eockm2),
+  extent_occurrence <- sp::SpatialPolygonsDataFrame(c_hull_extent, # extent of occurrence
+                                                    data = data.frame(species, eockm2),
                                                     match.ID = FALSE)
 
-  area_occupancy <- sp::SpatialPolygonsDataFrame(grid_sp, data = data.frame(species, # area of occupancy
-                                                                            aockm2),
+  area_occupancy <- sp::SpatialPolygonsDataFrame(grid_sp, # area of occupancy
+                                                 data = data.frame(species, aockm2),
                                                  match.ID = FALSE)
 
   # exporting
@@ -275,11 +279,11 @@ rangemap_hull <- function(occurrences, hull_type = "convex", buffer_distance = 5
 
   # return results (list or a different object?)
   sp_dat <- data.frame(occ[1, 1], dim(occ_pr)[1], areakm2, eocckm2, aocckm2) # extent of occ = total area?
-  colnames(sp_dat) <- c("Species", "Unique records", "Range area", "Extent of occurrence", "Area of occupancy")
+  colnames(sp_dat) <- c("Species", "Unique_records", "Range_area", "Extent_of_occurrence", "Area_of_occupancy")
 
   results <- list(sp_dat, occ_pr, clip_area, extent_occurrence, area_occupancy)
-  names(results) <- c("Summary", "Species unique records", "Species range", "Extent of occurrence",
-                      "Area of occupancy")
+  names(results) <- c("Summary", "Species_unique_records", "Species_range", "Extent_of_occurrence",
+                      "Area_of_occupancy")
   return(results)
 }
 
