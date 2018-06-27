@@ -230,8 +230,8 @@ rangemap_hull <- function(occurrences, hull_type = "convex", buffer_distance = 5
                                         byid = TRUE, drop_lower_td = TRUE) # area of interest
 
   # calculate areas in km2
-  area <- raster::area(hulls_buff_un) / 1000000
-  areakm2 <- sum(area) # total area of the species range
+  areakm2 <- raster::area(hulls_buff_un) / 1000000
+  areackm2 <- sum(areakm2) # total area of the species range
 
   ## extent of occurrence
   coord <- as.data.frame(occ[, 2:3]) # spatial point dataframe to data frame keeping only coordinates
@@ -257,7 +257,7 @@ rangemap_hull <- function(occurrences, hull_type = "convex", buffer_distance = 5
   # adding characteristics to spatial polygons
   species <- as.character(occurrences[1, 1])
   clip_area <- sp::SpatialPolygonsDataFrame(hulls_buff_un, # species range
-                                            data = data.frame(species, area),
+                                            data = data.frame(species, areakm2),
                                             match.ID = FALSE)
 
   extent_occurrence <- sp::SpatialPolygonsDataFrame(c_hull_extent, # extent of occurrence
@@ -278,7 +278,7 @@ rangemap_hull <- function(occurrences, hull_type = "convex", buffer_distance = 5
   }
 
   # return results (list or a different object?)
-  sp_dat <- data.frame(occ[1, 1], dim(occ_pr)[1], areakm2, eocckm2, aocckm2) # extent of occ = total area?
+  sp_dat <- data.frame(occ[1, 1], dim(occ_pr)[1], areackm2, eocckm2, aocckm2) # extent of occ = total area?
   colnames(sp_dat) <- c("Species", "Unique_records", "Range_area", "Extent_of_occurrence", "Area_of_occupancy")
 
   results <- list(sp_dat, occ_pr, clip_area, extent_occurrence, area_occupancy)
