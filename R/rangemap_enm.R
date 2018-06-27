@@ -140,6 +140,9 @@ rangemap_enm <- function(occurrences, model, threshold_value, threshold,
 
   polygons <- sp::spTransform(polygons, AEQD)
 
+  polygons <- suppressWarnings(rgeos::gBuffer(polygons, byid = TRUE, width = 0)) # to avoid topology problems
+  polygons <- rgeos::gUnaryUnion(polygons)
+
   # calculate areas in km2
   area <- raster::area(enm_range_pr) / 1000000
   areakm2 <- sum(area) # total area of the species range
@@ -166,17 +169,16 @@ rangemap_enm <- function(occurrences, model, threshold_value, threshold,
 
   # adding characteristics to spatial polygons
   species <- as.character(occurrences[1, 1])
-  clip_area <- sp::SpatialPolygonsDataFrame(enm_range_pr, data = data.frame(species, areakm2, # species range
-                                                                         eocckm2, aocckm2),
+  clip_area <- sp::SpatialPolygonsDataFrame(enm_range_pr, # species range
+                                            data = data.frame(species, area),
                                             match.ID = FALSE)
 
   extent_occurrence <- sp::SpatialPolygonsDataFrame(c_hull_extent, # extent of occurrence
-                                                    data = data.frame(species,
-                                                                      eockm2),
+                                                    data = data.frame(species, eockm2),
                                                     match.ID = FALSE)
 
-  area_occupancy <- sp::SpatialPolygonsDataFrame(grid_sp, data = data.frame(species, # area of occupancy
-                                                                            aockm2),
+  area_occupancy <- sp::SpatialPolygonsDataFrame(grid_sp, # area of occupancy
+                                                 data = data.frame(species, aockm2),
                                                  match.ID = FALSE)
 
   # exporting
@@ -190,10 +192,10 @@ rangemap_enm <- function(occurrences, model, threshold_value, threshold,
 
   # return results (list or a different object?)
   sp_dat <- data.frame(occ[1, 1], dim(occ_pr)[1], areakm2, eocckm2, aocckm2) # extent of occ = total area?
-  colnames(sp_dat) <- c("Species", "Unique records", "Range area", "Extent of occurrence", "Area of occupancy")
+  colnames(sp_dat) <- c("Species", "Unique_records", "Range_area", "Extent_of_occurrence", "Area_of_occupancy")
 
   results <- list(sp_dat, occ_pr, clip_area, extent_occurrence, area_occupancy)
-  names(results) <- c("Summary", "Species unique records", "Species range", "Extent of occurrence",
-                      "Area of occupancy")
+  names(results) <- c("Summary", "Species_unique_records", "Species_range", "Extent_of_occurrence",
+                      "Area_of_occupancy")
   return(results)
 }
