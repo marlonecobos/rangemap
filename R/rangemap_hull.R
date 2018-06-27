@@ -226,8 +226,8 @@ rangemap_hull <- function(occurrences, hull_type = "convex", buffer_distance = 5
   polygons <- suppressWarnings(rgeos::gBuffer(polygons, byid = TRUE, width = 0)) # to avoid topology problems
   polygons <- rgeos::gUnaryUnion(polygons)
 
-  hulls_buff_un <- rgeos::gIntersection(hulls_buff_un, polygons,
-                                        byid = TRUE, drop_lower_td = TRUE) # area of interest
+  hulls_buff_un <- suppressWarnings(rgeos::gIntersection(hulls_buff_un, polygons,
+                                                         byid = TRUE, drop_lower_td = TRUE)) # area of interest
 
   # calculate areas in km2
   areakm2 <- raster::area(hulls_buff_un) / 1000000
