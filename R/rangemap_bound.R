@@ -159,18 +159,16 @@ rangemap_bound <- function(occurrences, country_code, boundary_level = 0,
 
   # adding characteristics to spatial polygons
   species <- as.character(occurrences[1, 1])
-  boundaries <- sp::SpatialPolygonsDataFrame(boundaries, data = data.frame(species, rangekm2, # species range
-                                                                           eocckm2,
-                                                                           aocckm2),
-                                            match.ID = FALSE)
+  boundaries <- sp::SpatialPolygonsDataFrame(boundaries, # species range
+                                             data = data.frame(species, rangekm2),
+                                             match.ID = FALSE)
 
   extent_occurrence <- sp::SpatialPolygonsDataFrame(c_hull_extent, # extent of occurrence
-                                                    data = data.frame(species,
-                                                                      eockm2),
+                                                    data = data.frame(species, eockm2),
                                                     match.ID = FALSE)
 
-  area_occupancy <- sp::SpatialPolygonsDataFrame(grid_sp, data = data.frame(species, # area of occupancy
-                                                                            aockm2),
+  area_occupancy <- sp::SpatialPolygonsDataFrame(grid_sp, # area of occupancy
+                                                 data = data.frame(species, aockm2),
                                                  match.ID = FALSE)
 
   # exporting
@@ -184,11 +182,11 @@ rangemap_bound <- function(occurrences, country_code, boundary_level = 0,
 
   # return results (list or a different object?)
   sp_dat <- data.frame(occ[1, 1], dim(occ_pr)[1], areakm2, eocckm2, aocckm2) # extent of occ = total area?
-  colnames(sp_dat) <- c("Species", "Unique records", "Range area", "Extent of occurrence", "Area of occupancy")
+  colnames(sp_dat) <- c("Species", "Unique_records", "Range_area", "Extent_of_occurrence", "Area_of_occupancy")
 
   results <- list(sp_dat, occ_pr, boundaries, extent_occurrence, area_occupancy)
-  names(results) <- c("Summary", "Species unique records", "Species range", "Extent of occurrence",
-                      "Area of occupancy")
+  names(results) <- c("Summary", "Species_unique_records", "Species_range", "Extent_of_occurrence",
+                      "Area_of_occupancy")
   return(results)
 }
 
