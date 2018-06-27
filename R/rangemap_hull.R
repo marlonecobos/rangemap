@@ -168,7 +168,7 @@ rangemap_hull <- function(occurrences, hull_type = "convex", buffer_distance = 5
 
       for (i in 1:length(occ_prs)) {
         if (length(occ_prs) > 1) {
-          coord <- as.data.frame(sp::coordinates(occ_prs[[i]])) # spatial point dataframe to data frame keeping only coordinates
+          coord <- as.data.frame(sp::coordinates(occ_prs@coords[[i]])) # spatial point dataframe to data frame keeping only coordinates
         }else {
           coord <- as.data.frame(sp::coordinates(occ_prs[[i]])) # spatial point dataframe to data frame keeping only coordinates
         }
@@ -191,7 +191,7 @@ rangemap_hull <- function(occurrences, hull_type = "convex", buffer_distance = 5
 
       for (i in 1:length(occ_prs)) {
         if (length(occ_prs) > 1) {
-          coord <- as.data.frame(sp::coordinates(occ_prs[[i]])) # spatial point dataframe to data frame keeping only coordinates
+          coord <- as.data.frame(sp::coordinates(occ_prs@coords[[i]])) # spatial point dataframe to data frame keeping only coordinates
         }else {
           coord <- as.data.frame(sp::coordinates(occ_prs[[i]])) # spatial point dataframe to data frame keeping only coordinates
         }
