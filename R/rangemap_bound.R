@@ -94,7 +94,7 @@ rangemap_bound <- function(occurrences, country_code, boundary_level = 0,
       bounds[[i]] <- raster::getData('GADM', country = country_code[i], level = boundary_level)
     }
     polygon <- do.call("rbind", bounds)
-    polygon@data$OBJECTID <- 1:length(bounds)
+    polygon@data$OBJECTID <- 1:length(polygon@data$OBJECTID)
     polygons <- sp::spTransform(polygon, WGS84)
 
     polygons@data[, 6:dim(polygons@data)[2]] <- NULL # erase non-relevant columns to avoid to much data
