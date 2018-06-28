@@ -66,33 +66,42 @@ rangemap_explore <- function(occurrences, polygons) {
   if (missing(polygons)) {
     data(wrld_simpl)
     polygons <- wrld_simpl
+    rm("wrld_simpl", pos = ".GlobalEnv")
   }
-  rm("wrld_simpl", pos = ".GlobalEnv")
 
   # keeping only records in land
-  w_map <- maps::map(database = "world", fill = TRUE, plot = FALSE) # map of the world
-
-  w_po <- sapply(strsplit(w_map$names, ":"), function(x) x[1]) # preparing data to create polygon
-  poly <- maptools::map2SpatialPolygons(w_map, IDs = w_po, proj4string = WGS84) # map to polygon
-
-  occ_sp <- occ_sp[!is.na(sp::over(occ_sp, poly)), ]
+  polygons <- sp::spTransform(polygons, WGS84)
+  occ_sp <- occ_sp[polygons, ]
 
   # projecting polygons and occurrences
   ROBIN <- sp::CRS("+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs") # for pretty maps
 
   occ_pr <- sp::spTransform(occ_sp, ROBIN)
   polygons <- sp::spTransform(polygons, ROBIN) # for base map
+  occ_poly <- polygons[occ_pr, ] # polygons with occurrences
 
   # plot a background map and the range
   ## limits of map
-  xlim <- as.numeric(c(occ_pr@bbox[1, 1:2]))
-  ylim <- as.numeric(c(occ_pr@bbox[2, 1:2]))
+  xlim <- as.numeric(c(occ_poly@bbox[1, 1:2]))
+  ylim <- as.numeric(c(occ_poly@bbox[2, 1:2]))
+
+  ## labels
+  lab <- polygons@data$ISO3
+  cent <- rgeos::gCentroid(polygons, byid = TRUE)
+  cords <- cent@coords
 
   ## generic plot
+  if(.Platform$OS.type == "unix") {
+    quartz()
+  } else {
+    x11()
+  }
+
   par(mar = c(0, 0, 0, 0), tcl = 0.25)
   sp::plot(polygons, xlim = xlim, ylim = ylim, col = "grey90") # base map
-  points(occ_pr, pch = 21, bg = scales::alpha("blue", 0.6), cex = 0.95)  #plot my sample sites
+  points(occ_pr, pch = 21, bg = scales::alpha("yellow", 0.6), cex = 1.5)  #plot my sample sites
+  text(x = cords, labels = lab, cex = 0.8)
   box()
-}
+  }
 
 
