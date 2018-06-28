@@ -101,6 +101,8 @@ rangemap_buff <- function(occurrences, buffer_distance = 100000, polygons, save_
   # create a buffer based on a user-defined distance
   buff_area <- rgeos::gBuffer(occ_pr, width = buffer_distance)
 
+  buff_area <- raster::disaggregate(buff_area)
+
   # clip a world map based on the created buffer
   polygons <- suppressWarnings(rgeos::gBuffer(polygons, byid = TRUE, width = 0)) # to avoid topology problems
   polygons <- rgeos::gUnaryUnion(polygons)
@@ -108,8 +110,8 @@ rangemap_buff <- function(occurrences, buffer_distance = 100000, polygons, save_
   clip_area <- rgeos::gIntersection(polygons, buff_area, byid = TRUE, drop_lower_td = TRUE)
 
   # calculate areas in km2
-  area <- raster::area(clip_area) / 1000000
-  areakm2 <- sum(area) # total area of the species range
+  areakm2 <- raster::area(clip_area) / 1000000
+  areackm2 <- sum(areakm2) # total area of the species range
 
   ## extent of occurrence
   coord <- as.data.frame(occ[, 2:3]) # spatial point dataframe to data frame keeping only coordinates
@@ -134,7 +136,7 @@ rangemap_buff <- function(occurrences, buffer_distance = 100000, polygons, save_
   # adding characteristics to spatial polygons
   species <- as.character(occurrences[1, 1])
   clip_area <- sp::SpatialPolygonsDataFrame(clip_area, # species range
-                                            data = data.frame(species, area),
+                                            data = data.frame(species, areakm2),
                                             match.ID = FALSE)
 
   extent_occurrence <- sp::SpatialPolygonsDataFrame(c_hull_extent, # extent of occurrence
@@ -155,7 +157,7 @@ rangemap_buff <- function(occurrences, buffer_distance = 100000, polygons, save_
   }
 
   # return results (list or a different object?)
-  sp_dat <- data.frame(occ[1, 1], dim(occ_pr)[1], areakm2, eocckm2, aocckm2) # extent of occ = total area?
+  sp_dat <- data.frame(occ[1, 1], dim(occ_pr)[1], areackm2, eocckm2, aocckm2) # extent of occ = total area?
   colnames(sp_dat) <- c("Species", "Unique_records", "Range_area", "Extent_of_occurrence", "Area_of_occupancy")
 
   results <- list(sp_dat, occ_pr, clip_area, extent_occurrence, area_occupancy)
