@@ -107,6 +107,7 @@ rangemap_bound <- function(occurrences, adm_areas, country_code, boundary_level 
     }
     if (!missing(occurrences) & !missing(adm_areas)) {
       if (dim(occurrences)[2] != 3) {
+        rm("occurrences")
         warning(paste("occurrences data.frame does not have required arrangment:",
                       "\nSpecies, Longitude, and Latitude.", " Species range will be",
                       "\ncreated using adm_areas only.", sep = ""))
@@ -129,8 +130,8 @@ rangemap_bound <- function(occurrences, adm_areas, country_code, boundary_level 
 
         if (sum(adm_areas %in% a_a_names) != length(adm_areas)) {
           warning(paste("Not all of the administrative areas defined in adm_areas coincide",
-                        "\nwith the available names for administrative areas in polygons.",
-                        sep = ""))
+                        "\nwith the available names for administrative areas in polygons,",
+                        "\nonly those that coincide will be used.", sep = ""))
         }
 
         if (sum(adm_areas %in% a_a_names) == 0 & missing(occurrences)) {
@@ -140,6 +141,7 @@ rangemap_bound <- function(occurrences, adm_areas, country_code, boundary_level 
         }
 
         if (sum(adm_areas %in% a_a_names) == 0 & !missing(occurrences)) {
+          rm("adm_areas")
           warning(paste("None of the administrative areas defined in adm_areas coincides",
                         "\nwith the available names for administrative areas in polygons.",
                         "\nSpecies range will be created using occurrences only.",
@@ -163,6 +165,7 @@ rangemap_bound <- function(occurrences, adm_areas, country_code, boundary_level 
         }
 
         if (sum(adm_areas %in% a_a_names) == 0 & !missing(occurrences)) {
+          rm("adm_areas")
           warning(paste("None of the administrative areas defined in adm_areas coincides",
                         "\nwith the available names for that level in the countries listed",
                         "\nin country_code. Species range will be created using occurrences only.",
@@ -172,25 +175,8 @@ rangemap_bound <- function(occurrences, adm_areas, country_code, boundary_level 
     }
   }
 
-  # erase duplicate records
-  occ <- as.data.frame(unique(occurrences))[, 1:3]
-  colnames(occ) <- c("Species", "Longitude", "Latitude")
-
-  # make a spatial object from coordinates
+  # initial projection
   WGS84 <- sp::CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
-  occ_sp <- sp::SpatialPointsDataFrame(coords = occ[, 2:3], data = occ,
-                                       proj4string = WGS84)
-
-  # keeping only records in land
-  occ_sp <- occ_sp[!is.na(sp::over(occ_sp, as(polygons, "SpatialPolygons"))), ]
-
-  # project the points using their centriods as reference
-  centroid <- rgeos::gCentroid(occ_sp, byid = FALSE)
-
-  AEQD <- sp::CRS(paste("+proj=aeqd +lat_0=", centroid@coords[2], " +lon_0=", centroid@coords[1],
-                        " +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs", sep = ""))
-
-  occ_pr <- sp::spTransform(occ_sp, AEQD)
 
   # world map or user map fro creating species range
   if (missing(polygons)) {
@@ -200,9 +186,12 @@ rangemap_bound <- function(occurrences, adm_areas, country_code, boundary_level 
     }
     polygon <- do.call("rbind", bounds)
     polygon@data$OBJECTID <- 1:length(polygon@data$OBJECTID)
-    polygons <- sp::spTransform(polygon, WGS84)
 
-    polygons@data[, 6:dim(polygons@data)[2]] <- NULL # erase non-relevant columns to avoid to much data
+    a_names <- ifelse(boundary_level == 0, "NAME_ENGLISH",
+                      paste("NAME", boundary_level, sep = "_"))
+
+    polygon@data[, !names(polygon@data) %in% c("OBJECTID", a_names)] <- NULL # erase columns
+    names(polygon@data) <- c("OBJECTID", "adm_names")
 
     if (kept_data == FALSE) {
       # erasing rds files in working directory
@@ -212,10 +201,64 @@ rangemap_bound <- function(occurrences, adm_areas, country_code, boundary_level 
   }
 
   # project polygons
+  polygons <- sp::spTransform(polygon, WGS84)
+
+  # anlysis
+  if (!missing(occurrences)) {
+    # erase duplicate records
+    occ <- as.data.frame(unique(occurrences))[, 1:3]
+    colnames(occ) <- c("Species", "Longitude", "Latitude")
+
+    # make a spatial object from coordinates
+    occ_sp <- sp::SpatialPointsDataFrame(coords = occ[, 2:3], data = occ,
+                                         proj4string = WGS84)
+
+    # keeping only records in land
+    occ_sp <- occ_sp[!is.na(sp::over(occ_sp, as(polygons, "SpatialPolygons"))), ]
+
+    # centriods of points as reference
+    centroid <- rgeos::gCentroid(occ_sp, byid = FALSE)
+  }else {
+    centroid <- rgeos::gCentroid(polygons, byid = FALSE)
+  }
+
+  # new projection
+  AEQD <- sp::CRS(paste("+proj=aeqd +lat_0=", centroid@coords[2], " +lon_0=", centroid@coords[1],
+                        " +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs", sep = ""))
+
+  # reproject polygons
   polygons <- sp::spTransform(polygons, AEQD)
 
-  # select polygons that overlap with points
-  boundaries <- polygons[!is.na(sp::over(polygons, as(occ_pr, "SpatialPoints"))), ]
+  #selecting polygons
+  if (!missing(occurrences) | !missing(adm_areas)) {
+    if (!missing(occurrences) & !missing(adm_areas)) {
+      # reproject occurrences
+      occ_pr <- sp::spTransform(occ_sp, AEQD)
+
+      # select polygons that overlap with points
+      boundaries <- polygons[!is.na(sp::over(polygons, as(occ_pr, "SpatialPoints"))), ]
+
+      # select polygons by names
+      boundaries1 <- polygons[polygons@data$adm_names %in% adm_areas, ]
+
+      # combining boundaries
+      boundaries <- polygons[polygons@data$adm_names %in%
+                               as.vector(unique(c(boundaries@data$adm_names,
+                                                  boundaries1@data$adm_names))), ]
+    }
+    if (!missing(occurrences) & missing(adm_areas)) {
+      # reproject occurrences
+      occ_pr <- sp::spTransform(occ_sp, AEQD)
+
+      # select polygons that overlap with points
+      boundaries <- polygons[!is.na(sp::over(polygons, as(occ_pr, "SpatialPoints"))), ]
+    }
+
+    if (!missing(adm_areas) & missing(occurrences)) {
+      # select polygons by names
+      boundaries <- polygons[polygons@data$adm_areas %in% adm_areas, ]
+    }
+  }
 
   # disolve
   if (dissolve == TRUE) {
@@ -284,5 +327,3 @@ rangemap_bound <- function(occurrences, adm_areas, country_code, boundary_level 
                       "Area_of_occupancy")
   return(results)
 }
-
-
