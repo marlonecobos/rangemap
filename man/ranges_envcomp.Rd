@@ -40,3 +40,6 @@ one of them if environmental conditions are considered.
 Trend surface analysis Is a method based on low-order polynomials of spatial coordinates
 for estimating a regular grid of points from scattered observations.
 }
+\examples{
+# comming
+}
