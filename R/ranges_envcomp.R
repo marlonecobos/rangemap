@@ -25,6 +25,7 @@
 #' for estimating a regular grid of points from scattered observations.
 #'
 #' @examples
+#' # comming
 
 # Dependencies: maps (map), maptools (map2SpatialPolygons), viridis?, ggplot2?, vegan?
 
