@@ -10,7 +10,7 @@
 #' Species, Longitude, and Latitude. If not defined, adm_areas must be defined and areas specified
 #' in there will be used as part of the species range.
 #' @param adm_areas (character) a vector of names of administrative areas known to be occupied by
-#' the species, names depend on the boundary_level selected. Check \code{\link{adm_areas}} data
+#' the species, names depend on the boundary_level selected. Check \code{\link{adm_area_names}} data
 #' documentation for an idea of how to define names in this parameter. If not defined, occurrences
 #' must exist.
 #' @param country_code (character) vector of country codes that will be considered when
