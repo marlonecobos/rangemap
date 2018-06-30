@@ -229,6 +229,8 @@ rangemap_hull <- function(occurrences, hull_type = "convex", buffer_distance = 5
   hulls_buff_un <- suppressWarnings(rgeos::gIntersection(hulls_buff_un, polygons,
                                                          byid = TRUE, drop_lower_td = TRUE)) # area of interest
 
+  hulls_buff_un <- raster::disaggregate(hulls_buff_un)
+
   # calculate areas in km2
   areakm2 <- raster::area(hulls_buff_un) / 1000000
   areackm2 <- sum(areakm2) # total area of the species range
