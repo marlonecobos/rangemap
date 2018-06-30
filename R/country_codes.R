@@ -11,4 +11,8 @@
 #'   \item{ISO_Numeric_Code_UN_M49_Numerical_Code}{numeric, country numeric codes.}
 #' }
 #' @source \url{http://www.nationsonline.org/oneworld/country_code_list.htm}
-"country_names"
+#'
+#' @examples
+#' data(country_codes)
+#' View(country_codes)
+"country_codes"
