@@ -264,11 +264,9 @@ rangemap_bound <- function(occurrences, adm_areas, country_code, boundary_level 
   if (dissolve == TRUE) {
     cat("\nDissolving polygons, please wait...\n")
     polygons@data$union_field <- rep("Union", length(polygons@data[, 1])) # new field for union
-    polygons <- rgeos::gBuffer(polygons, byid = TRUE, width = 0)
     polygons <- rgeos::gUnaryUnion(polygons, id = polygons@data$union_field) # now dissolve
 
     boundaries@data$union_field <- rep("Union", length(boundaries@data[, 1])) # new field for union
-    boundaries <- rgeos::gBuffer(boundaries, byid = TRUE, width = 0)
     boundaries <- rgeos::gUnaryUnion(boundaries, id = boundaries@data$union_field) # now dissolve
     boundaries <- raster::disaggregate(boundaries)
   }
