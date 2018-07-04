@@ -11,9 +11,11 @@ ranges_envcomp(occurrences, ranges, variables, save = FALSE, format = "png",
 \item{occurrences}{a data.frame containing species occurrences, columns must be:
 Species, Longitude, and Latitude.}
 
-\item{ranges}{a list of objects produced with any of the following functions:
+\item{ranges}{(list) of SpatialPolygons or SpatialPolygonsDataFrame or a
+list of objects produced with any of the following functions:
 \code{\link{rangemap_buff}}, \code{\link{rangemap_bound}}, \code{\link{rangemap_hull}},
-\code{\link{rangemap_enm}}, and \code{\link{rangemap_tsa}}.}
+\code{\link{rangemap_enm}}, and \code{\link{rangemap_tsa}}. For graphical purposes, using
+up to four ranges is recomended.}
 
 \item{variables}{a RasterStack object of environmental variables that will be used for
 create the principal components to represent the environmental space.}
@@ -41,5 +43,71 @@ Trend surface analysis Is a method based on low-order polynomials of spatial coo
 for estimating a regular grid of points from scattered observations.
 }
 \examples{
-# comming soon
+if(!require(rgbif)){
+install.packages("rgbif")
+library(rgbif)
+}
+
+# getting the data from GBIF
+species <- name_lookup(query = "Dasypus kappleri",
+                       rank="species", return = "data") # information about the species
+
+occ_count(taxonKey = species$key[14], georeferenced = TRUE) # testing if keys return records
+
+key <- species$key[14] # using species key that return information
+
+occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
+
+# keeping only georeferenced records
+occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
+             c("name", "decimalLongitude", "decimalLatitude")]
+
+
+# range based on buffers
+dist <- 500000
+
+buff <- rangemap_buff(occurrences = occ_g, buffer_distance = dist)
+
+
+# range based on boundaries
+## checking which countries may be involved in the analysis
+rangemap_explore(occurrences = occ_g)
+
+level <- 0
+adm <- "Ecuador" # Athough no record is on this country, we know it is in Ecuador
+
+countries <- c("PER", "BRA", "COL", "VEN", "ECU", "GUF", "GUY", "SUR", "BOL")
+
+bound <- rangemap_bound(occurrences = occ_g, adm_areas = adm, country_code = countries,
+                        boundary_level = level)
+
+
+# range based on concave hulls
+dist1 <- 250000
+hull1 <- "concave"
+
+concave <- rangemap_hull(occurrences = occ_g, hull_type = hull1, buffer_distance = dist1)
+
+
+# ranges comparison in environmental space
+## list of ranges
+ranges <- list(buff, bound, concave)
+names(ranges) <- c("buff", "bound", "concave")
+
+## other data for environmental comparisson
+if(!require(raster)){
+  install.packages("raster")
+  library(raster)
+}
+
+vars <- getData("worldclim", var = "bio", res = 5)
+
+## mask variables to region of interest
+e <- extent(reg)
+mask <- as(e, 'SpatialPolygons')
+
+variables <- crop(vars, mask)
+
+## comparison
+ranges_envcomp(occurrences = occ_g, ranges = ranges, variables = variables)
 }
