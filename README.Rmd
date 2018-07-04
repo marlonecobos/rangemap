@@ -319,7 +319,7 @@ grid <- TRUE
 sides <- "bottomleft"
 
 # creating the species range figure
-range_map <- rangemap_fig(range, add_extent = extent, add_occurrences = occ,
+range_map <- rangemap_fig(hull_range5, add_extent = extent, add_occurrences = occ,
                           grid = grid, sides = sides)
 
 dev.off() # for returning to default par settings
@@ -332,6 +332,61 @@ dev.off() # for returning to default par settings
 The *rangemap_envcomp* function . 
 
 ```{r, eval=FALSE, include=TRUE}
-# 
+# getting the data from GBIF
+species <- name_lookup(query = "Dasypus kappleri",
+                       rank="species", return = "data") # information about the species
 
+occ_count(taxonKey = species$key[14], georeferenced = TRUE) # testing if keys return records
+
+key <- species$key[14] # using species key that return information
+
+occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
+
+# keeping only georeferenced records
+occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
+             c("name", "decimalLongitude", "decimalLatitude")]
+
+
+# range based on buffers
+dist <- 500000
+
+buff <- rangemap_buff(occurrences = occ_g, buffer_distance = dist)
+
+
+# range based on boundaries
+## checking which countries may be involved in the analysis
+rangemap_explore(occurrences = occ_g)
+
+level <- 0
+adm <- "Ecuador" # Athough no record is on this country, we know it is in Ecuador
+
+countries <- c("PER", "BRA", "COL", "VEN", "ECU", "GUF", "GUY", "SUR", "BOL")
+
+bound <- rangemap_bound(occurrences = occ_g, adm_areas = adm, country_code = countries,
+                        boundary_level = level)
+
+
+# range based on concave hulls
+dist1 <- 250000
+hull1 <- "concave"
+
+concave <- rangemap_hull(occurrences = occ_g, hull_type = hull1, buffer_distance = dist1)
+
+
+# ranges comparison in environmental space
+## list of ranges
+ranges <- list(buff, bound, concave)
+names(ranges) <- c("buff", "bound", "concave")
+
+## other data for environmental comparisson
+vars <- getData("worldclim", var = "bio", res = 5)
+
+## mask variables to region of interest
+e <- extent(reg)
+mask <- as(e, 'SpatialPolygons')  
+
+variables <- crop(vars, mask)
+
+## comparison
+ranges_envcomp(occurrences = occ_g, ranges = ranges, variables = variables)
 ```
