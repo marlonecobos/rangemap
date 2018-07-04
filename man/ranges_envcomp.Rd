@@ -4,27 +4,27 @@
 \alias{ranges_envcomp}
 \title{Comparison of species ranges in environmental space}
 \usage{
-ranges_envcomp(occurrences, variables, ranges, export = FALSE,
-  format = "png", ...)
+ranges_envcomp(occurrences, ranges, variables, save = FALSE, format = "png",
+  name)
 }
 \arguments{
 \item{occurrences}{a data.frame containing species occurrences, columns must be:
 Species, Longitude, and Latitude.}
 
-\item{variables}{a RasterStack object of environmental variables that will be used for
-performing the trend surface analysis.}
-
 \item{ranges}{a list of objects produced with any of the following functions:
 \code{\link{rangemap_buff}}, \code{\link{rangemap_bound}}, \code{\link{rangemap_hull}},
 \code{\link{rangemap_enm}}, and \code{\link{rangemap_tsa}}.}
 
-\item{export}{(logical) if TRUE a figure in format = format will be written in the working
+\item{variables}{a RasterStack object of environmental variables that will be used for
+create the principal components to represent the environmental space.}
+
+\item{save}{(logical) if TRUE a figure in format = format will be written in the working
 directory, appart of the returned object.}
 
 \item{format}{(character) format of the figure that will be written in the working directory
 if export = TRUE.}
 
-\item{...}{other arguments from function \code{\link[Base]{plot}}.}
+\item{name}{(character) valid if save = TRUE. The name of the figure to be exported.}
 }
 \value{
 A figure showing, in the environmental space, the species ranges generated with any
@@ -41,5 +41,5 @@ Trend surface analysis Is a method based on low-order polynomials of spatial coo
 for estimating a regular grid of points from scattered observations.
 }
 \examples{
-# comming
+# comming soon
 }
