@@ -1,6 +1,5 @@
-README
+rangemap vignette
 ================
-May 16, 2018
 
 -   [Package description](#package-description)
 -   [Installing the package](#installing-the-package)
@@ -71,6 +70,11 @@ library(maps)
 if(!require(maptools)){
  install.packages("maptools")
  library(maptools)
+}
+
+if(!require(raster)){
+ install.packages("raster")
+ library(raster)
 }
 
 # working directory
@@ -386,11 +390,18 @@ names(ranges) <- c("buff", "bound", "concave")
 vars <- getData("worldclim", var = "bio", res = 5)
 
 ## mask variables to region of interest
+WGS84 <- CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
+w_map <- map(database = "world", regions = c("Ecuador", "Peru", "Bolivia", "Colombia", "Venezuela",
+                                             "Suriname", "Guyana", "French Guyana"), 
+             fill = TRUE, plot = FALSE) # map of the world
+w_po <- sapply(strsplit(w_map$names, ":"), function(x) x[1]) # preparing data to create polygon
+reg <- map2SpatialPolygons(w_map, IDs = w_po, proj4string = WGS84) # map to polygon
+
 e <- extent(reg)
 mask <- as(e, 'SpatialPolygons')  
 
 variables <- crop(vars, mask)
 
 ## comparison
-ranges_envcomp(occurrences = occ_g, ranges = ranges, variables = variables)
+ranges_envcomp(occurrences = occ_g, ranges = ranges, variables = variables, , save_fig = FALSE)
 ```
