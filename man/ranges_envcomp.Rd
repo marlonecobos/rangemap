@@ -4,8 +4,7 @@
 \alias{ranges_envcomp}
 \title{Comparison of species ranges in environmental space}
 \usage{
-ranges_envcomp(occurrences, ranges, variables, save = FALSE, format = "png",
-  name)
+ranges_envcomp(occurrences, ranges, variables, save_fig = FALSE)
 }
 \arguments{
 \item{occurrences}{a data.frame containing species occurrences, columns must be:
@@ -20,13 +19,11 @@ up to four ranges is recomended.}
 \item{variables}{a RasterStack object of environmental variables that will be used for
 create the principal components to represent the environmental space.}
 
-\item{save}{(logical) if TRUE a figure in format = format will be written in the working
+\item{save_fig}{(logical) if TRUE a figure in format = format will be written in the working
 directory, appart of the returned object.}
 
 \item{format}{(character) format of the figure that will be written in the working directory
-if export = TRUE.}
-
-\item{name}{(character) valid if save = TRUE. The name of the figure to be exported.}
+if save_fig = TRUE. Options are: "svg", "pdf", "png". Defaul = "svg".}
 }
 \value{
 A figure showing, in the environmental space, the species ranges generated with any
@@ -39,8 +36,7 @@ ranges created using distinct algortihms, to visualize implications of selecting
 one of them if environmental conditions are considered.
 }
 \details{
-Trend surface analysis Is a method based on low-order polynomials of spatial coordinates
-for estimating a regular grid of points from scattered observations.
+.
 }
 \examples{
 if(!require(rgbif)){
@@ -99,10 +95,21 @@ if(!require(raster)){
   install.packages("raster")
   library(raster)
 }
+if(!require(maps)){
+install.packages("maps")
+library(maps)
+}
 
 vars <- getData("worldclim", var = "bio", res = 5)
 
 ## mask variables to region of interest
+WGS84 <- CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
+w_map <- map(database = "world", regions = c("Ecuador", "Peru", "Bolivia", "Colombia", "Venezuela",
+                                             "Suriname", "Guyana", "French Guyana"),
+             fill = TRUE, plot = FALSE) # map of the world
+w_po <- sapply(strsplit(w_map$names, ":"), function(x) x[1]) # preparing data to create polygon
+reg <- map2SpatialPolygons(w_map, IDs = w_po, proj4string = WGS84) # map to polygon
+
 e <- extent(reg)
 mask <- as(e, 'SpatialPolygons')
 

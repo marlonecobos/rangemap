@@ -13,18 +13,16 @@
 #' up to four ranges is recomended.
 #' @param variables a RasterStack object of environmental variables that will be used for
 #' create the principal components to represent the environmental space.
-#' @param save (logical) if TRUE a figure in format = format will be written in the working
+#' @param save_fig (logical) if TRUE a figure in format = format will be written in the working
 #' directory, appart of the returned object.
 #' @param format (character) format of the figure that will be written in the working directory
-#' if export = TRUE.
-#' @param name (character) valid if save = TRUE. The name of the figure to be exported.
+#' if save_fig = TRUE. Options are: "svg", "pdf", "png". Defaul = "svg".
 #'
 #' @return A figure showing, in the environmental space, the species ranges generated with any
 #' of the functions: \code{\link{rangemap_buff}}, \code{\link{rangemap_bound}},
 #' \code{\link{rangemap_hull}}, \code{\link{rangemap_enm}}, and \code{\link{rangemap_tsa}}.
 #'
-#' @details Trend surface analysis Is a method based on low-order polynomials of spatial coordinates
-#' for estimating a regular grid of points from scattered observations.
+#' @details .
 #'
 #' @examples
 #' if(!require(rgbif)){
@@ -83,10 +81,21 @@
 #'   install.packages("raster")
 #'   library(raster)
 #' }
+#' if(!require(maps)){
+#' install.packages("maps")
+#' library(maps)
+#' }
 #'
 #' vars <- getData("worldclim", var = "bio", res = 5)
 #'
 #' ## mask variables to region of interest
+#' WGS84 <- CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
+#' w_map <- map(database = "world", regions = c("Ecuador", "Peru", "Bolivia", "Colombia", "Venezuela",
+#'                                              "Suriname", "Guyana", "French Guyana"),
+#'              fill = TRUE, plot = FALSE) # map of the world
+#' w_po <- sapply(strsplit(w_map$names, ":"), function(x) x[1]) # preparing data to create polygon
+#' reg <- map2SpatialPolygons(w_map, IDs = w_po, proj4string = WGS84) # map to polygon
+#'
 #' e <- extent(reg)
 #' mask <- as(e, 'SpatialPolygons')
 #'
@@ -95,8 +104,7 @@
 #' ## comparison
 #' ranges_envcomp(occurrences = occ_g, ranges = ranges, variables = variables)
 
-
-ranges_envcomp <- function(occurrences, ranges, variables, save = FALSE, format = "png", name) {
+ranges_envcomp <- function(occurrences, ranges, variables, save_fig = FALSE) {
 
   # testing potential issues
 
@@ -155,7 +163,7 @@ ranges_envcomp <- function(occurrences, ranges, variables, save = FALSE, format 
   if (class(unlist(ranges)) == "list") {
     sp_ranges <- list()
     for (i in 1:length(ranges)) {
-      sp_ranges[[i]] <- ranges[[i]][[3]]
+      sp_ranges[[i]] <- sp::spTransform(ranges[[i]][[3]], AEQD)
     }
   }else {
     sp_ranges <- ranges
@@ -173,7 +181,7 @@ ranges_envcomp <- function(occurrences, ranges, variables, save = FALSE, format 
 
   env_ranges1 <- env_ranges
 
-  colors <- c("red", "blue", "yellow", "purple", "black", "brown", "pink", "green")
+  colors <- c("black", "blue", "yellow", "purple", "red", "brown", "pink", "green")
 
   # plot
   p <- plotly::plot_ly()
@@ -183,22 +191,58 @@ ranges_envcomp <- function(occurrences, ranges, variables, save = FALSE, format 
                            type = "scatter3d", size = 1,
                            mode = "markers",
                            marker = list(color = colors[i],
-                                         opacity=0.04), name = rnames[i])
+                                         opacity = 0.01), name = rnames[i])
   }
 
   points <- pc_points@data
 
-  p %>%
+  p <- plotly::add_trace(p, x = pc_varp$PC1, y = pc_varp$PC2, z = pc_varp$PC3, mode = "markers", type = "scatter3d",
+                      marker = list(size = 2, color = "gray65",
+                                    opacity = 0.02, symbol = 104), name = "Available space") %>%
     plotly::add_trace(x = points$PC1, y = points$PC2, z = points$PC3, mode = "markers", type = "scatter3d",
-              marker = list(size = 5, color = "black", symbol = 104), name = "Occurrences") %>%
+              marker = list(size = 6, color = "black", symbol = 104), name = "Occurrences") %>%
     plotly::layout(scene = list(xaxis = list(title = "PC 1", backgroundcolor="white", showbackground=TRUE,
                                      titlefont = list(color = "black", family = "Arial", size = 16)),
                         yaxis = list(title = "PC 2", backgroundcolor="white", showbackground=TRUE,
                                      titlefont = list(color = "black", family = "Arial", size = 16)),
                         zaxis = list(title = "PC 3", backgroundcolor="white", showbackground=TRUE,
                                      titlefont = list(color = "black", family = "Arial", size = 16)),
-                        camera = list(eye = list(x = 1.85, y = 1.25, z = 1.35))))
+                        camera = list(eye = list(x = 1.95, y = 1.25, z = 1.35))))
 
-  # present a figure with multiple panels?
+  # present the figure
+  print(p)
+
+  # saving the figure
+  if (save_fig == TRUE) {
+    connection <- !is.null(curl::nslookup("r-project.org", error = FALSE))
+    if (connection == FALSE) {
+      cat("Internet conection is required to download the figure.")
+
+    }else {
+      cat("Exporting the figure, this process may take some time, please wait...")
+      # Save viewer settings (e.g. RStudio viewer pane)
+      op <- options()
+
+      # Set viewer to web browser
+      options(viewer = NULL)
+
+      # Use web browser to save image
+      p %>% htmlwidgets::onRender(
+        "function(el, x) {
+           var gd = document.getElementById(el.id);
+           Plotly.downloadImage(gd, {format: 'svg', width: 1000, height: 800, filename: 'ranges_env_comparison'});
+        }"
+      )
+
+      # Restore viewer to old setting (e.g. RStudio)
+      options(viewer = op$viewer)
+
+      cat("Figure saved in your browser download folder as ranges_env_comparison.svg.")
+    }
+  }
+
+  cat("For further work with the figure use the object created with the function.")
+
   # return results
+  return(p)
 }
