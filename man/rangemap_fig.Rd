@@ -5,9 +5,11 @@
 \title{Figures of species range maps}
 \usage{
 rangemap_fig(range, polygons, add_extent = FALSE, add_occurrences = FALSE,
-  grid = FALSE, sides = "bottomleft", northarrow = FALSE,
-  northarrow_position = "topright", scalebar = FALSE,
-  scalebar_position = "bottomleft")
+  grid = FALSE, grid_sides = "bottomleft", legend = FALSE,
+  legend_position = "bottomright", northarrow = FALSE,
+  northarrow_position = "topright", scalebar = FALSE, save_fig = FALSE,
+  name = "range_fig", format = "png", resolution = 300, width = 166,
+  height = 166)
 }
 \arguments{
 \item{range}{an object produced with any of the following functions:
@@ -25,16 +27,35 @@ the figure.}
 
 \item{grid}{(logical) if TRUE labels and ticks of coordinates will be inserted in sides.}
 
-\item{sides}{(character) sides in which the labels will be placed in the figure. Options
+\item{grid_sides}{(character) sides in which the labels will be placed in the figure. Options
 for this are the same than for other position character options indicators.}
+
+\item{legend}{(logical) if TRUE a legend of the plotted features will be added to the figure in
+legend_position.}
+
+\item{legend_position}{(character) site in the figure where the north legend will be placed.}
 
 \item{northarrow}{(logical) if TRUE, a simple north arrow will be placed in northarrow_position.}
 
 \item{northarrow_position}{(character) site in the figure where the north arrow will be placed.}
 
-\item{scalebar}{(logical) if TRUE a simple scale bar will be inserted in scalebar_position.}
+\item{scalebar}{(logical) if TRUE a simple scale bar will be inserted at the bottom left part
+of the figure.}
 
-\item{scalebar_position}{(character) place for the scale bar insertion.}
+\item{save_fig}{(logical) if TRUE the figure will be written in the working directory under the
+name = name, in format = format, and at resolution = resolution. Default = FALSE.}
+
+\item{name}{(character) if save_fig = TRUE, name of the figure to be exported. Default = "range_fig".}
+
+\item{format}{(character) if save_fig = TRUE, format in which the figure will be written. Options
+include "bmp", "png", "jpeg", and "tiff". Default = "png".}
+
+\item{resolution}{(numeric) if save_fig = TRUE, resolution in ppi in wich the figure will be exported.
+Default = 300.}
+
+\item{width}{(numeric) width of the figure in mm. Default = 166.}
+
+\item{height}{(numeric) height of the figure in mm. Default = 166.}
 }
 \value{
 A figure of the species distributional range in a geographical context, with the
@@ -71,23 +92,27 @@ occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
              c("name", "decimalLongitude", "decimalLatitude")]
 
 level <- 0
+adm <- "Ecuador"
 dissolve <- FALSE
 save <- FALSE
 countries <- c("PER", "BRA", "COL", "VEN", "ECU", "GUF", "GUY", "SUR", "BOL")
 
 # creating the species range map
-range <- rangemap::rangemap_bound(occurrences = occ_g, country_code = countries, boundary_level = level,
-                                dissolve = FALSE, save_shp = FALSE)
+range <- rangemap::rangemap_bound(occurrences = occ_g, country_code = countries, adm_areas = adm,
+                                  boundary_level = level, dissolve = dissolve, save_shp = save)
 
 # arguments for the species range figure
 extent <- TRUE
 occ <- TRUE
 grid <- TRUE
 sides <- "bottomleft"
+legend <- TRUE
+north <- TRUE
 
 # creating the species range figure
 range_map <- rangemap_fig(range, add_extent = extent, add_occurrences = occ,
-                          grid = grid, sides = sides)
+                          grid = grid, grid_sides = sides, legend = legend,
+                          northarrow = north)
 
 dev.off() # for returning to default par settings
 }
