@@ -236,7 +236,7 @@ ranges_envcomp <- function(occurrences, ranges, variables, save_fig = FALSE) {
       # Restore viewer to old setting (e.g. RStudio)
       options(viewer = op$viewer)
 
-      cat("Figure saved in your browser download folder as ranges_env_comparison.svg.")
+      cat("\nFigure saved in your browser download folder as ranges_env_comparison.svg.\n")
     }
   }
 
