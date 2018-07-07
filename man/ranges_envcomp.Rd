@@ -21,9 +21,6 @@ create the principal components to represent the environmental space.}
 
 \item{save_fig}{(logical) if TRUE a figure in format = format will be written in the working
 directory, appart of the returned object.}
-
-\item{format}{(character) format of the figure that will be written in the working directory
-if save_fig = TRUE. Options are: "svg", "pdf", "png". Defaul = "svg".}
 }
 \value{
 A figure showing, in the environmental space, the species ranges generated with any
@@ -116,5 +113,5 @@ mask <- as(e, 'SpatialPolygons')
 variables <- crop(vars, mask)
 
 ## comparison
-ranges_envcomp(occurrences = occ_g, ranges = ranges, variables = variables)
+env_comp <- ranges_envcomp(occurrences = occ_g, ranges = ranges, variables = variables)
 }

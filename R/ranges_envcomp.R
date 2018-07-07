@@ -15,8 +15,6 @@
 #' create the principal components to represent the environmental space.
 #' @param save_fig (logical) if TRUE a figure in format = format will be written in the working
 #' directory, appart of the returned object.
-#' @param format (character) format of the figure that will be written in the working directory
-#' if save_fig = TRUE. Options are: "svg", "pdf", "png". Defaul = "svg".
 #'
 #' @return A figure showing, in the environmental space, the species ranges generated with any
 #' of the functions: \code{\link{rangemap_buff}}, \code{\link{rangemap_bound}},
@@ -102,7 +100,7 @@
 #' variables <- crop(vars, mask)
 #'
 #' ## comparison
-#' ranges_envcomp(occurrences = occ_g, ranges = ranges, variables = variables)
+#' env_comp <- ranges_envcomp(occurrences = occ_g, ranges = ranges, variables = variables)
 
 ranges_envcomp <- function(occurrences, ranges, variables, save_fig = FALSE) {
 
@@ -173,7 +171,7 @@ ranges_envcomp <- function(occurrences, ranges, variables, save_fig = FALSE) {
   rnames <- names(ranges)
 
   # getting environmental (PCs) data in ranges
-  cat("\nGetting environmental conditions in ranges, please wait...")
+  cat("\nGetting environmental conditions in ranges, please wait...\n")
   env_ranges <- list()
   for (i in 1:length(ranges)) {
     env_ranges[[i]] <- pc_varp[sp_ranges[[i]], ]
@@ -184,6 +182,7 @@ ranges_envcomp <- function(occurrences, ranges, variables, save_fig = FALSE) {
   colors <- c("black", "blue", "yellow", "purple", "red", "brown", "pink", "green")
 
   # plot
+  cat("\nCreating an interactive visualization...\n")
   p <- plotly::plot_ly()
   for(i in 1:length(env_ranges1)){
     ell <- rgl::ellipse3d(cov(env_ranges1[[i]]@data))
@@ -216,10 +215,10 @@ ranges_envcomp <- function(occurrences, ranges, variables, save_fig = FALSE) {
   if (save_fig == TRUE) {
     connection <- !is.null(curl::nslookup("r-project.org", error = FALSE))
     if (connection == FALSE) {
-      cat("Internet conection is required to download the figure.")
+      stop("\nInternet conection is required to download the figure.\n")
 
     }else {
-      cat("Exporting the figure, this process may take some time, please wait...")
+      cat("\nExporting the figure, this process may take some time, please wait...\n")
       # Save viewer settings (e.g. RStudio viewer pane)
       op <- options()
 
@@ -241,7 +240,7 @@ ranges_envcomp <- function(occurrences, ranges, variables, save_fig = FALSE) {
     }
   }
 
-  cat("For further work with the figure use the object created with the function.")
+  cat("\nFor further work with the figure use the object created with the function.\n")
 
   # return results
   return(p)
