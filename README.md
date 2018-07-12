@@ -8,7 +8,12 @@ rangemap vignette
     -   [Simple graphical exploration of your data.](#simple-graphical-exploration-of-your-data.)
     -   [Species ranges from buffered occurrences](#species-ranges-from-buffered-occurrences)
     -   [Species ranges from boundaries](#species-ranges-from-boundaries)
+        -   [Using only occurrences](#using-only-occurrences)
+        -   [Using only administrative area names](#using-only-administrative-area-names)
+        -   [Using occurrences and administrative areas](#using-occurrences-and-administrative-areas)
     -   [Species ranges from hull polygons](#species-ranges-from-hull-polygons)
+        -   [Convex hulls](#convex-hulls)
+        -   [Concave hulls](#concave-hulls)
     -   [Species ranges from ecological niche models](#species-ranges-from-ecological-niche-models)
     -   [Species ranges using trend surface analyses](#species-ranges-using-trend-surface-analyses)
     -   [Nice fugures of species ranges](#nice-fugures-of-species-ranges)
@@ -30,13 +35,12 @@ The **rangemap** R package presents various tools to create species range maps b
 # Installing and loading packages
 if(!require(devtools)){
     install.packages("devtools")
-    library(devtools)
 }
 
 if(!require(rangemap)){
     devtools::install_github("marlonecobos/rangemap")
-    library(rangemap)
 }
+library(rangemap)
 ```
 
 <br>
@@ -45,45 +49,40 @@ if(!require(rangemap)){
 
 #### Setting R up
 
+The following code chunk installs (if needed) and loads the R packages that will be used to perform the example analyses with the **rangemap** package. The working directory will also be defined in this part.
+
 ``` r
-# dependincies
-if(!require(rgbif)){
-  install.packages("rgbif")
-  library(rgbif)
+# pacakges from CRAN
+pcakages <- c("rgbif", "maps", "maptools", "raster")
+req_packages <- pcakages[!(pcakages %in% installed.packages()[, "Package"])]
+if (length(req_packages) > 0) {
+  install.packages(req_packages, dependencies = TRUE)
 }
+sapply(pcakages, require, character.only = TRUE)
 
-if(!require(devtools)){
-install.packages("devtools")
-library(devtools)
-}
-
+# package from github
 if(!require(kuenm)){
 install_github("marlonecobos/kuenm")
+}
 library(kuenm)
-}
-
-if(!require(maps)){
-install.packages("maps")
-library(maps)
-}
-
-if(!require(maptools)){
- install.packages("maptools")
- library(maptools)
-}
-
-if(!require(raster)){
- install.packages("raster")
- library(raster)
-}
-
+    
 # working directory
 setwd("YOUR/WORKING/DIRECTORY")
 ```
 
+<br>
+
 #### Simple graphical exploration of your data.
 
 The *rangemap\_explore* function .
+
+The function's help can be consulted usign the following line of code:
+
+``` r
+help(rangemap_explore)
+```
+
+An example of the use of this function is written below.
 
 ``` r
 # getting the data from GBIF
@@ -102,8 +101,6 @@ occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
 
 # simple figure of the species occurrence data
 explore_map <- rangemap_explore(occurrences = occ_g)
-
-dev.off() # for returning to default par settings
 ```
 
 <br>
@@ -111,6 +108,14 @@ dev.off() # for returning to default par settings
 #### Species ranges from buffered occurrences
 
 The *rangemap\_buff* function .
+
+The function's help can be consulted usign the following line of code:
+
+``` r
+help(rangemap_buff)
+```
+
+An example of the use of this function is written below.
 
 ``` r
 # getting the data from GBIF
@@ -142,6 +147,18 @@ buff_range <- rangemap_buff(occurrences = occ_g, buffer_distance = dist,
 
 The *rangemap\_bound* function .
 
+The function's help can be consulted usign the following line of code:
+
+``` r
+help(rangemap_bound)
+```
+
+Examples of the use of this function with most of its variants are written below.
+
+<br>
+
+##### Using only occurrences
+
 ``` r
 # getting the data from GBIF
 species <- name_lookup(query = "Dasypus kappleri",
@@ -157,14 +174,86 @@ occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
 occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
             c("name", "decimalLongitude", "decimalLatitude")]
 
+# checking which countries may be involved in the analysis
+rangemap_explore(occurrences = occ_g)
+
 level <- 0
 dissolve <- FALSE
 save <- TRUE
 name <- "test1"
 countries <- c("PER", "BRA", "COL", "VEN", "ECU", "GUF", "GUY", "SUR", "BOL")
 
-bound_range <- rangemap_bound(occurrences = occ_g, country_code = countries, boundary_level = level,
+bound_range <- rangemap_bound(occurrences = occ_g, country_code = countries, boundary_level = level, 
                               dissolve = dissolve, save_shp = save, name = name)
+```
+
+<br>
+
+##### Using only administrative area names
+
+``` r
+# getting the data from GBIF
+species <- name_lookup(query = "Dasypus kappleri",
+                       rank="species", return = "data") # information about the species
+
+occ_count(taxonKey = species$key[14], georeferenced = TRUE) # testing if keys return records
+
+key <- species$key[14] # using species key that return information
+
+occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
+
+# keeping only georeferenced records
+occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
+            c("name", "decimalLongitude", "decimalLatitude")]
+
+# checking which countries may be involved in the analysis
+rangemap_explore(occurrences = occ_g)
+
+data("country_codes") #list of country names and ISO codes
+View(country_codes)
+
+level <- 0
+adm <- c("Ecuador", "Peru", "Venezuela", "Colombia", "Brazil") # If we only know the countries in wich the species is
+dissolve <- FALSE
+save <- TRUE
+name <- "test2"
+countries <- c("PER", "BRA", "COL", "VEN", "ECU", "GUF", "GUY", "SUR", "BOL")
+
+bound_range <- rangemap_bound(adm_areas = adm, country_code = countries, boundary_level = level,
+                              dissolve = dissolve, save_shp = save, name = name)
+```
+
+<br>
+
+##### Using occurrences and administrative areas
+
+``` r
+# getting the data from GBIF
+species <- name_lookup(query = "Dasypus kappleri",
+                       rank="species", return = "data") # information about the species
+
+occ_count(taxonKey = species$key[14], georeferenced = TRUE) # testing if keys return records
+
+key <- species$key[14] # using species key that return information
+
+occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
+
+# keeping only georeferenced records
+occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
+            c("name", "decimalLongitude", "decimalLatitude")]
+
+# checking which countries may be involved in the analysis
+rangemap_explore(occurrences = occ_g)
+
+level <- 0
+adm <- "Ecuador" # Athough no record is on this country, we know it is in Ecuador
+dissolve <- FALSE
+save <- TRUE
+name <- "test3"
+countries <- c("PER", "BRA", "COL", "VEN", "ECU", "GUF", "GUY", "SUR", "BOL")
+
+bound_range <- rangemap_bound(occurrences = occ_g, adm_areas = adm, country_code = countries,
+                              boundary_level = level, dissolve = dissolve, save_shp = save, name = name)
 ```
 
 <br>
@@ -173,7 +262,17 @@ bound_range <- rangemap_bound(occurrences = occ_g, country_code = countries, bou
 
 The *rangemap\_hull* function .
 
-Convex hulls
+The function's help can be consulted usign the following line of code:
+
+``` r
+help(rangemap_hull)
+```
+
+Examples of the use of this function with most of its variants are written below.
+
+<br>
+
+##### Convex hulls
 
 ``` r
 # getting the data from GBIF
@@ -195,7 +294,7 @@ dist <- 100000
 hull <- "convex" 
 split <- FALSE
 save <- TRUE
-name <- "test2"
+name <- "test4"
 
 hull_range <- rangemap_hull(occurrences = occ_g, hull_type = hull, buffer_distance = dist,
                             split = split, save_shp = save, name = name)
@@ -205,7 +304,7 @@ hull_range <- rangemap_hull(occurrences = occ_g, hull_type = hull, buffer_distan
 split <- TRUE
 c_method <- "hierarchical"
 split_d <- 1500000
-name <- "test3"
+name <- "test5"
 
 hull_range1 <- rangemap_hull(occurrences = occ_g, hull_type = hull, buffer_distance = dist,
                             split = split, cluster_method = c_method, split_distance = split_d,
@@ -214,7 +313,7 @@ hull_range1 <- rangemap_hull(occurrences = occ_g, hull_type = hull, buffer_dista
 ## clustering occurrences with the k-means method
 c_method <- "k-means"
 n_clus <- 3
-name <- "test4"
+name <- "test6"
 
 hull_range2 <- rangemap_hull(occurrences = occ_g, hull_type = hull, buffer_distance = dist,
                             split = split, cluster_method = c_method, n_k_means = n_clus,
@@ -223,7 +322,7 @@ hull_range2 <- rangemap_hull(occurrences = occ_g, hull_type = hull, buffer_dista
 
 <br>
 
-Concave hulls .
+##### Concave hulls
 
 ``` r
 # unique polygon (non-disjunct distribution)
@@ -231,7 +330,7 @@ dist <- 100000
 hull <- "concave" 
 split <- FALSE
 save <- TRUE
-name <- "test5"
+name <- "test7"
 
 hull_range3 <- rangemap_hull(occurrences = occ_g, hull_type = hull, buffer_distance = dist,
                             split = split, save_shp = save, name = name)
@@ -241,7 +340,7 @@ hull_range3 <- rangemap_hull(occurrences = occ_g, hull_type = hull, buffer_dista
 split <- TRUE
 c_method <- "hierarchical"
 split_d <- 1500000
-name <- "test6"
+name <- "test8"
 
 hull_range4 <- rangemap_hull(occurrences = occ_g, hull_type = hull, buffer_distance = dist,
                             split = split, cluster_method = c_method, split_distance = split_d,
@@ -250,7 +349,7 @@ hull_range4 <- rangemap_hull(occurrences = occ_g, hull_type = hull, buffer_dista
 ## clustering occurrences with the k-means method
 c_method <- "k-means"
 n_clus <- 3
-name <- "test7"
+name <- "test9"
 
 hull_range5 <- rangemap_hull(occurrences = occ_g, hull_type = hull, buffer_distance = dist,
                             split = split, cluster_method = c_method, n_k_means = n_clus,
@@ -261,7 +360,15 @@ hull_range5 <- rangemap_hull(occurrences = occ_g, hull_type = hull, buffer_dista
 
 #### Species ranges from ecological niche models
 
-The *rangemap\_enm* function .
+The *rangemap\_enm* function.
+
+The function's help can be consulted usign the following line of code:
+
+``` r
+help(rangemap_buff)
+```
+
+An example of the use of this function is written below.
 
 ``` r
 # parameters
@@ -270,7 +377,7 @@ data(sp_train)
 occ_sp <- data.frame("A_americanum", sp_train)
 thres <- 5
 save <- TRUE
-name <- "test8"
+name <- "test10"
 
 enm_range <- rangemap_enm(occurrences = occ_sp, model = sp_mod,  threshold = thres,
                           save_shp = save, name = name)
@@ -281,6 +388,14 @@ enm_range <- rangemap_enm(occurrences = occ_sp, model = sp_mod,  threshold = thr
 #### Species ranges using trend surface analyses
 
 The *rangemap\_tsa* function .
+
+The function's help can be consulted usign the following line of code:
+
+``` r
+help(rangemap_tsa)
+```
+
+An example of the use of this function is written below.
 
 ``` r
 # getting the data from GBIF
@@ -307,7 +422,7 @@ reg <- map2SpatialPolygons(w_map, IDs = w_po, proj4string = WGS84) # map to poly
 res <- 1
 thr <- 0
 save <- TRUE
-name <- "test"
+name <- "test11"
 
 tsa <- rangemap_tsa(occurrences = occ_g, region_of_interest = reg, threshold = thr,
                     resolution = res, save_shp = save, name = name)
@@ -318,6 +433,14 @@ tsa <- rangemap_tsa(occurrences = occ_g, region_of_interest = reg, threshold = t
 #### Nice fugures of species ranges
 
 The *rangemap\_fig* function .
+
+The function's help can be consulted usign the following line of code:
+
+``` r
+help(rangemap_fig)
+```
+
+An example of the use of this function is written below.
 
 ``` r
 # arguments for the species range figure
@@ -337,7 +460,15 @@ dev.off() # for returning to default par settings
 
 #### Species ranges in the environmental space
 
-The *rangemap\_envcomp* function .
+The *ranges\_envcomp* function .
+
+The function's help can be consulted usign the following line of code:
+
+``` r
+help(ranges_envcomp)
+```
+
+An example of the use of this function is written below.
 
 ``` r
 # getting the data from GBIF
@@ -403,5 +534,5 @@ mask <- as(e, 'SpatialPolygons')
 variables <- crop(vars, mask)
 
 ## comparison
-ranges_envcomp(occurrences = occ_g, ranges = ranges, variables = variables, , save_fig = FALSE)
+r_env <- ranges_envcomp(occurrences = occ_g, ranges = ranges, variables = variables, , save_fig = FALSE)
 ```
