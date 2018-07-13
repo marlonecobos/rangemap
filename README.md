@@ -17,7 +17,11 @@ rangemap vignette
     -   [Species ranges from ecological niche models](#species-ranges-from-ecological-niche-models)
     -   [Species ranges using trend surface analyses](#species-ranges-using-trend-surface-analyses)
     -   [Nice fugures of species ranges](#nice-fugures-of-species-ranges)
-    -   [Species ranges in the environmental space](#species-ranges-in-the-environmental-space)
+        -   [Including the extent of occurrence](#including-the-extent-of-occurrence)
+        -   [Including the occurrences](#including-the-occurrences)
+        -   [Including the extent of occurrence ond species recods](#including-the-extent-of-occurrence-ond-species-recods)
+        -   [Including other components](#including-other-components)
+        -   [Saving the figure](#saving-the-figure)
 
 <br>
 
@@ -74,7 +78,7 @@ setwd("YOUR/WORKING/DIRECTORY")
 
 #### Simple graphical exploration of your data.
 
-The *rangemap\_explore* function .
+The *rangemap\_explore* function generates simple figures to visualize species occurrence data in the geographic space before using other functions of this package. The figure created with this function helps to identify countries involved in the species distribution. Other aspects of the species distribution can also be generally checked here; for instace, disjunt distributions, dimension of the species range, etc.
 
 The function's help can be consulted usign the following line of code:
 
@@ -107,7 +111,7 @@ explore_map <- rangemap_explore(occurrences = occ_g)
 
 #### Species ranges from buffered occurrences
 
-The *rangemap\_buff* function .
+The *rangemap\_buff* function generates a species range for a given species by buffering provided occurrences using a user-defined distance. An approach to the species extent of occurrence (using convex hulls) and the area of occupancy according to the IUCN criteria are also generated. Shape files (occurrences, species range, extent of occurrence, and area of occupancy) can be saved in the working directory if it is needed.
 
 The function's help can be consulted usign the following line of code:
 
@@ -141,11 +145,13 @@ buff_range <- rangemap_buff(occurrences = occ_g, buffer_distance = dist,
                             save_shp = save, name = name)
 ```
 
+The function *rangemap\_fig* generates customizable figures of species range maps using the objects produced by other function of this package. Let's see hoy the generated range looks like.
+
 <br>
 
 #### Species ranges from boundaries
 
-The *rangemap\_bound* function .
+The *rangemap\_bound* function generates a species range polygon for a given species by considering all the polygons of administrative entities in which the species has been detected. An approach to the species extent of occurrence (using convex hulls) and the area of occupancy according to the IUCN criteria are also generated. Shape files can also be saved in the working directory if needed.
 
 The function's help can be consulted usign the following line of code:
 
@@ -158,6 +164,8 @@ Examples of the use of this function with most of its variants are written below
 <br>
 
 ##### Using only occurrences
+
+Following there is an example in wich administrative areas will be selected using only occurrences. The *rangemap\_explore* function will be used for obtainig a first visualization of the species distributional range.
 
 ``` r
 # getting the data from GBIF
@@ -190,6 +198,8 @@ bound_range <- rangemap_bound(occurrences = occ_g, country_code = countries, bou
 <br>
 
 ##### Using only administrative area names
+
+Following there is an example in wich administrative areas will be selected using only the names of the administrative entities known to be occupied by the species. This approach may be useful in circumstances where goegraphic coordinates or aqurate localitie descriptions do not exist.
 
 ``` r
 # getting the data from GBIF
@@ -227,6 +237,8 @@ bound_range <- rangemap_bound(adm_areas = adm, country_code = countries, boundar
 
 ##### Using occurrences and administrative areas
 
+An example of using both occurrences and administrative areas for creating species ranges with the function *rangemap\_bound* is presented below. This option may be useful when these two types of infromation complement the knowledge of the species distribution.
+
 ``` r
 # getting the data from GBIF
 species <- name_lookup(query = "Dasypus kappleri",
@@ -260,7 +272,7 @@ bound_range <- rangemap_bound(occurrences = occ_g, adm_areas = adm, country_code
 
 #### Species ranges from hull polygons
 
-The *rangemap\_hull* function .
+The *rangemap\_hull* function generates a species range polygon for a given species by creating convex or concave hull polygons based on occurrence data. An approach to the species extent of occurrence (using convex hulls) and the area of occupancy according to the IUCN criteria are also generated. Shape files can be saved if needed.
 
 The function's help can be consulted usign the following line of code:
 
@@ -273,6 +285,8 @@ Examples of the use of this function with most of its variants are written below
 <br>
 
 ##### Convex hulls
+
+With the example provided below, a species range will be constructed using convex hulls. This range will be split based on two distinct algorithms of clustering: hierarchical and k-means. Convex hull polygons are commonly used to represent species ranges, however in circunstances where biogeographic barriers for the species dispersal exist, concave hulls may be a better option.
 
 ``` r
 # getting the data from GBIF
@@ -323,6 +337,8 @@ hull_range2 <- rangemap_hull(occurrences = occ_g, hull_type = hull, buffer_dista
 <br>
 
 ##### Concave hulls
+
+With the following examples, the species range will be constructed using concave hulls. The species range will be calculated as an only area and as disjunt areas by clustering its occurrences using hierarchical and k-means algorithms.
 
 ``` r
 # unique polygon (non-disjunct distribution)
@@ -387,7 +403,9 @@ enm_range <- rangemap_enm(occurrences = occ_sp, model = sp_mod,  threshold = thr
 
 #### Species ranges using trend surface analyses
 
-The *rangemap\_tsa* function .
+The *rangemap\_tsa* function generates species range polygons for a given species using a trend surface analysis. An approach to the species extent of occurrence (using convex hulls) and the area of occupancy according to the IUCN criteria are also generated. Shape files can be saved in the working directory if it is needed.
+
+Trend surface analysis is a method based on low-order polynomials of spatial coordinates for estimating a regular grid of points from scattered observations. This method assumes that all cells not occupied by occurrences are absences; hence its use depends on the quality of data and the certainty of having or not a complete sampling of the regiong\_of\_interest.
 
 The function's help can be consulted usign the following line of code:
 
@@ -432,7 +450,7 @@ tsa <- rangemap_tsa(occurrences = occ_g, region_of_interest = reg, threshold = t
 
 #### Nice fugures of species ranges
 
-The *rangemap\_fig* function .
+The *rangemap\_fig* function can be used to plot not only the generated species ranges but also the extent of occurrence and the species records in the same map.
 
 The function's help can be consulted usign the following line of code:
 
@@ -440,14 +458,62 @@ The function's help can be consulted usign the following line of code:
 help(rangemap_fig)
 ```
 
-An example of the use of this function is written below.
+Examples of the use of this function are written below.
+
+##### Including the extent of occurrence
+
+``` r
+# arguments for the species range figure
+extent <- TRUE
+
+# creating the species range figure
+range_map <- rangemap_fig(hull_range5, add_extent = extent)
+
+dev.off() # for returning to default par settings
+```
+
+<br>
+
+##### Including the occurrences
+
+``` r
+# arguments for the species range figure
+occ <- TRUE
+
+# creating the species range figure
+range_map <- rangemap_fig(hull_range5, add_occurrences = occ)
+
+dev.off() # for returning to default par settings
+```
+
+<br>
+
+##### Including the extent of occurrence ond species recods
 
 ``` r
 # arguments for the species range figure
 extent <- TRUE
 occ <- TRUE
-grid <- TRUE
-sides <- "bottomleft"
+
+# creating the species range figure
+range_map <- rangemap_fig(hull_range5, add_extent = extent, add_occurrences = occ)
+
+dev.off() # for returning to default par settings
+```
+
+<br>
+
+##### Including other components
+
+``` r
+# arguments for the species range figure
+extent <- TRUE
+occ <- TRUE
+grid <- TRUE # grid
+leggend <- TRUE # leggend of objects included
+scale <- TRUE # scale bar
+north <- TRUE # north arrow
+
 
 # creating the species range figure
 range_map <- rangemap_fig(hull_range5, add_extent = extent, add_occurrences = occ,
@@ -456,13 +522,31 @@ range_map <- rangemap_fig(hull_range5, add_extent = extent, add_occurrences = oc
 dev.off() # for returning to default par settings
 ```
 
-<br>
+##### Saving the figure
+
+``` r
+# arguments for the species range figure
+extent <- TRUE
+occ <- TRUE
+grid <- TRUE # grid
+leggend <- TRUE # leggend of objects included
+scale <- TRUE # scale bar
+north <- TRUE # north arrow
+save <-  TRUE
+
+
+# creating the species range figure
+range_map <- rangemap_fig(hull_range5, add_extent = extent, add_occurrences = occ,
+                          grid = grid, sides = sides, save_fig = save)
+
+dev.off() # for returning to default par settings
 
 #### Species ranges in the environmental space
 
-The *ranges\_envcomp* function .
+The *ranges_envcomp* function generates a three dimensional comparison of a species' ranges created using distinct algortihms, to visualize implications of selecting one of them if environmental conditions are considered. 
 
 The function's help can be consulted usign the following line of code:
+```
 
 ``` r
 help(ranges_envcomp)
