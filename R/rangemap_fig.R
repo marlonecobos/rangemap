@@ -26,7 +26,7 @@
 #' name = name, in format = format, and at resolution = resolution. Default = FALSE.
 #' @param name (character) if save_fig = TRUE, name of the figure to be exported. Default = "range_fig".
 #' @param format (character) if save_fig = TRUE, format in which the figure will be written. Options
-#' include "bmp", "png", "jpeg", and "tiff". Default = "png".
+#' include "bmp", "png", "jpeg", "tiff", and "pdf". Default = "png".
 #' @param resolution (numeric) if save_fig = TRUE, resolution in ppi in wich the figure will be exported.
 #' Default = 300.
 #' @param width (numeric) width of the figure in mm. Default = 166.
@@ -242,6 +242,9 @@ rangemap_fig <- function(range, polygons, add_extent = FALSE, add_occurrences = 
     if (format == "tiff") {
       tiff(filename = paste(name, "tif", sep = "."), width = width, height = height,
            units = "mm", res = resolution)
+    }
+    if (format == "pdf") {
+      pdf(file = paste(name, "pdf", sep = "."), width = width)
     }
 
     par(mar = c(0, 0, 0, 0), tcl = 0.25, cex = 0.85)

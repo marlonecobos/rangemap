@@ -48,7 +48,7 @@ name = name, in format = format, and at resolution = resolution. Default = FALSE
 \item{name}{(character) if save_fig = TRUE, name of the figure to be exported. Default = "range_fig".}
 
 \item{format}{(character) if save_fig = TRUE, format in which the figure will be written. Options
-include "bmp", "png", "jpeg", and "tiff". Default = "png".}
+include "bmp", "png", "jpeg", "tiff", and "pdf". Default = "png".}
 
 \item{resolution}{(numeric) if save_fig = TRUE, resolution in ppi in wich the figure will be exported.
 Default = 300.}
