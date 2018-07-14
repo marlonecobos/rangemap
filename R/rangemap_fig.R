@@ -99,7 +99,12 @@ rangemap_fig <- function(range, polygons, add_extent = FALSE, add_occurrences = 
   suppressMessages(library(maptools))
 
   # projections
-  AEQD <- range$Species_unique_records@proj4string # initial
+  if (class(range) == "list") {
+    AEQD <- range$Species_range@proj4string # initial
+  }
+  if (class(range) %in% c("SpatialPolygons", "SpatialPolygonsDataFrame")) {
+    AEQD <- range@proj4string # initial
+  }
   WGS84 <- sp::CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0") # generic
   ROBIN <- sp::CRS("+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs") # for pretty maps
 
@@ -112,7 +117,12 @@ rangemap_fig <- function(range, polygons, add_extent = FALSE, add_occurrences = 
 
   # project for mantaining shapes
   polygons <- sp::spTransform(polygons, ROBIN) # base map
-  range_sp <- sp::spTransform(range$Species_range, ROBIN) # species range
+  if (class(range) == "list") {
+    range_sp <- sp::spTransform(range$Species_range, ROBIN) # species range
+  }
+  if (class(range) %in% c("SpatialPolygons", "SpatialPolygonsDataFrame")) {
+    range_sp <- sp::spTransform(range, ROBIN) # species range
+  }
 
   if (add_extent == TRUE) {
     extent_sp <- sp::spTransform(range$Extent_of_occurrence, ROBIN) # species extent of occ
