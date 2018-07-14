@@ -267,16 +267,16 @@ rangemap_tsa <- function(occurrences, region_of_interest, resolution = 5, thresh
 
   # return results (list or a different object?)
   sp_dat <- data.frame(occ[1, 1], dim(occ_pr)[1], areakm2, eocckm2, aocckm2) # extent of occ = total area?
-  colnames(sp_dat) <- c("Species", "Unique records", "Range area", "Extent of occurrence", "Area of occupancy")
+  colnames(sp_dat) <- c("Species", "Unique_records", "Range_area", "Extent_of_occurrence", "Area_of_occupancy")
 
   if (save_tsmodel == TRUE) {
     results <- list(sp_dat, occ_pr, clip_area, extent_occurrence, area_occupancy, tsa_model)
-    names(results) <- c("Summary", "Species unique records", "Species range", "Extent of occurrence",
-                        "Area of occupancy", "Trend surface model")
+    names(results) <- c("Summary", "Species_unique_records", "Species_range", "Extent_of_occurrence",
+                        "Area_of_occupancy", "Trend_surface_model")
   }else {
     results <- list(sp_dat, occ_pr, clip_area, extent_occurrence, area_occupancy)
-    names(results) <- c("Summary", "Species unique records", "Species range", "Extent of occurrence",
-                        "Area of occupancy")
+    names(results) <- c("Summary", "Species_unique_records", "Species_range", "Extent_of_occurrence",
+                        "Area_of_occupancy")
   }
 
   return(results)
