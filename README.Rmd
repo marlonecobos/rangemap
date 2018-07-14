@@ -22,7 +22,7 @@ The **rangemap** R package presents various tools to create species range maps b
 
 **rangemap** is in a GitHub repository and can be installed and/or loaded using the following code (make sure to have Internet connection). 
 
-```{r, eval=FALSE, include=TRUE}
+```{r, include=TRUE, message=FALSE}
 # Installing and loading packages
 if(!require(devtools)){
     install.packages("devtools")
@@ -40,9 +40,9 @@ library(rangemap)
 
 #### Setting R up
 
-The following code chunk installs (if needed) and loads the R packages that will be used to perform the example analyses with the **rangemap** package. The working directory will also be defined in this part.
+The following code chunk installs (if needed) and loads the R packages that will be used to perform the example analyses with the **rangemap** package. 
 
-```{r, eval=FALSE, include=TRUE}
+```{r, include=TRUE, message=FALSE, warning=FALSE}
 # pacakges from CRAN
 pcakages <- c("rgbif", "maps", "maptools", "raster")
 req_packages <- pcakages[!(pcakages %in% installed.packages()[, "Package"])]
@@ -56,9 +56,13 @@ if(!require(kuenm)){
 install_github("marlonecobos/kuenm")
 }
 library(kuenm)
-    
+```
+
+The working directory will also be defined in this part.
+
+```{r, eval=FALSE, include=TRUE}
 # working directory
-setwd("YOUR/WORKING/DIRECTORY")
+setwd("C:/Users/Marlon/Documents/R/Borrar") # YOUR/WORKING/DIRECTORY
 ```
 
 <br>
@@ -75,7 +79,7 @@ help(rangemap_explore)
 
 An example of the use of this function is written below.
 
-```{r, eval=FALSE, include=TRUE}
+```{r, include=TRUE, cache=TRUE}
 # getting the data from GBIF
 species <- name_lookup(query = "Dasypus kappleri",
                        rank="species", return = "data") # information about the species
@@ -89,9 +93,13 @@ occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
 # keeping only georeferenced records
 occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
              c("name", "decimalLongitude", "decimalLatitude")]
+```
 
+Now the figure.
+
+```{r}
 # simple figure of the species occurrence data
-explore_map <- rangemap_explore(occurrences = occ_g)
+rangemap_explore(occurrences = occ_g)
 ```
 
 <br>
@@ -108,7 +116,7 @@ help(rangemap_buff)
 
 An example of the use of this function is written below.
 
-```{r, eval=FALSE, include=TRUE}
+```{r, include=TRUE, cache=TRUE}
 # getting the data from GBIF
 species <- name_lookup(query = "Peltophryne empusa",
                        rank="species", return = "data") # information about the species
@@ -125,7 +133,7 @@ occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
 
 # buffer distance
 dist <- 100000
-save <- TRUE
+save <- FALSE # TRUE if you want to save the shapefiles in the working directory 
 name <- "test"
 
 buff_range <- rangemap_buff(occurrences = occ_g, buffer_distance = dist,
@@ -133,9 +141,14 @@ buff_range <- rangemap_buff(occurrences = occ_g, buffer_distance = dist,
 ```
 
 
-The function *rangemap_fig* generates customizable figures of species range maps using the objects produced by other function of this package. Let's see hoy the generated range looks like.
+The function *rangemap_fig* generates customizable figures of species range maps using the objects produced by other function of this package. Let's see how the generated range looks like.
 
+```{r, include=TRUE, cache=TRUE}
+# creating the species range figure
+rangemap_fig(buff_range)
 
+#dev.off() # for returning to default par settings
+```
 
 <br>
 
@@ -157,7 +170,7 @@ Examples of the use of this function with most of its variants are written below
 
 Following there is an example in wich administrative areas will be selected using only occurrences. The *rangemap_explore* function will be used for obtainig a first visualization of the species distributional range.
 
-```{r, eval=FALSE, include=TRUE}
+```{r, include=TRUE, cache=TRUE}
 # getting the data from GBIF
 species <- name_lookup(query = "Dasypus kappleri",
                        rank="species", return = "data") # information about the species
@@ -177,12 +190,21 @@ rangemap_explore(occurrences = occ_g)
 
 level <- 0
 dissolve <- FALSE
-save <- TRUE
+save <- FALSE # TRUE if you want to save the shapefiles in the working directory 
 name <- "test1"
 countries <- c("PER", "BRA", "COL", "VEN", "ECU", "GUF", "GUY", "SUR", "BOL")
 
 bound_range <- rangemap_bound(occurrences = occ_g, country_code = countries, boundary_level = level, 
                               dissolve = dissolve, save_shp = save, name = name)
+```
+
+Figure of the generated range.
+
+```{r, include=TRUE, cache=TRUE}
+# creating the species range figure
+rangemap_fig(bound_range)
+
+#dev.off() # for returning to default par settings
 ```
 
 <br>
@@ -191,36 +213,30 @@ bound_range <- rangemap_bound(occurrences = occ_g, country_code = countries, bou
 
 Following there is an example in wich administrative areas will be selected using only the names of the administrative entities known to be occupied by the species. This approach may be useful in circumstances where goegraphic coordinates or aqurate localitie descriptions do not exist.
 
-```{r, eval=FALSE, include=TRUE}
-# getting the data from GBIF
-species <- name_lookup(query = "Dasypus kappleri",
-                       rank="species", return = "data") # information about the species
-
-occ_count(taxonKey = species$key[14], georeferenced = TRUE) # testing if keys return records
-
-key <- species$key[14] # using species key that return information
-
-occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
-
-# keeping only georeferenced records
-occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
-            c("name", "decimalLongitude", "decimalLatitude")]
-
-# checking which countries may be involved in the analysis
-rangemap_explore(occurrences = occ_g)
-
+```{r, include=TRUE, cache=TRUE}
+# administrative areas invloved
 data("country_codes") #list of country names and ISO codes
-View(country_codes)
+head(country_codes)
+# View(country_codes) # if you want to see the complete list
 
 level <- 0
 adm <- c("Ecuador", "Peru", "Venezuela", "Colombia", "Brazil") # If we only know the countries in wich the species is
 dissolve <- FALSE
-save <- TRUE
+save <- FALSE # TRUE if you want to save the shapefiles in the working directory 
 name <- "test2"
 countries <- c("PER", "BRA", "COL", "VEN", "ECU", "GUF", "GUY", "SUR", "BOL")
 
-bound_range <- rangemap_bound(adm_areas = adm, country_code = countries, boundary_level = level,
+bound_range1 <- rangemap_bound(adm_areas = adm, country_code = countries, boundary_level = level,
                               dissolve = dissolve, save_shp = save, name = name)
+```
+
+Map of the generated range.
+
+```{r, include=TRUE, cache=TRUE}
+# creating the species range figure
+rangemap_fig(bound_range1)
+
+#dev.off() # for returning to default par settings
 ```
 
 <br>
@@ -229,7 +245,7 @@ bound_range <- rangemap_bound(adm_areas = adm, country_code = countries, boundar
 
 An example of using both occurrences and administrative areas for creating species ranges with the function *rangemap_bound* is presented below. This option may be useful when these two types of infromation complement the knowledge of the species distribution.
 
-```{r, eval=FALSE, include=TRUE}
+```{r, include=TRUE, cache=TRUE}
 # getting the data from GBIF
 species <- name_lookup(query = "Dasypus kappleri",
                        rank="species", return = "data") # information about the species
@@ -244,18 +260,24 @@ occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
 occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
             c("name", "decimalLongitude", "decimalLatitude")]
 
-# checking which countries may be involved in the analysis
-rangemap_explore(occurrences = occ_g)
-
 level <- 0
 adm <- "Ecuador" # Athough no record is on this country, we know it is in Ecuador
 dissolve <- FALSE
-save <- TRUE
+save <- FALSE # TRUE if you want to save the shapefiles in the working directory 
 name <- "test3"
 countries <- c("PER", "BRA", "COL", "VEN", "ECU", "GUF", "GUY", "SUR", "BOL")
 
-bound_range <- rangemap_bound(occurrences = occ_g, adm_areas = adm, country_code = countries,
+bound_range2 <- rangemap_bound(occurrences = occ_g, adm_areas = adm, country_code = countries,
                               boundary_level = level, dissolve = dissolve, save_shp = save, name = name)
+```
+
+Map of the species range.
+
+```{r, include=TRUE, cache=TRUE}
+# creating the species range figure
+rangemap_fig(bound_range2)
+
+#dev.off() # for returning to default par settings
 ```
 
 <br>
@@ -266,7 +288,7 @@ The *rangemap_hull* function generates a species range polygon for a given speci
 
 The function's help can be consulted usign the following line of code:
 
-```{r, eval=FALSE, include=TRUE}
+```{r, eval=FALSE, include=TRUE, cache=TRUE}
 help(rangemap_hull)
 ```
 
@@ -278,7 +300,7 @@ Examples of the use of this function with most of its variants are written below
 
 With the example provided below, a species range will be constructed using convex hulls. This range will be split based on two distinct algorithms of clustering: hierarchical and k-means. Convex hull polygons are commonly used to represent species ranges, however in circunstances where biogeographic barriers for the species dispersal exist, concave hulls may be a better option.
 
-```{r, eval=FALSE, include=TRUE}
+```{r, include=TRUE, cache=TRUE}
 # getting the data from GBIF
 species <- name_lookup(query = "Dasypus kappleri",
 rank="species", return = "data") # information about the species
@@ -297,7 +319,7 @@ occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
 dist <- 100000
 hull <- "convex" 
 split <- FALSE
-save <- TRUE
+save <- FALSE # TRUE if you want to save the shapefiles in the working directory
 name <- "test4"
 
 hull_range <- rangemap_hull(occurrences = occ_g, hull_type = hull, buffer_distance = dist,
@@ -324,18 +346,27 @@ hull_range2 <- rangemap_hull(occurrences = occ_g, hull_type = hull, buffer_dista
                             save_shp = save, name = name)
 ```
 
+Now the figure of the species range.
+
+```{r, include=TRUE, cache=TRUE}
+# creating the species range figure
+rangemap_fig(hull_range1) # try hull_range and hull_range2
+
+#dev.off() # for returning to default par settings
+```
+
 <br>
 
 ##### Concave hulls 
 
 With the following examples, the species range will be constructed using concave hulls. The species range will be calculated as an only area and as disjunt areas by clustering its occurrences using hierarchical and k-means algorithms.
 
-```{r, eval=FALSE, include=TRUE}
+```{r, include=TRUE, cache=TRUE}
 # unique polygon (non-disjunct distribution)
 dist <- 100000
 hull <- "concave" 
 split <- FALSE
-save <- TRUE
+save <- FALSE # TRUE if you want to save the shapefiles in the working directory
 name <- "test7"
 
 hull_range3 <- rangemap_hull(occurrences = occ_g, hull_type = hull, buffer_distance = dist,
@@ -362,6 +393,15 @@ hull_range5 <- rangemap_hull(occurrences = occ_g, hull_type = hull, buffer_dista
                             save_shp = save, name = name)
 ```
 
+Checking the figure.
+
+```{r, include=TRUE, cache=TRUE}
+# creating the species range figure
+rangemap_fig(hull_range3) # try hull_range4 and hull_range5
+
+#dev.off() # for returning to default par settings
+```
+
 <br>
 
 #### Species ranges from ecological niche models
@@ -371,22 +411,31 @@ The *rangemap_enm* function.
 The function's help can be consulted usign the following line of code:
 
 ```{r, eval=FALSE, include=TRUE}
-help(rangemap_buff)
+help(rangemap_enm)
 ```
 
 An example of the use of this function is written below.
 
-```{r, eval=FALSE, include=TRUE}
+```{r, include=TRUE, cache=TRUE}
 # parameters
 data(sp_mod)
 data(sp_train)
 occ_sp <- data.frame("A_americanum", sp_train)
 thres <- 5
-save <- TRUE
+save <- FALSE # TRUE if you want to save the shapefiles in the working directory
 name <- "test10"
 
 enm_range <- rangemap_enm(occurrences = occ_sp, model = sp_mod,  threshold = thres,
                           save_shp = save, name = name)
+```
+
+Let's see how this range looks like.
+
+```{r, include=TRUE, cache=TRUE}
+# creating the species range figure
+rangemap_fig(enm_range)
+
+#dev.off() # for returning to default par settings
 ```
 
 <br>
@@ -405,7 +454,7 @@ help(rangemap_tsa)
 
 An example of the use of this function is written below.
 
-```{r, eval=FALSE, include=TRUE}
+```{r, include=TRUE, cache=TRUE}
 # getting the data from GBIF
 species <- name_lookup(query = "Peltophryne fustiger",
                        rank="species", return = "data") # information about the species
@@ -429,16 +478,25 @@ reg <- map2SpatialPolygons(w_map, IDs = w_po, proj4string = WGS84) # map to poly
 # other data
 res <- 1
 thr <- 0
-save <- TRUE
+save <- FALSE # TRUE if you want to save the shapefiles in the working directory
 name <- "test11"
 
-tsa <- rangemap_tsa(occurrences = occ_g, region_of_interest = reg, threshold = thr,
+tsa_r <- rangemap_tsa(occurrences = occ_g, region_of_interest = reg, threshold = thr,
                     resolution = res, save_shp = save, name = name)
+```
+
+Let's take a look at the results.
+
+```{r, include=TRUE, cache=TRUE}
+# creating the species range figure
+rangemap_fig(tsa_r)
+
+#dev.off() # for returning to default par settings
 ```
 
 <br>
 
-#### Nice fugures of species ranges
+#### Nice figures of species ranges
 
 The *rangemap_fig* function can be used to plot not only the generated species ranges but also the extent of occurrence and the species records in the same map.
 
@@ -452,74 +510,74 @@ Examples of the use of this function are written below.
 
 ##### Including the extent of occurrence
 
-```{r, eval=FALSE, include=TRUE}
+```{r, include=TRUE, cache=TRUE}
 # arguments for the species range figure
 extent <- TRUE
 
 # creating the species range figure
-range_map <- rangemap_fig(hull_range5, add_extent = extent)
+rangemap_fig(hull_range5, add_extent = extent)
 
-dev.off() # for returning to default par settings
+#dev.off() # for returning to default par settings
 ```
 
 <br>
 
 ##### Including the occurrences
 
-```{r, eval=FALSE, include=TRUE}
+```{r, include=TRUE, cache=TRUE}
 # arguments for the species range figure
 occ <- TRUE
 
 # creating the species range figure
-range_map <- rangemap_fig(hull_range5, add_occurrences = occ)
+rangemap_fig(hull_range5, add_occurrences = occ)
 
-dev.off() # for returning to default par settings
+#dev.off() # for returning to default par settings
 ```
 
 <br>
 
 ##### Including the extent of occurrence ond species recods
 
-```{r, eval=FALSE, include=TRUE}
+```{r, include=TRUE, cache=TRUE}
 # arguments for the species range figure
 extent <- TRUE
 occ <- TRUE
 
 # creating the species range figure
-range_map <- rangemap_fig(hull_range5, add_extent = extent, add_occurrences = occ)
+rangemap_fig(hull_range5, add_extent = extent, add_occurrences = occ)
 
-dev.off() # for returning to default par settings
+#dev.off() # for returning to default par settings
 ```
 
 <br>
 
 ##### Including other components
 
-```{r, eval=FALSE, include=TRUE}
+```{r, include=TRUE, cache=TRUE}
 # arguments for the species range figure
 extent <- TRUE
 occ <- TRUE
 grid <- TRUE # grid
-leggend <- TRUE # leggend of objects included
+legend <- TRUE # leggend of objects included
 scale <- TRUE # scale bar
 north <- TRUE # north arrow
 
 
 # creating the species range figure
-range_map <- rangemap_fig(hull_range5, add_extent = extent, add_occurrences = occ,
-                          grid = grid, sides = sides)
+rangemap_fig(hull_range5, add_extent = extent, add_occurrences = occ,
+             grid = grid, legend = legend, scalebar = scale, northarrow = north)
 
-dev.off() # for returning to default par settings
+#dev.off() # for returning to default par settings
 ```
 
 ##### Saving the figure
 
-```{r, eval=FALSE, include=TRUE}
+```{r, eval=FALSE, include=TRUE, cache=TRUE}
 # arguments for the species range figure
 extent <- TRUE
 occ <- TRUE
 grid <- TRUE # grid
-leggend <- TRUE # leggend of objects included
+legend <- TRUE # leggend of objects included
 scale <- TRUE # scale bar
 north <- TRUE # north arrow
 save <-  TRUE
@@ -527,9 +585,13 @@ save <-  TRUE
 
 # creating the species range figure
 range_map <- rangemap_fig(hull_range5, add_extent = extent, add_occurrences = occ,
-                          grid = grid, sides = sides, save_fig = save)
+                          grid = grid, legend = legend, scalebar = scale, 
+                          northarrow = north, save_fig = save)
 
-dev.off() # for returning to default par settings
+#dev.off() # for returning to default par settings
+```
+
+<br>
 
 #### Species ranges in the environmental space
 
@@ -543,7 +605,7 @@ help(ranges_envcomp)
 
 An example of the use of this function is written below.
 
-```{r, eval=FALSE, include=TRUE}
+```{r, eval=FALSE, include=TRUE, cache=TRUE}
 # getting the data from GBIF
 species <- name_lookup(query = "Dasypus kappleri",
                        rank="species", return = "data") # information about the species
@@ -607,5 +669,5 @@ mask <- as(e, 'SpatialPolygons')
 variables <- crop(vars, mask)
 
 ## comparison
-r_env <- ranges_envcomp(occurrences = occ_g, ranges = ranges, variables = variables, , save_fig = FALSE)
+r_env <- ranges_envcomp(occurrences = occ_g, ranges = ranges, variables = variables, save_fig = FALSE)
 ```
