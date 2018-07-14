@@ -271,59 +271,87 @@ rangemap_bound <- function(occurrences, adm_areas, country_code, boundary_level 
     boundaries <- raster::disaggregate(boundaries)
   }
 
-  # calculate areas in km2
-  rangekm2 <- raster::area(boundaries) / 1000000
-  areakm2 <- sum(rangekm2) # total area of the species range
+  # final part
+  if (missing(occurrences)) {
+    # calculate areas in km2
+    rangekm2 <- raster::area(boundaries) / 1000000
+    areakm2 <- sum(rangekm2) # total area of the species range
 
-  ## extent of occurrence
-  coord <- as.data.frame(occ[, 2:3]) # spatial point dataframe to data frame keeping only coordinates
-  covexhull <- chull(coord) # convex hull from points
-  coord_pol <- coord[c(covexhull, covexhull[1]),] # defining coordinates
-  covexhull_polygon <- sp::SpatialPolygons(list(sp::Polygons(list(sp::Polygon(coord_pol)), ID = 1))) # into SpatialPolygons
-  sp::proj4string(covexhull_polygon) <- WGS84 # project
-  covexhull_polygon_pr <- sp::spTransform(covexhull_polygon, AEQD) # reproject
-  c_hull_extent <- rgeos::gIntersection(polygons, covexhull_polygon_pr, byid = TRUE, drop_lower_td = TRUE) # area of interest
+    # adding characteristics to spatial polygons
+    species <- as.character(occurrences[1, 1])
+    boundaries <- sp::SpatialPolygonsDataFrame(boundaries, # species range
+                                               data = data.frame(species, rangekm2),
+                                               match.ID = FALSE)
 
-  eockm2 <- raster::area(c_hull_extent) / 1000000
-  eocckm2 <- sum(eockm2) # total area of the species range
+    # exporting
+    if (save_shp == TRUE) {
+      cat("\nWriting shapefile in the working directory...\n")
+      rgdal::writeOGR(boundaries, ".", name, driver = "ESRI Shapefile")
+    }
 
-  ## area of occupancy
-  grid <- raster::raster(ext = raster::extent(occ_pr) + 10000, res = c(2000, 2000), crs = AEQD)
-  raster_sp <- raster::rasterize(occ_pr[, 2:3], grid)[[1]] # raster from points
-  grid_sp <- as(raster_sp, "SpatialPolygonsDataFrame") # raster to polygon
+    # return results
+    sp_dat <- data.frame("Species", areakm2) # extent of occ = total area?
+    colnames(sp_dat) <- c("Species", "Range_area")
 
-  aockm2 <- raster::area(grid_sp) / 1000000
-  aocckm2 <- sum(aockm2) # area calculation
+    results <- list(sp_dat, boundaries)
+    names(results) <- c("Summary", "Species_range")
 
-  # adding characteristics to spatial polygons
-  species <- as.character(occurrences[1, 1])
-  boundaries <- sp::SpatialPolygonsDataFrame(boundaries, # species range
-                                             data = data.frame(species, rangekm2),
-                                             match.ID = FALSE)
+  }else {
+    # calculate areas in km2
+    rangekm2 <- raster::area(boundaries) / 1000000
+    areakm2 <- sum(rangekm2) # total area of the species range
 
-  extent_occurrence <- sp::SpatialPolygonsDataFrame(c_hull_extent, # extent of occurrence
-                                                    data = data.frame(species, eockm2),
-                                                    match.ID = FALSE)
+    ## extent of occurrence
+    coord <- as.data.frame(occ[, 2:3]) # spatial point dataframe to data frame keeping only coordinates
+    covexhull <- chull(coord) # convex hull from points
+    coord_pol <- coord[c(covexhull, covexhull[1]),] # defining coordinates
+    covexhull_polygon <- sp::SpatialPolygons(list(sp::Polygons(list(sp::Polygon(coord_pol)), ID = 1))) # into SpatialPolygons
+    sp::proj4string(covexhull_polygon) <- WGS84 # project
+    covexhull_polygon_pr <- sp::spTransform(covexhull_polygon, AEQD) # reproject
+    c_hull_extent <- rgeos::gIntersection(polygons, covexhull_polygon_pr, byid = TRUE, drop_lower_td = TRUE) # area of interest
 
-  area_occupancy <- sp::SpatialPolygonsDataFrame(grid_sp, # area of occupancy
-                                                 data = data.frame(species, aockm2),
-                                                 match.ID = FALSE)
+    eockm2 <- raster::area(c_hull_extent) / 1000000
+    eocckm2 <- sum(eockm2) # total area of the species range
 
-  # exporting
-  if (save_shp == TRUE) {
-    cat("\nWriting shapefiles in the working directory...\n")
-    rgdal::writeOGR(boundaries, ".", name, driver = "ESRI Shapefile")
-    rgdal::writeOGR(extent_occurrence, ".", paste(name, "extent_occ", sep = "_"), driver = "ESRI Shapefile")
-    rgdal::writeOGR(area_occupancy, ".", paste(name, "area_occ", sep = "_"), driver = "ESRI Shapefile")
-    rgdal::writeOGR(occ_pr, ".", paste(name, "unique_records", sep = "_"), driver = "ESRI Shapefile")
+    ## area of occupancy
+    grid <- raster::raster(ext = raster::extent(occ_pr) + 10000, res = c(2000, 2000), crs = AEQD)
+    raster_sp <- raster::rasterize(occ_pr[, 2:3], grid)[[1]] # raster from points
+    grid_sp <- as(raster_sp, "SpatialPolygonsDataFrame") # raster to polygon
+
+    aockm2 <- raster::area(grid_sp) / 1000000
+    aocckm2 <- sum(aockm2) # area calculation
+
+    # adding characteristics to spatial polygons
+    species <- as.character(occurrences[1, 1])
+    boundaries <- sp::SpatialPolygonsDataFrame(boundaries, # species range
+                                               data = data.frame(species, rangekm2),
+                                               match.ID = FALSE)
+
+    extent_occurrence <- sp::SpatialPolygonsDataFrame(c_hull_extent, # extent of occurrence
+                                                      data = data.frame(species, eockm2),
+                                                      match.ID = FALSE)
+
+    area_occupancy <- sp::SpatialPolygonsDataFrame(grid_sp, # area of occupancy
+                                                   data = data.frame(species, aockm2),
+                                                   match.ID = FALSE)
+
+    # exporting
+    if (save_shp == TRUE) {
+      cat("\nWriting shapefiles in the working directory...\n")
+      rgdal::writeOGR(boundaries, ".", name, driver = "ESRI Shapefile")
+      rgdal::writeOGR(extent_occurrence, ".", paste(name, "extent_occ", sep = "_"), driver = "ESRI Shapefile")
+      rgdal::writeOGR(area_occupancy, ".", paste(name, "area_occ", sep = "_"), driver = "ESRI Shapefile")
+      rgdal::writeOGR(occ_pr, ".", paste(name, "unique_records", sep = "_"), driver = "ESRI Shapefile")
+    }
+
+    # return results (list or a different object?)
+    sp_dat <- data.frame(occ[1, 1], dim(occ_pr)[1], areakm2, eocckm2, aocckm2) # extent of occ = total area?
+    colnames(sp_dat) <- c("Species", "Unique_records", "Range_area", "Extent_of_occurrence", "Area_of_occupancy")
+
+    results <- list(sp_dat, occ_pr, boundaries, extent_occurrence, area_occupancy)
+    names(results) <- c("Summary", "Species_unique_records", "Species_range", "Extent_of_occurrence",
+                        "Area_of_occupancy")
   }
 
-  # return results (list or a different object?)
-  sp_dat <- data.frame(occ[1, 1], dim(occ_pr)[1], areakm2, eocckm2, aocckm2) # extent of occ = total area?
-  colnames(sp_dat) <- c("Species", "Unique_records", "Range_area", "Extent_of_occurrence", "Area_of_occupancy")
-
-  results <- list(sp_dat, occ_pr, boundaries, extent_occurrence, area_occupancy)
-  names(results) <- c("Summary", "Species_unique_records", "Species_range", "Extent_of_occurrence",
-                      "Area_of_occupancy")
   return(results)
 }
