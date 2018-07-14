@@ -7,6 +7,8 @@
 #' Species, Longitude, and Latitude.
 #' @param polygons a SpatialPolygon object to be used as base map for plotting the species range.
 #' If not provided, a simplified world map will be used.
+#' @graphic_device (logical) if TRUE a new graphic device is opened to plot the figure.
+#' Default = FALSE.
 #'
 #' @return A simple figure of the species occurrences in a geographical context.
 #'
@@ -40,7 +42,7 @@
 #               scales (alpha),
 #               sp (plot, spTransform, CRS),
 
-rangemap_explore <- function(occurrences, polygons) {
+rangemap_explore <- function(occurrences, polygons, graphic_device = FALSE) {
 
   suppressMessages(library(maptools))
 
@@ -91,10 +93,12 @@ rangemap_explore <- function(occurrences, polygons) {
   cords <- cent@coords
 
   ## generic plot
-  if(.Platform$OS.type == "unix") {
-    quartz()
-  } else {
-    x11()
+  if (graphic_device == TRUE) {
+    if (.Platform$OS.type == "unix") {
+      quartz()
+    } else {
+      x11()
+    }
   }
 
   par(mar = c(0, 0, 0, 0), tcl = 0.25)

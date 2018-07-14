@@ -4,7 +4,7 @@
 \alias{rangemap_explore}
 \title{Figures for exploring occurrences on maps before creating range maps}
 \usage{
-rangemap_explore(occurrences, polygons)
+rangemap_explore(occurrences, polygons, graphic_device = FALSE)
 }
 \arguments{
 \item{occurrences}{a data.frame containing species occurrences, columns must be:
