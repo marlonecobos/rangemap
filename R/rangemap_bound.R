@@ -256,7 +256,7 @@ rangemap_bound <- function(occurrences, adm_areas, country_code, boundary_level 
 
     if (!missing(adm_areas) & missing(occurrences)) {
       # select polygons by names
-      boundaries <- polygons[polygons@data$adm_areas %in% adm_areas, ]
+      boundaries <- polygons[polygons@data$adm_names %in% adm_areas, ]
     }
   }
 
