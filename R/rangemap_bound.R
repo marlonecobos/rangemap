@@ -278,9 +278,8 @@ rangemap_bound <- function(occurrences, adm_areas, country_code, boundary_level 
     areakm2 <- sum(rangekm2) # total area of the species range
 
     # adding characteristics to spatial polygons
-    species <- as.character(occurrences[1, 1])
     boundaries <- sp::SpatialPolygonsDataFrame(boundaries, # species range
-                                               data = data.frame(species, rangekm2),
+                                               data = data.frame("Species", rangekm2),
                                                match.ID = FALSE)
 
     # exporting
