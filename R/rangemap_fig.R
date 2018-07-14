@@ -301,7 +301,7 @@ rangemap_fig <- function(range, polygons, add_extent = FALSE, add_occurrences = 
         xpos <- xlim[1] + ((xlim[2] - xlim[1]) * 0.97)
         ypos <- ylim[1] + ((ylim[2] - ylim[1]) * 0.03)
       }
-      text(x = xpos , y = ypos, cex = 1.3, labels = "↑ N")
+      text(x = xpos , y = ypos, cex = 1.3, labels = "N")
     }
 
     ## scale
