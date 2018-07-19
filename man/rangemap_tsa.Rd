@@ -2,14 +2,14 @@
 % Please edit documentation in R/rangemap_tsa.R
 \name{rangemap_tsa}
 \alias{rangemap_tsa}
-\title{Species distributional ranges based on a trend surface analysis}
+\title{Species distributional ranges based on trend surface analyses}
 \usage{
 rangemap_tsa(occurrences, region_of_interest, resolution = 5, threshold = 0,
   simplify_level = 0, save_shp = FALSE, save_tsmodel = FALSE, name)
 }
 \arguments{
-\item{occurrences}{a data.frame containing species occurrences, columns must be:
-Species, Longitude, and Latitude.}
+\item{occurrences}{a data.frame containing geographic coordinates of species occurrences,
+columns must be: Species, Longitude, and Latitude. Geographic coordinates must be in decimal degrees.}
 
 \item{region_of_interest}{a SpatialPolygon object on which the trend surface analysis
 will be performed. For instance, a country, an ecoregion, or a biogeogeographical region.
@@ -20,34 +20,38 @@ default = 5. Rsolution will depend on the size of the area in wich the species i
 and values lower than 1 are only recomended when the species is narrowly distributed.}
 
 \item{threshold}{(numeric) percentage of occurrence records to be excluded when deciding
-the minimum surface value to be considered part of the species range, default = 0.}
+the minimum trend surface value to be considered as part of the species range. Default = 0.}
 
 \item{simplify_level}{(numeric) tolerance at the moment of simplifying polygons created with
 the trend surface model. Lower values will produce polygons more similar to the original geometry.
 Default = 0. If simplify is needed, try numbers between 0 and 1 first.}
 
-\item{save_shp}{(logical) if TRUE shapefiles of the species range, extent of occurrence and area of
-occupancy will be written in the working directory. Default = FALSE.}
+\item{save_shp}{(logical) if TRUE shapefiles of the species range, occurrences, extent of occurrence and
+area of occupancy will be written in the working directory. Default = FALSE.}
 
-\item{save_tsmodel}{(logical) if TRUE a GeoTif file of the species tsa model will be written in
-the working directory. Default = FALSE.}
+\item{save_tsmodel}{(logical) if TRUE the species tsa model will be included as part of the object
+(list) returned, and if other shapefiles are also saved, \code{save_shp} = TRUE, the tsa model will
+be written in GeoTif format in the working directory. Default = FALSE.}
 
-\item{name}{(character) valid if save_shp TRUE. The name of the shapefile and GeoTif (if save_tsmodel
-= TRUE) to be exported.}
+\item{name}{(character) valid if \code{save_shp} = TRUE. The name of the geographic files to be exported.
+A suffix will be added to \code{name} depending on the object as follows: species extent of occurrence =
+"_extent_occ", area of occupancy = "_area_occ", occurrences = "_unique_records", and, if \code{save_tsmodel}
+= TRUE, trend surface model "_tsa".}
 }
 \value{
-A named list containing a data.frame with information about the species range, a
-SpatialPolygon object of the species range in Geographic projection, and the same SpatialPolygon
-object projected to the Azimuthal equal area projection.
+A named list containing: (1) a data.frame with information about the species range, and
+SpatialPolygon objects of (2) unique occurrences, (3) species range, (4) extent of occurrence, and
+(5) area of occurpancy. If \code{save_tsmodel} = TRUE, the (6) tsa model will be included as well.
+All Spatial objects will be in Azimuthal equal area projection.
 }
 \description{
-rangemap_tsa generates species range polygons for a given species
-using a trend surface analysis. An approach to the species extent of occurrence
+rangemap_tsa generates distributional range for a given species
+using a trend surface analysis. AAn approach to the species extent of occurrence
 (using convex hulls) and the area of occupancy according to the IUCN criteria
-are also generated. Shape files can be saved in the working directory if it is needed.
+are also generated. Shapefiles can be saved in the working directory if it is needed.
 }
 \details{
-Trend surface analysis Is a method based on low-order polynomials of spatial coordinates
+Trend surface analysis is a method based on low-order polynomials of spatial coordinates
 for estimating a regular grid of points from scattered observations. This method assumes that all
 cells not occupied by occurrences are absences; hence its use depends on the quality of data and
 the certainty of having or not a complete sampling of the regiong_of_interest.

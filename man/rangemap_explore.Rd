@@ -2,26 +2,28 @@
 % Please edit documentation in R/rangemap_explore.R
 \name{rangemap_explore}
 \alias{rangemap_explore}
-\title{Figures for exploring occurrences on maps before creating range maps}
+\title{Exploring occurrences before creating range maps}
 \usage{
-rangemap_explore(occurrences, polygons, graphic_device = FALSE)
+rangemap_explore(occurrences, show_countries = FALSE,
+  graphic_device = FALSE)
 }
 \arguments{
-\item{occurrences}{a data.frame containing species occurrences, columns must be:
-Species, Longitude, and Latitude.}
+\item{occurrences}{a data.frame containing geographic coordinates of species occurrences,
+columns must be: Species, Longitude, and Latitude. Geographic coordinates must be in decimal degrees.}
 
-\item{polygons}{a SpatialPolygon object to be used as base map for plotting the species range.
-If not provided, a simplified world map will be used.}
+\item{show_countries}{(logical) if TRUE ISO 3 country codes will label country polygons.}
+
+\item{graphic_device}{(logical) if TRUE a new graphic device is opened to plot the figure.
+Default = FALSE.}
 }
 \value{
 A simple figure of the species occurrences in a geographical context.
 }
 \description{
 rangemap_explore generates simple figures to visualize species occurrence
-data in the geographic space before using other function sof this package.
+data in the geographic space before using other functions of this package.
 }
 \examples{
-
 if(!require(rgbif)){
   install.packages("rgbif")
   library(rgbif)
@@ -42,7 +44,7 @@ occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
              c("name", "decimalLongitude", "decimalLatitude")]
 
 # simple figure of the species occurrence data
-explore_map <- rangemap_explore(occurrences = occ_g)
+explore_map <- rangemap_explore(occurrences = occ_g, show_countries = TRUE)
 
-dev.off() # for returning to default par settings
+#dev.off() # for returning to default par settings
 }

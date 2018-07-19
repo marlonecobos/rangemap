@@ -1,19 +1,17 @@
-#' Figures for exploring occurrences on maps before creating range maps
+#' Exploring occurrences before creating range maps
 #'
 #' @description rangemap_explore generates simple figures to visualize species occurrence
-#' data in the geographic space before using other function sof this package.
+#' data in the geographic space before using other functions of this package.
 #'
-#' @param occurrences a data.frame containing species occurrences, columns must be:
-#' Species, Longitude, and Latitude.
-#' @param polygons a SpatialPolygon object to be used as base map for plotting the species range.
-#' If not provided, a simplified world map will be used.
-#' @graphic_device (logical) if TRUE a new graphic device is opened to plot the figure.
+#' @param occurrences a data.frame containing geographic coordinates of species occurrences,
+#' columns must be: Species, Longitude, and Latitude. Geographic coordinates must be in decimal degrees.
+#' @param show_countries (logical) if TRUE ISO 3 country codes will label country polygons.
+#' @param graphic_device (logical) if TRUE a new graphic device is opened to plot the figure.
 #' Default = FALSE.
 #'
 #' @return A simple figure of the species occurrences in a geographical context.
 #'
 #' @examples
-#'
 #' if(!require(rgbif)){
 #'   install.packages("rgbif")
 #'   library(rgbif)
@@ -34,15 +32,11 @@
 #'              c("name", "decimalLongitude", "decimalLatitude")]
 #'
 #' # simple figure of the species occurrence data
-#' explore_map <- rangemap_explore(occurrences = occ_g)
+#' explore_map <- rangemap_explore(occurrences = occ_g, show_countries = TRUE)
 #'
-#' dev.off() # for returning to default par settings
+#' #dev.off() # for returning to default par settings
 
-# Dependencies: maptools (data(wrld_simpl)),
-#               scales (alpha),
-#               sp (plot, spTransform, CRS),
-
-rangemap_explore <- function(occurrences, polygons, graphic_device = FALSE) {
+rangemap_explore <- function(occurrences, show_countries = FALSE, graphic_device = FALSE) {
 
   suppressMessages(library(maptools))
 
@@ -65,11 +59,9 @@ rangemap_explore <- function(occurrences, polygons, graphic_device = FALSE) {
                                        proj4string = WGS84)
 
   # bringing maps if polygons false
-  if (missing(polygons)) {
-    data(wrld_simpl)
-    polygons <- wrld_simpl
-    rm("wrld_simpl", pos = ".GlobalEnv")
-  }
+  data(wrld_simpl)
+  polygons <- wrld_simpl
+  rm("wrld_simpl", pos = ".GlobalEnv")
 
   # keeping only records in land
   polygons <- sp::spTransform(polygons, WGS84)
@@ -88,9 +80,11 @@ rangemap_explore <- function(occurrences, polygons, graphic_device = FALSE) {
   ylim <- as.numeric(c(occ_poly@bbox[2, 1:2]))
 
   ## labels
-  lab <- polygons@data$ISO3
-  cent <- rgeos::gCentroid(polygons, byid = TRUE)
-  cords <- cent@coords
+  if (show_countries == TRUE) {
+    lab <- polygons@data$ISO3
+    cent <- rgeos::gCentroid(polygons, byid = TRUE)
+    cords <- cent@coords
+  }
 
   ## generic plot
   if (graphic_device == TRUE) {
@@ -102,10 +96,12 @@ rangemap_explore <- function(occurrences, polygons, graphic_device = FALSE) {
   }
 
   par(mar = c(0, 0, 0, 0), tcl = 0.25)
-  sp::plot(polygons, xlim = xlim, ylim = ylim, col = "grey90") # base map
-  points(occ_pr, pch = 21, bg = scales::alpha("yellow", 0.6), cex = 1.5)  #plot my sample sites
-  text(x = cords, labels = lab, cex = 0.8)
-  box()
+  sp::plot(polygons, xlim = xlim, ylim = ylim, col = "grey92") # base map
+  points(occ_pr, pch = 21, bg = scales::alpha("yellow", 0.5), cex = 1.2)  #plot my sample sites
+  if (show_countries == TRUE) {
+    text(x = cords, labels = lab, cex = 0.65)
   }
+  box()
+}
 
 

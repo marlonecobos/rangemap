@@ -1,46 +1,52 @@
 #' Species distributional ranges based on ecological niche models
 #'
-#' @description rangemap_enm generates species range polygons for a given species
-#' using a continuous raster layer produced with an ecological niche modeling tool.
-#' This function split the model in suitable and unsuitable habitats using a user
-#' specified level of error or a given threshold value. An approach to the species
+#' @description rangemap_enm generates a distributional range for a given species
+#' using a continuous raster layer produced with an ecological niche modeling algorithm.
+#' This function split the model in suitable and unsuitable areas using a user
+#' specified level of omission or a given threshold value. An approach to the species
 #' extent of occurrence (using convex hulls) and the area of occupancy according
-#' to the IUCN criteria are also generated. Shape files can be saved in the working
+#' to the IUCN criteria are also generated. Shapefiles can be saved in the working
 #' directory if it is needed.
 #'
-#' @param occurrences a data.frame containing species occurrences, columns must be:
-#' Species, Longitude, and Latitude.
-#' @param model a RasterLayer object that will be binarized using the threshold value defined
-#' by the user or a value calculated based on a value (from 0 - 100) defined in threshold.
-#' @param threshold_value (numeric) decimal value used for reclasifying the model. This value will
-#' be the lowest considered as suitable for the species.
-#' @param threshold (numeric) percentage of occurrence records to be excluded from suitable areas
-#' considering their values of suitability in the continuous model (e.g., 0, 5, or 10).
+#' @param occurrences a data.frame containing geographic coordinates of species occurrences,
+#' columns must be: Species, Longitude, and Latitude. Geographic coordinates must be in decimal degrees.
+#' @param model a RasterLayer object that will be binarized using the \code{threshold_value} defined
+#' by the user or a value calculated based on an omission level (from 0 - 100) defined in
+#' \code{threshold_omission}.
+#' @param threshold_value (numeric) value used for reclasifying the model. This value will
+#' be the lowest considered as suitable for the species nad must be inside the range of values
+#' present in \code{model}. If defined, \code{threshold_omission} will be ignored.
+#' @param threshold_omission (numeric) percentage of occurrence records to be excluded from suitable areas
+#' considering their values of suitability in the continuous model (e.g., 0, 5, or 10). Ignored if
+#' \code{threshold_value} is included.
+#' @param simplify (logical) if TRUE polygons of suitable areas will be simplified at a tolerance
+#' defined in \code{simplify_level}. Default = FALSE.
 #' @param simplify_level (numeric) tolerance at the moment of simplifying polygons created from
 #' the suitable areas derived from the ecological niche model. Lower values will produce polygons
 #' more similar to the original geometry. Default = 0. If simplify is needed, try numbers between
-#' 0 and 1 first.
-#' @param polygons (optional) a SpatialPolygon object that will be clipped with the buffer areas
-#' to create species ranges based on actual limits. Projection must be Geographic (longitude, latitude).
-#' If not defined, a default, simple world map will be used.
-#' @param save_shp (logical) if TRUE shapefiles of the species range, extent of occurrence and area of
-#' occupancy will be written in the working directory, default = FALSE.
-#' @param name (character) valid if save_shp TRUE. The name of the shapefile to be exported.
+#' 0 and 1 first. Ignored if \code{simplify} = FALSE.
+#' @param polygons (optional) a SpatialPolygon object to adjust created polygons to these limits.
+#' Projection must be Geographic (longitude, latitude). If not defined, a default, simple world
+#' map will be used.
+#' @param save_shp (logical) if TRUE shapefiles of the species range, occurrences, extent of occurrence and
+#' area of occupancy will be written in the working directory. Default = FALSE.
+#' @param name (character) valid if \code{save_shp} = TRUE. The name of the shapefile to be exported.
+#' A suffix will be added to \code{name} depending on the object as follows: species extent of occurrence =
+#' "_extent_occ", area of occupancy = "_area_occ", and occurrences = "_unique_records".
 #'
-#' @return A named list containing a data.frame with information about the species range, a
-#' SpatialPolygon object of the species range in Geographic projection, and the same SpatialPolygon
-#' object projected to the Azimuthal equal area projection.
+#' @return A named list containing: (1) a data.frame with information about the species range, and
+#' SpatialPolygon objects of (2) unique occurrences, (3) species range, (4) extent of occurrence, and
+#' (5) area of occurpancy. All Spatial objects will be in Azimuthal equal area projection.
 #'
-#' @details If threshold_value is provided, argument threshold is ignored.
+#' @details If threshold_value is provided, argument threshold_omission is ignored.
 #'
 #' @examples
 #' if(!require(devtools)){
 #' install.packages("devtools")
-#' library(devtools)
 #' }
 #'
 #' if(!require(kuenm)){
-#' install_github("marlonecobos/kuenm")
+#' devtools::install_github("marlonecobos/kuenm")
 #' library(kuenm)
 #' }
 #'
@@ -52,14 +58,10 @@
 #' save <- TRUE
 #' name <- "test"
 #'
-#' enm_range <- rangemap_enm(occurrences = occ_sp, model = sp_mod,  threshold = thres,
+#' enm_range <- rangemap_enm(occurrences = occ_sp, model = sp_mod,  threshold_omission = thres,
 #'                           save_shp = save, name = name)
 
-# Dependencies: sp (SpatialPointsDataFrame, spTransform), rgdal?,
-#               raster (buffer, area), maps (map), maptools (map2SpatialPolygons),
-#               rgeos (gUnaryUnion, gIntersection, gCentroid)
-
-rangemap_enm <- function(occurrences, model, threshold_value, threshold,
+rangemap_enm <- function(occurrences, model, threshold_value, threshold_omission, simplify = FALSE,
                          simplify_level = 0, polygons, save_shp = FALSE, name) {
 
   # check for errors
@@ -67,27 +69,27 @@ rangemap_enm <- function(occurrences, model, threshold_value, threshold,
     stop("model must exist to perform the calculations.")
   }
 
-  if (!missing("threshold_value") | !missing("threshold") | !missing("occurrences")) {
+  if (!missing("threshold_value") | !missing("threshold_omission") | !missing("occurrences")) {
     if (!missing("threshold_value")) {
       binary <- model
       raster::values(binary)[raster::values(binary) < threshold_value] <- 0
       raster::values(binary)[raster::values(binary) >= threshold_value] <- 1
     }else {
-      if (!missing("threshold") & !missing("occurrences")) {
+      if (!missing("threshold_omission") & !missing("occurrences")) {
         # keeping only coordinates
         occ <- occurrences[, 2:3]
 
         # threshold value calculation
         o_suit <- raster::extract(model, occ)
         o_suit_sort <- sort(o_suit)
-        thres <- o_suit_sort[ceiling(length(occ[, 1]) * threshold / 100) + 1]
+        thres <- o_suit_sort[ceiling(length(occ[, 1]) * threshold_omission / 100) + 1]
 
         # binarization
         binary <- model
         raster::values(binary)[raster::values(binary) < thres] <- 0
         raster::values(binary)[raster::values(binary) >= thres] <- 1
       }else {
-        stop("Parameters threshold and occ.tra, or threshold_value must be defined to perform the calculations.")
+        stop("Parameters threshold_omission and occ.tra, or threshold_value must be \ndefined to perform the calculations.")
       }
     }
   }
@@ -115,7 +117,9 @@ rangemap_enm <- function(occurrences, model, threshold_value, threshold,
   slot(enm_range, "polygons") <- lapply(slot(enm_range, "polygons"),
                                         "comment<-", NULL)
 
-  enm_range <- suppressWarnings(rgeos::gSimplify(enm_range, tol = simplify_level)) # simplify polygons
+  if (simplify == TRUE) {
+    enm_range <- suppressWarnings(rgeos::gSimplify(enm_range, tol = simplify_level)) # simplify polygons
+  }
 
   # world map or user map for creating extent of occurrence
   if (missing(polygons)) {

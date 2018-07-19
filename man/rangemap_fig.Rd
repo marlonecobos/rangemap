@@ -5,7 +5,9 @@
 \title{Figures of species range maps}
 \usage{
 rangemap_fig(range, polygons, add_extent = FALSE, add_occurrences = FALSE,
-  grid = FALSE, grid_sides = "bottomleft", legend = FALSE,
+  basemap_color = "grey93", range_color = "darkgreen",
+  extent_color = "blue", occurrences_color = "yellow", grid = FALSE,
+  grid_sides = "bottomleft", legend = FALSE,
   legend_position = "bottomright", northarrow = FALSE,
   northarrow_position = "topright", scalebar = FALSE, save_fig = FALSE,
   name = "range_fig", format = "png", resolution = 300, width = 166,
@@ -20,58 +22,73 @@ rangemap_fig(range, polygons, add_extent = FALSE, add_occurrences = FALSE,
 If not provided, a simplified world map will be used.}
 
 \item{add_extent}{(logical) if TRUE the extent of occurrence of the species will be added to
-the figure.}
+the figure. Ignored if the \code{range} is product of the \code{\link{rangemap_bound}} function
+and administrative areas were selected only based on names.}
 
 \item{add_occurrences}{(logical) if TRUE the species occurrence records will be added to
-the figure.}
+the figure. Ignored if the \code{range} is product of the \code{\link{rangemap_bound}} function
+and administrative areas were selected only based on names.}
 
-\item{grid}{(logical) if TRUE labels and ticks of coordinates will be inserted in sides.}
+\item{basemap_color}{color for the basemap (\code{polygons}) to be ploted in the figure.
+Default = "grey93".}
+
+\item{range_color}{color for the species \code{range} to be ploted in the figure.
+Default = "darkgreen".}
+
+\item{extent_color}{color for the species extent of occurrence to be ploted in the figure.
+Default = "blue".}
+
+\item{occurrences_color}{color for the species \code{occurrences} to be ploted in the figure.
+Default = "yellow".}
+
+\item{grid}{(logical) if TRUE labels and grid division ticks will be inserted in \code{grid_sides}.}
 
 \item{grid_sides}{(character) sides in which the labels will be placed in the figure. Options
-for this are the same than for other position character options indicators.}
+are the same than for other position character options indicators (see details).}
 
 \item{legend}{(logical) if TRUE a legend of the plotted features will be added to the figure in
-legend_position.}
+\code{legend_position}.}
 
-\item{legend_position}{(character) site in the figure where the north legend will be placed.}
+\item{legend_position}{(character) site in the figure where the north legend will be placed. See
+options in details.}
 
-\item{northarrow}{(logical) if TRUE, a simple north arrow will be placed in northarrow_position.}
+\item{northarrow}{(logical) if TRUE, a simple north arrow will be placed in \code{northarrow_position}.}
 
 \item{northarrow_position}{(character) site in the figure where the north arrow will be placed.}
 
 \item{scalebar}{(logical) if TRUE a simple scale bar will be inserted at the bottom left part
 of the figure.}
 
-\item{save_fig}{(logical) if TRUE the figure will be written in the working directory under the
-name = name, in format = format, and at resolution = resolution. Default = FALSE.}
+\item{save_fig}{(logical) if TRUE the figure will be written in the working directory. Default = FALSE.}
 
-\item{name}{(character) if save_fig = TRUE, name of the figure to be exported. Default = "range_fig".}
+\item{name}{(character) if \code{save_fig} = TRUE, name of the figure to be exported. Default = "range_fig".}
 
-\item{format}{(character) if save_fig = TRUE, format in which the figure will be written. Options
+\item{format}{(character) if \code{save_fig} = TRUE, format in which the figure will be written. Options
 include "bmp", "png", "jpeg", "tiff", and "pdf". Default = "png".}
 
-\item{resolution}{(numeric) if save_fig = TRUE, resolution in ppi in wich the figure will be exported.
+\item{resolution}{(numeric) if \code{save_fig} = TRUE, resolution in ppi in wich the figure will be exported.
 Default = 300.}
 
-\item{width}{(numeric) width of the figure in mm. Default = 166.}
+\item{width}{(numeric) if \code{save_fig} = TRUE, width of the figure in mm. Default = 166.}
 
-\item{height}{(numeric) height of the figure in mm. Default = 166.}
+\item{height}{(numeric) if \code{save_fig} = TRUE, height of the figure in mm. Default = 166.}
 }
 \value{
-A figure of the species distributional range in a geographical context, with the
-map components defined by the user.
+A figure of the species distributional range in a geographical context, with map components
+defined by the user.
 }
 \description{
 rangemap_fig generates customizable figures of species range maps
-using the objects produced by other function of this package.
+using objects produced by other functions of this package.
 }
 \details{
 Position of distinct elements depend on the spatial configuration of the species range.
-Therefore, their positiuon may need to be changed if the elements are needed. Position options are:
-"bottomright", "bottomleft", "topleft", and "topright".
+Therefore, their position may need to be changed if the elements are needed. Position options are:
+"bottomright", "bottomleft", "topleft", and "topright". This version of the function only allows
+scale bars in the "bottomleft" part of the figure, and cannot be changed; thus, avoid using this
+position for other components is recommended.
 }
 \examples{
-
 if(!require(rgbif)){
   install.packages("rgbif")
   library(rgbif)
@@ -114,5 +131,5 @@ range_map <- rangemap_fig(range, add_extent = extent, add_occurrences = occ,
                           grid = grid, grid_sides = sides, legend = legend,
                           northarrow = north)
 
-dev.off() # for returning to default par settings
+#dev.off() # for returning to default par settings
 }

@@ -10,8 +10,8 @@ rangemap_hull(occurrences, hull_type = "convex", buffer_distance = 50000,
   save_shp = FALSE, name)
 }
 \arguments{
-\item{occurrences}{a data.frame containing species occurrences, columns must be:
-Species, Longitude, and Latitude.}
+\item{occurrences}{a data.frame containing geographic coordinates of species occurrences,
+columns must be: Species, Longitude, and Latitude. Geographic coordinates must be in decimal degrees.}
 
 \item{hull_type}{(character) type of hull polygons to be created. Available options are: "convex"
 or "concave" hulls. Default = "convex".}
@@ -20,8 +20,8 @@ or "concave" hulls. Default = "convex".}
 around occurrences, default = 50000.}
 
 \item{concave_distance_lim}{(numeric) distance, in meters, to be passed to the length_threshold
-parameter of the \code{\link[concaveman]{concaveman}} funcion. Default = 5000. Ignored if hull_type
-is not "concave".}
+parameter of the \code{\link[concaveman]{concaveman}} funcion. Default = 5000. Ignored if
+\code{hull_type} is not "concave".}
 
 \item{split}{(logical) if TRUE a distance (for hierarchical clustering) or a number (for K-means
 clustering) is used to separate distinct chunks of occurrences. Recommended when the species of
@@ -29,35 +29,37 @@ interest has a disjunct distribution. Default = FALSE.}
 
 \item{cluster_method}{(character) name of the method to be used for clustering the occurrences. Options
 are "hierarchical" and "k-means"; default = "hierarchical". Note that this parameter is ignored when
-split = FALSE.}
+\code{split} = FALSE.}
 
 \item{split_distance}{(numeric) distance in meters that will limit connectivity among
 hull polygons created with chunks of points separated by long distances. This parameter is used when
-cluster method = "hierarchical".}
+\code{cluster_method} = "hierarchical" and \code{split} = TRUE.}
 
-\item{n_k_means}{(numeric) number of clusters in which the species occurrences will be grouped when
-using the "k-means" cluster_method.}
+\item{n_k_means}{(numeric) if \code{split} = TRUE, number of clusters in which the species occurrences
+will be grouped when using the "k-means" \code{cluster_method}.}
 
-\item{polygons}{(optional) a SpatialPolygon object that will be clipped with the buffer areas
-to create species ranges based on actual limits. Projection must be Geographic (longitude, latitude).
+\item{polygons}{(optional) a SpatialPolygon object to clip the obtained areas and adjust the species
+range and other polygons to these limits. Projection must be Geographic (longitude, latitude).
 If not defined, a default, simple world map will be used.}
 
-\item{save_shp}{(logical) if TRUE shapefiles of the species range, extent of occurrence and area of
-occupancy will be written in the working directory.}
+\item{save_shp}{(logical) if TRUE shapefiles of the species range, occurrences, extent of occurrence and
+area of occupancy will be written in the working directory. Default = FALSE.}
 
-\item{name}{(character) valid if save_shp TRUE. The name of the shapefile to be exported.}
+\item{name}{(character) valid if \code{save_shp} = TRUE. The name of the shapefile to be exported.
+A suffix will be added to \code{name} depending on the object as follows: species extent of occurrence =
+"_extent_occ", area of occupancy = "_area_occ", and occurrences = "_unique_records".}
 }
 \value{
-A named list containing a data.frame with information about the species range, a
-SpatialPolygon object of the species range in Geographic projection, and the same SpatialPolygon
-object projected to the Azimuthal equal area projection.
+A named list containing: (1) a data.frame with information about the species range, and
+SpatialPolygon objects of (2) unique occurrences, (3) species range, (4) extent of occurrence, and
+(5) area of occurpancy. All Spatial objects will be in Azimuthal equal area projection.
 }
 \description{
-rangemap_hull generates a species range polygon for a given species
+rangemap_hull generates a distributional range for a given species
 by creating convex or concave hull polygons based on occurrence data.
-An approach to the species extent of occurrence (using convex hulls) and the
-area of occupancy according to the IUCN criteria are also generated. Shape files can be saved
-in the working directory if it is needed.
+An approach to the species extent of occurrence (using convex hulls) and the area
+of occupancy according to the IUCN criteria are also generated. Shapefiles can be
+saved in the working directory if it is needed.
 }
 \examples{
 if(!require(rgbif)){

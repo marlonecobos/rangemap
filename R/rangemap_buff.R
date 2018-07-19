@@ -1,25 +1,26 @@
 #' Species distributional ranges based on buffered occurrences
 #'
-#' @description rangemap_buff generates a species range for a given species by
+#' @description rangemap_buff generates a distributional range for a given species by
 #' buffering provided occurrences using a defined distance. An approach to the species extent
 #' of occurrence (using convex hulls) and the area of occupancy according to the IUCN criteria
-#' are also generated. Shape files can be saved in the working directory if it is needed.
+#' are also generated. Shapefiles can be saved in the working directory if it is needed.
 #'
-#' @param occurrences a data.frame containing species occurrences, columns must be:
-#' Species, Longitude, and Latitude. Geographic coordinates must be in decimal degrees
+#' @param occurrences a data.frame containing geographic coordinates of species occurrences,
+#' columns must be: Species, Longitude, and Latitude. Geographic coordinates must be in decimal degrees.
 #' @param buffer_distance (numeric) distance, in meters, to be used for creating the buffer areas
 #' around occurrences, default = 100000.
-#' @param polygons (optional) a SpatialPolygon object that will be clipped with the buffer areas
-#' to create species ranges based on actual limits. Projection must be Geographic (longitude, latitude).
+#' @param polygons (optional) a SpatialPolygon object to clip buffer areas and adjust the species
+#' range and other polygons to these limits. Projection must be Geographic (longitude, latitude).
 #' If not defined, a default, simple world map will be used.
-#' @param save_shp (logical) if TRUE shapefiles of the species range, extent of occurrence and area of
-#' occupancy will be written in the working directory.
-#' @param name (character) valid if save_shp TRUE. The name of the shapefile to be exported.
+#' @param save_shp (logical) if TRUE shapefiles of the species range, occurrences, extent of occurrence and
+#' area of occupancy will be written in the working directory. Default = FALSE.
+#' @param name (character) valid if \code{save_shp} = TRUE. The name of the shapefile to be exported.
+#' A suffix will be added to \code{name} depending on the object as follows: species extent of occurrence =
+#' "_extent_occ", area of occupancy = "_area_occ", and occurrences = "_unique_records".
 #'
-#' @return A named list containing a data.frame with information about the species range and
-#' SpatialPolygonDataFrame objects of the species range, extent of occurrence, and area of occupancy;
-#' all in Azimuthal equal area projection. If save_shp = TRUE, written shapefiles' projections
-#' will be the same as the SpatialPolygonDataFrame objects.
+#' @return A named list containing: (1) a data.frame with information about the species range, and
+#' SpatialPolygon objects of (2) unique occurrences, (3) species range, (4) extent of occurrence, and
+#' (5) area of occurpancy. All Spatial objects will be in Azimuthal equal area projection.
 #'
 #' @examples
 #' if(!require(rgbif)){
@@ -48,14 +49,6 @@
 #'
 #' buff_range <- rangemap_buff(occurrences = occ_g, buffer_distance = dist,
 #'                             save_shp = save, name = name)
-
-# Dependencies: maps (map),
-#               maptools (map2SpatialPolygons),
-#               raster (area, rasterize, extent),
-#               rgdal (writeOGR),
-#               rgeos (gIntersection, gCentroid, gBuffer),
-#               sp (SpatialPointsDataFrame, spTransform, SpatialPolygonsDataFrame,
-#                   CRS, over, Polygons, Polygon, SpatialPolygons, proj4string)
 
 rangemap_buff <- function(occurrences, buffer_distance = 100000, polygons, save_shp = FALSE, name) {
   # testing potential issues
