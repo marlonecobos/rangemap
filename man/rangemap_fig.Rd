@@ -7,7 +7,7 @@
 rangemap_fig(range, polygons, add_extent = FALSE, add_occurrences = FALSE,
   basemap_color = "grey93", range_color = "darkgreen",
   extent_color = "blue", occurrences_color = "yellow", grid = FALSE,
-  grid_sides = "bottomleft", legend = FALSE,
+  grid_sides = "bottomleft", ylabels_position = 1.8, legend = FALSE,
   legend_position = "bottomright", northarrow = FALSE,
   northarrow_position = "topright", scalebar = FALSE, save_fig = FALSE,
   name = "range_fig", format = "png", resolution = 300, width = 166,
@@ -45,6 +45,9 @@ Default = "yellow".}
 
 \item{grid_sides}{(character) sides in which the labels will be placed in the figure. Options
 are the same than for other position character options indicators (see details).}
+
+\item{ylabels_position}{(numeric) if \code{grid} = TRUE, separation (in lines) of y axis labels from
+the axis. Bigger numbers will increase separation. Default = 1.8.}
 
 \item{legend}{(logical) if TRUE a legend of the plotted features will be added to the figure in
 \code{legend_position}.}
@@ -115,8 +118,8 @@ save <- FALSE
 countries <- c("PER", "BRA", "COL", "VEN", "ECU", "GUF", "GUY", "SUR", "BOL")
 
 # creating the species range map
-range <- rangemap::rangemap_bound(occurrences = occ_g, country_code = countries, adm_areas = adm,
-                                  boundary_level = level, dissolve = dissolve, save_shp = save)
+range <- rangemap_bound(occurrences = occ_g, country_code = countries, adm_areas = adm,
+                        boundary_level = level, dissolve = dissolve, save_shp = save)
 
 # arguments for the species range figure
 extent <- TRUE

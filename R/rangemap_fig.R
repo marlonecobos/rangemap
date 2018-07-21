@@ -25,6 +25,8 @@
 #' @param grid (logical) if TRUE labels and grid division ticks will be inserted in \code{grid_sides}.
 #' @param grid_sides (character) sides in which the labels will be placed in the figure. Options
 #' are the same than for other position character options indicators (see details).
+#' @param ylabels_position (numeric) if \code{grid} = TRUE, separation (in lines) of y axis labels from
+#' the axis. Bigger numbers will increase separation. Default = 1.8.
 #' @param legend (logical) if TRUE a legend of the plotted features will be added to the figure in
 #' \code{legend_position}.
 #' @param legend_position (character) site in the figure where the north legend will be placed. See
@@ -78,8 +80,8 @@
 #' countries <- c("PER", "BRA", "COL", "VEN", "ECU", "GUF", "GUY", "SUR", "BOL")
 #'
 #' # creating the species range map
-#' range <- rangemap::rangemap_bound(occurrences = occ_g, country_code = countries, adm_areas = adm,
-#'                                   boundary_level = level, dissolve = dissolve, save_shp = save)
+#' range <- rangemap_bound(occurrences = occ_g, country_code = countries, adm_areas = adm,
+#'                         boundary_level = level, dissolve = dissolve, save_shp = save)
 #'
 #' # arguments for the species range figure
 #' extent <- TRUE
@@ -98,9 +100,9 @@
 
 rangemap_fig <- function(range, polygons, add_extent = FALSE, add_occurrences = FALSE, basemap_color = "grey93",
                          range_color = "darkgreen", extent_color = "blue", occurrences_color = "yellow",
-                         grid = FALSE, grid_sides = "bottomleft", legend = FALSE, legend_position = "bottomright",
-                         northarrow = FALSE, northarrow_position = "topright", scalebar = FALSE,
-                         save_fig = FALSE, name = "range_fig", format = "png", resolution = 300,
+                         grid = FALSE, grid_sides = "bottomleft", ylabels_position = 1.8, legend = FALSE,
+                         legend_position = "bottomright", northarrow = FALSE, northarrow_position = "topright",
+                         scalebar = FALSE, save_fig = FALSE, name = "range_fig", format = "png", resolution = 300,
                          width = 166, height = 166) {
 
   suppressMessages(library(maptools))
@@ -145,8 +147,8 @@ rangemap_fig <- function(range, polygons, add_extent = FALSE, add_occurrences = 
   ylim <- as.numeric(c(range_sp@bbox[2, 1:2]))
 
   ## generic plot
-  par(mar = c(0, 0, 0, 0), tcl = 0.25)
-  sp::plot(polygons, xlim = xlim, ylim = ylim, col = basemap_color)
+  par(mar = c(0, 0, 0, 0))
+  sp::plot(polygons, xlim = xlim, ylim = ylim, col = basemap_color, xaxt = "n", yaxt = "n")
   sp::plot(range_sp, col = scales::alpha(range_color, 0.75), border = FALSE, add = TRUE)  #plot the species range
   box()
 
@@ -164,20 +166,28 @@ rangemap_fig <- function(range, polygons, add_extent = FALSE, add_occurrences = 
   ## grid
   if (grid == TRUE) {
     if (grid_sides == "bottomleft") {
-      axis(side = 1)
-      axis(side = 2)
+      axis(side = 1, tcl = 0.3, lwd.ticks = 1,
+           mgp = c(0, -1.3, 0), cex.axis = 0.7)
+      axis(side = 2, tcl = 0.3, lwd.ticks = 1,
+           mgp = c(0, -ylabels_position, 0), cex.axis = 0.7, las = 1)
     }
     if (grid_sides == "bottomright") {
-      axis(side = 1)
-      axis(side = 4)
+      axis(side = 1, tcl = 0.3, lwd.ticks = 1,
+           mgp = c(0, -1.3, 0), cex.axis = 0.7)
+      axis(side = 4, tcl = 0.3, lwd.ticks = 1,
+           mgp = c(0, -ylabels_position, 0), cex.axis = 0.7, las = 1)
     }
     if (grid_sides == "topleft") {
-      axis(side = 3)
-      axis(side = 2)
+      axis(side = 3, tcl = 0.3, lwd.ticks = 1,
+           mgp = c(0, -1.3, 0), cex.axis = 0.7)
+      axis(side = 2, tcl = 0.3, lwd.ticks = 1,
+           mgp = c(0, -ylabels_position, 0), cex.axis = 0.7, las = 1)
     }
     if (grid_sides == "topright") {
-      axis(side = 3)
-      axis(side = 4)
+      axis(side = 3, tcl = 0.3, lwd.ticks = 1,
+           mgp = c(0, -1.3, 0), cex.axis = 0.7)
+      axis(side = 4, tcl = 0.3, lwd.ticks = 1,
+           mgp = c(0, -ylabels_position, 0), cex.axis = 0.7, las = 1)
     }
   }
 
@@ -216,28 +226,28 @@ rangemap_fig <- function(range, polygons, add_extent = FALSE, add_occurrences = 
     if (add_extent == FALSE & add_occurrences == FALSE) {
       legend(legend_position, legend = c("Species range"),
              bty = "n", inset = 0.05, pt.bg = scales::alpha(range_color, 0.75),
-             pch = 22, col = scales::alpha(range_color, 0.75), pt.cex = 2)
+             pch = 22, col = scales::alpha(range_color, 0.75), pt.cex = 2, cex = 0.8)
     }
     if (add_extent == TRUE & add_occurrences == TRUE) {
       legend(legend_position, legend = c("Occurrences", "Species range", "Extent of occurrence"),
              bty = "n", inset = 0.05, pch = c(21, 22, 22),
              col = c("black", scales::alpha(range_color, 0.75), scales::alpha(extent_color, 0.4)),
              pt.bg = c(scales::alpha(occurrences_color, 0.8), scales::alpha(range_color, 0.75), scales::alpha(extent_color, 0.4)),
-             pt.cex = c(1, 2, 2))
+             pt.cex = c(1, 2, 2), cex = 0.8)
     }
     if (add_extent == TRUE & add_occurrences == FALSE) {
       legend(legend_position, legend=c("Species range", "Extent of occurrence"),
              bty="n", inset = 0.05, pch = c(22, 22),
              col = c(scales::alpha(range_color, 0.75), scales::alpha(extent_color, 0.4)),
              pt.bg = c(scales::alpha(range_color, 0.75), scales::alpha(extent_color, 0.4)),
-             pt.cex = c(2, 2))
+             pt.cex = c(2, 2), cex = 0.8)
     }
     if (add_extent == FALSE & add_occurrences == TRUE) {
       legend(legend_position, legend=c("Species range", "Ocurrences"),
              bty="n", inset = 0.05, pch = c(21, 22),
              col = c("black", scales::alpha(range_color, 0.75)),
              pt.bg = c(scales::alpha(occurrences_color, 0.8), scales::alpha(range_color, 0.75)),
-             pt.cex = c(1, 2))
+             pt.cex = c(1, 2), cex = 0.8)
     }
   }
 
@@ -264,8 +274,8 @@ rangemap_fig <- function(range, polygons, add_extent = FALSE, add_occurrences = 
       pdf(file = paste(name, "pdf", sep = "."), width = width)
     }
 
-    par(mar = c(0, 0, 0, 0), tcl = 0.25, cex = 0.85)
-    sp::plot(polygons, xlim = xlim, ylim = ylim, col = basemap_color)
+    par(mar = c(0, 0, 0, 0), cex = 0.85)
+    sp::plot(polygons, xlim = xlim, ylim = ylim, col = basemap_color, xaxt = "n", yaxt = "n")
     sp::plot(range_sp, col = scales::alpha(range_color, 0.75), border = FALSE, add = TRUE)  #plot the species range
     box()
 
@@ -283,20 +293,28 @@ rangemap_fig <- function(range, polygons, add_extent = FALSE, add_occurrences = 
     ## grid
     if (grid == TRUE) {
       if (grid_sides == "bottomleft") {
-        axis(side = 1)
-        axis(side = 2)
+        axis(side = 1, tcl = 0.3, lwd.ticks = 1,
+             mgp = c(0, -1.3, 0), cex.axis = 0.7)
+        axis(side = 2, tcl = 0.3, lwd.ticks = 1,
+             mgp = c(0, -ylabels_position, 0), cex.axis = 0.7, las = 1)
       }
       if (grid_sides == "bottomright") {
-        axis(side = 1)
-        axis(side = 4)
+        axis(side = 1, tcl = 0.3, lwd.ticks = 1,
+             mgp = c(0, -1.3, 0), cex.axis = 0.7)
+        axis(side = 4, tcl = 0.3, lwd.ticks = 1,
+             mgp = c(0, -ylabels_position, 0), cex.axis = 0.7, las = 1)
       }
       if (grid_sides == "topleft") {
-        axis(side = 3)
-        axis(side = 2)
+        axis(side = 3, tcl = 0.3, lwd.ticks = 1,
+             mgp = c(0, -1.3, 0), cex.axis = 0.7)
+        axis(side = 2, tcl = 0.3, lwd.ticks = 1,
+             mgp = c(0, -ylabels_position, 0), cex.axis = 0.7, las = 1)
       }
       if (grid_sides == "topright") {
-        axis(side = 3)
-        axis(side = 4)
+        axis(side = 3, tcl = 0.3, lwd.ticks = 1,
+             mgp = c(0, -1.3, 0), cex.axis = 0.7)
+        axis(side = 4, tcl = 0.3, lwd.ticks = 1,
+             mgp = c(0, -ylabels_position, 0), cex.axis = 0.7, las = 1)
       }
     }
 
@@ -335,33 +353,32 @@ rangemap_fig <- function(range, polygons, add_extent = FALSE, add_occurrences = 
       if (add_extent == FALSE & add_occurrences == FALSE) {
         legend(legend_position, legend = c("Species range"),
                bty = "n", inset = 0.05, pt.bg = scales::alpha(range_color, 0.75),
-               pch = 22, col = scales::alpha(range_color, 0.75), pt.cex = 2)
+               pch = 22, col = scales::alpha(range_color, 0.75), pt.cex = 2, cex = 0.8)
       }
       if (add_extent == TRUE & add_occurrences == TRUE) {
         legend(legend_position, legend = c("Occurrences", "Species range", "Extent of occurrence"),
                bty = "n", inset = 0.05, pch = c(21, 22, 22),
                col = c("black", scales::alpha(range_color, 0.75), scales::alpha(extent_color, 0.4)),
                pt.bg = c(scales::alpha(occurrences_color, 0.8), scales::alpha(range_color, 0.75), scales::alpha(extent_color, 0.4)),
-               pt.cex = c(1, 2, 2))
+               pt.cex = c(1, 2, 2), cex = 0.8)
       }
       if (add_extent == TRUE & add_occurrences == FALSE) {
         legend(legend_position, legend=c("Species range", "Extent of occurrence"),
                bty="n", inset = 0.05, pch = c(22, 22),
                col = c(scales::alpha(range_color, 0.75), scales::alpha(extent_color, 0.4)),
                pt.bg = c(scales::alpha(range_color, 0.75), scales::alpha(extent_color, 0.4)),
-               pt.cex = c(2, 2))
+               pt.cex = c(2, 2), cex = 0.8)
       }
       if (add_extent == FALSE & add_occurrences == TRUE) {
         legend(legend_position, legend=c("Species range", "Ocurrences"),
                bty="n", inset = 0.05, pch = c(21, 22),
                col = c("black", scales::alpha(range_color, 0.75)),
                pt.bg = c(scales::alpha(occurrences_color, 0.8), scales::alpha(range_color, 0.75)),
-               pt.cex = c(1, 2))
+               pt.cex = c(1, 2), cex = 0.8)
       }
     }
 
     invisible(dev.off())
   }
 }
-
 
