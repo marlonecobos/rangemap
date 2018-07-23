@@ -7,11 +7,12 @@
 rangemap_fig(range, polygons, add_extent = FALSE, add_occurrences = FALSE,
   basemap_color = "grey93", range_color = "darkgreen",
   extent_color = "blue", occurrences_color = "yellow", grid = FALSE,
-  grid_sides = "bottomleft", ylabels_position = 1.8, legend = FALSE,
+  grid_sides = "bottomleft", ylabels_position = 2.3, legend = FALSE,
   legend_position = "bottomright", northarrow = FALSE,
-  northarrow_position = "topright", scalebar = FALSE, save_fig = FALSE,
-  name = "range_fig", format = "png", resolution = 300, width = 166,
-  height = 166)
+  northarrow_position = "topright", scalebar = FALSE,
+  scalebar_position = "bottomleft", scalebar_length = 100,
+  save_fig = FALSE, name = "range_fig", format = "png",
+  resolution = 300, width = 166, height = 166)
 }
 \arguments{
 \item{range}{an object produced with any of the following functions:
@@ -44,23 +45,33 @@ Default = "yellow".}
 \item{grid}{(logical) if TRUE labels and grid division ticks will be inserted in \code{grid_sides}.}
 
 \item{grid_sides}{(character) sides in which the labels will be placed in the figure. Options
-are the same than for other position character options indicators (see details).}
+are the same than for other position character indicators (see details). Default = "bottomleft".}
 
 \item{ylabels_position}{(numeric) if \code{grid} = TRUE, separation (in lines) of y axis labels from
-the axis. Bigger numbers will increase separation. Default = 1.8.}
+the axis. Bigger numbers will increase separation. Default = 2.3.}
 
 \item{legend}{(logical) if TRUE a legend of the plotted features will be added to the figure in
 \code{legend_position}.}
 
-\item{legend_position}{(character) site in the figure where the north legend will be placed. See
-options in details.}
+\item{legend_position}{(numeric or character) site in the figure where the north legend will be placed. If
+numeric, vector of leght two indicating x and y coordinates to be used to position the legend. See
+details for options of character indicators of position. Default = "bottomright".}
 
 \item{northarrow}{(logical) if TRUE, a simple north arrow will be placed in \code{northarrow_position}.}
 
-\item{northarrow_position}{(character) site in the figure where the north arrow will be placed.}
+\item{northarrow_position}{(numeric or character) site in the figure where the north legend will be placed. If
+numeric, vector of leght two indicating x and y coordinates to be used to position the north arrow. See
+details for options of character indicators of position. Default = "topright".}
 
-\item{scalebar}{(logical) if TRUE a simple scale bar will be inserted at the bottom left part
-of the figure.}
+\item{scalebar}{(logical) if TRUE a simple scale bar will be inserted in the figure at
+\code{scalebar_position} with a length of \code{scalebar_length}.}
+
+\item{scalebar_position}{(numeric or character) site in the figure where the north legend will be placed. If
+numeric, vector of leght two indicating x and y coordinates to be used to position the scale bar. See
+details for options of character indicators of position. Default = bottomleft".}
+
+\item{scalebar_length}{(numeric) length of the scale bar in km. Using entire numbers divisble for
+two is recommended. Default = 100.}
 
 \item{save_fig}{(logical) if TRUE the figure will be written in the working directory. Default = FALSE.}
 
@@ -87,9 +98,11 @@ using objects produced by other functions of this package.
 \details{
 Position of distinct elements depend on the spatial configuration of the species range.
 Therefore, their position may need to be changed if the elements are needed. Position options are:
-"bottomright", "bottomleft", "topleft", and "topright". This version of the function only allows
-scale bars in the "bottomleft" part of the figure, and cannot be changed; thus, avoid using this
-position for other components is recommended.
+"bottomright", "bottomleft", "topleft", and "topright". Future releases will include numerical options
+for positioning these elememts.
+
+Scale bar is ploted using a modification of the "scalebar" function developed by Tanimura et al. (2007)
+\url{http://hdl.handle.net/10.18637/jss.v019.c01}.
 }
 \examples{
 if(!require(rgbif)){
@@ -130,9 +143,9 @@ legend <- TRUE
 north <- TRUE
 
 # creating the species range figure
-range_map <- rangemap_fig(range, add_extent = extent, add_occurrences = occ,
-                          grid = grid, grid_sides = sides, legend = legend,
-                          northarrow = north)
+rangemap_fig(range, add_extent = extent, add_occurrences = occ,
+             grid = grid, grid_sides = sides, legend = legend,
+             northarrow = north)
 
 #dev.off() # for returning to default par settings
 }
