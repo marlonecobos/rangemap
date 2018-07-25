@@ -1,7 +1,7 @@
 Package: rangemap
 Type: Package
 Title: Species distributional ranges
-Version: 0.0.38
+Version: 0.0.39
 Authors@R: c(
     person("Marlon E.", "Cobos", email = "manubio13@gmail.com", role = c("aut", "cre")),
     person("Vijay", "Barve", email = "vijay.barve@gmail.com", role = "aut"),
@@ -18,6 +18,7 @@ Imports:
     htmlwidgets (>= 1.2),
     maps (>= 3.3),
     maptools (>= 0.9),
+    plotly (>= 4.7),
     raster (>= 2.6),
     rgdal (>= 1.2),
     rgeos (>= 0.3),
