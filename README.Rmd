@@ -1,6 +1,5 @@
 ---
 title: "rangemap vignette"
-htmlwidgets: TRUE
 output:
   github_document:
     toc: yes
@@ -54,7 +53,7 @@ sapply(pcakages, require, character.only = TRUE)
 
 # package from github
 if(!require(kuenm)){
-install_github("marlonecobos/kuenm")
+devtools::install_github("marlonecobos/kuenm")
 }
 library(kuenm)
 ```
@@ -96,11 +95,19 @@ occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
              c("name", "decimalLongitude", "decimalLatitude")]
 ```
 
-Now the figure.
+A simple figure.
 
-```{r}
+```{r, include=TRUE, cache=TRUE}
 # simple figure of the species occurrence data
 rangemap_explore(occurrences = occ_g)
+```
+
+Same figure with country codes.
+
+
+```{r, include=TRUE, cache=TRUE}
+# simple figure of the species occurrence data
+rangemap_explore(occurrences = occ_g, show_countries = TRUE)
 ```
 
 <br>
@@ -135,7 +142,7 @@ occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
 # buffer distance
 dist <- 100000
 save <- FALSE # TRUE if you want to save the shapefiles in the working directory 
-name <- "test"
+name <- "Test"
 
 buff_range <- rangemap_buff(occurrences = occ_g, buffer_distance = dist,
                             save_shp = save, name = name)
@@ -146,9 +153,15 @@ The function *rangemap_fig* generates customizable figures of species range maps
 
 ```{r, include=TRUE, cache=TRUE}
 # creating the species range figure
-rangemap_fig(buff_range)
+rangemap_fig(buff_range, zoom = 1.2)
 
 #dev.off() # for returning to default par settings
+```
+
+For further details see the function help. 
+
+```{r, eval=FALSE, include=TRUE}
+help(rangemap_fig)
 ```
 
 <br>
@@ -419,14 +432,16 @@ An example of the use of this function is written below.
 
 ```{r, include=TRUE, cache=TRUE}
 # parameters
-data(sp_mod)
-data(sp_train)
+sp_mod <- raster::raster(list.files(system.file("extdata", package = "kuenm"),
+                                    pattern = "sp_model.tif", full.names = TRUE))
+sp_train <- read.csv(list.files(system.file("extdata", package = "kuenm"),
+                                pattern = "sp_train.csv", full.names = TRUE))
 occ_sp <- data.frame("A_americanum", sp_train)
 thres <- 5
 save <- FALSE # TRUE if you want to save the shapefiles in the working directory
 name <- "test10"
 
-enm_range <- rangemap_enm(occurrences = occ_sp, model = sp_mod,  threshold = thres,
+enm_range <- rangemap_enm(occurrences = occ_sp, model = sp_mod, threshold_omission = thres,
                           save_shp = save, name = name)
 ```
 
@@ -509,7 +524,7 @@ help(rangemap_fig)
 
 Examples of the use of this function are written below.
 
-##### Including the extent of occurrence
+##### Including extent of occurrence
 
 ```{r, include=TRUE, cache=TRUE}
 # arguments for the species range figure
@@ -523,7 +538,7 @@ rangemap_fig(hull_range5, add_extent = extent)
 
 <br>
 
-##### Including the occurrences
+##### Including occurrences
 
 ```{r, include=TRUE, cache=TRUE}
 # arguments for the species range figure
@@ -537,7 +552,7 @@ rangemap_fig(hull_range5, add_occurrences = occ)
 
 <br>
 
-##### Including the extent of occurrence ond species recods
+##### Including extent of occurrence and species records
 
 ```{r, include=TRUE, cache=TRUE}
 # arguments for the species range figure
@@ -566,7 +581,8 @@ north <- TRUE # north arrow
 
 # creating the species range figure
 rangemap_fig(hull_range5, add_extent = extent, add_occurrences = occ,
-             grid = grid, legend = legend, scalebar = scale, northarrow = north)
+             grid = grid, legend = legend, scalebar = scale, 
+             scalebar_length = 1000, northarrow = north)
 
 #dev.off() # for returning to default par settings
 ```

@@ -17,9 +17,9 @@ rangemap vignette
     -   [Species ranges from ecological niche models](#species-ranges-from-ecological-niche-models)
     -   [Species ranges using trend surface analyses](#species-ranges-using-trend-surface-analyses)
     -   [Nice figures of species ranges](#nice-figures-of-species-ranges)
-        -   [Including the extent of occurrence](#including-the-extent-of-occurrence)
-        -   [Including the occurrences](#including-the-occurrences)
-        -   [Including the extent of occurrence ond species recods](#including-the-extent-of-occurrence-ond-species-recods)
+        -   [Including extent of occurrence](#including-extent-of-occurrence)
+        -   [Including occurrences](#including-occurrences)
+        -   [Including extent of occurrence and species records](#including-extent-of-occurrence-and-species-records)
         -   [Including other components](#including-other-components)
         -   [Saving the figure](#saving-the-figure)
     -   [Species ranges and environmental factors](#species-ranges-and-environmental-factors)
@@ -78,7 +78,7 @@ sapply(pcakages, require, character.only = TRUE)
 ``` r
 # package from github
 if(!require(kuenm)){
-install_github("marlonecobos/kuenm")
+devtools::install_github("marlonecobos/kuenm")
 }
 library(kuenm)
 ```
@@ -124,7 +124,7 @@ occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
              c("name", "decimalLongitude", "decimalLatitude")]
 ```
 
-Now the figure.
+A simple figure.
 
 ``` r
 # simple figure of the species occurrence data
@@ -132,6 +132,15 @@ rangemap_explore(occurrences = occ_g)
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-6-1.png)
+
+Same figure with country codes.
+
+``` r
+# simple figure of the species occurrence data
+rangemap_explore(occurrences = occ_g, show_countries = TRUE)
+```
+
+![](README_files/figure-markdown_github/unnamed-chunk-7-1.png)
 
 <br>
 
@@ -169,7 +178,7 @@ occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
 # buffer distance
 dist <- 100000
 save <- FALSE # TRUE if you want to save the shapefiles in the working directory 
-name <- "test"
+name <- "Test"
 
 buff_range <- rangemap_buff(occurrences = occ_g, buffer_distance = dist,
                             save_shp = save, name = name)
@@ -179,13 +188,19 @@ The function *rangemap\_fig* generates customizable figures of species range map
 
 ``` r
 # creating the species range figure
-rangemap_fig(buff_range)
+rangemap_fig(buff_range, zoom = 1.2)
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-9-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-10-1.png)
 
 ``` r
 #dev.off() # for returning to default par settings
+```
+
+For further details see the function help.
+
+``` r
+help(rangemap_fig)
 ```
 
 <br>
@@ -231,7 +246,7 @@ occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
 rangemap_explore(occurrences = occ_g)
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-11-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-13-1.png)
 
 ``` r
 level <- 0
@@ -251,7 +266,7 @@ Figure of the generated range.
 rangemap_fig(bound_range)
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-12-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-14-1.png)
 
 ``` r
 #dev.off() # for returning to default par settings
@@ -305,7 +320,7 @@ Map of the generated range.
 rangemap_fig(bound_range1)
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-14-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-16-1.png)
 
 ``` r
 #dev.off() # for returning to default par settings
@@ -354,7 +369,7 @@ Map of the species range.
 rangemap_fig(bound_range2)
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-16-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-18-1.png)
 
 ``` r
 #dev.off() # for returning to default par settings
@@ -454,7 +469,7 @@ Now the figure of the species range.
 rangemap_fig(hull_range1) # try hull_range and hull_range2
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-19-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-21-1.png)
 
 ``` r
 #dev.off() # for returning to default par settings
@@ -522,7 +537,7 @@ Checking the figure.
 rangemap_fig(hull_range3) # try hull_range4 and hull_range5
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-21-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-23-1.png)
 
 ``` r
 #dev.off() # for returning to default par settings
@@ -544,16 +559,22 @@ An example of the use of this function is written below.
 
 ``` r
 # parameters
-data(sp_mod)
-data(sp_train)
+sp_mod <- raster::raster(list.files(system.file("extdata", package = "kuenm"),
+                                    pattern = "sp_model.tif", full.names = TRUE))
+sp_train <- read.csv(list.files(system.file("extdata", package = "kuenm"),
+                                pattern = "sp_train.csv", full.names = TRUE))
 occ_sp <- data.frame("A_americanum", sp_train)
 thres <- 5
 save <- FALSE # TRUE if you want to save the shapefiles in the working directory
 name <- "test10"
 
-enm_range <- rangemap_enm(occurrences = occ_sp, model = sp_mod,  threshold = thres,
+enm_range <- rangemap_enm(occurrences = occ_sp, model = sp_mod, threshold_omission = thres,
                           save_shp = save, name = name)
 ```
+
+    ## Warning in TopologyFunc(spgeom, id, byid, "rgeos_getcentroid"):
+    ## Polygons object missing comment attribute ignoring hole(s). See function
+    ## createSPComment.
 
 Let's see how this range looks like.
 
@@ -562,7 +583,7 @@ Let's see how this range looks like.
 rangemap_fig(enm_range)
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-24-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-26-1.png)
 
 ``` r
 #dev.off() # for returning to default par settings
@@ -626,7 +647,7 @@ Let's take a look at the results.
 rangemap_fig(tsa_r)
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-27-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-29-1.png)
 
 ``` r
 #dev.off() # for returning to default par settings
@@ -646,7 +667,7 @@ help(rangemap_fig)
 
 Examples of the use of this function are written below.
 
-##### Including the extent of occurrence
+##### Including extent of occurrence
 
 ``` r
 # arguments for the species range figure
@@ -656,7 +677,7 @@ extent <- TRUE
 rangemap_fig(hull_range5, add_extent = extent)
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-29-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-31-1.png)
 
 ``` r
 #dev.off() # for returning to default par settings
@@ -664,7 +685,7 @@ rangemap_fig(hull_range5, add_extent = extent)
 
 <br>
 
-##### Including the occurrences
+##### Including occurrences
 
 ``` r
 # arguments for the species range figure
@@ -674,7 +695,7 @@ occ <- TRUE
 rangemap_fig(hull_range5, add_occurrences = occ)
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-30-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-32-1.png)
 
 ``` r
 #dev.off() # for returning to default par settings
@@ -682,7 +703,7 @@ rangemap_fig(hull_range5, add_occurrences = occ)
 
 <br>
 
-##### Including the extent of occurrence ond species recods
+##### Including extent of occurrence and species records
 
 ``` r
 # arguments for the species range figure
@@ -693,7 +714,7 @@ occ <- TRUE
 rangemap_fig(hull_range5, add_extent = extent, add_occurrences = occ)
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-31-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-33-1.png)
 
 ``` r
 #dev.off() # for returning to default par settings
@@ -715,10 +736,11 @@ north <- TRUE # north arrow
 
 # creating the species range figure
 rangemap_fig(hull_range5, add_extent = extent, add_occurrences = occ,
-             grid = grid, legend = legend, scalebar = scale, northarrow = north)
+             grid = grid, legend = legend, scalebar = scale, 
+             scalebar_length = 1000, northarrow = north)
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-32-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-34-1.png)
 
 ``` r
 #dev.off() # for returning to default par settings
@@ -852,7 +874,7 @@ env_comp <- ranges_espace(ranges = ranges, add_occurrences = occur, variables = 
 env_comp
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-37-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-39-1.png)
 
 ``` r
 # now play around, zoom in and rotate the figure

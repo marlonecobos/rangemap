@@ -15,10 +15,10 @@ ranges_espace(ranges, add_occurrences = TRUE, variables,
 \code{\link{rangemap_enm}}, and \code{\link{rangemap_tsa}}. For visualization purposes,
 using up to three ranges is recommended.}
 
-\item{add_occurrences}{(logical) if TRUE, species occurrences contained in the list of \code{ranges}
-will be ploted in the figure. Default = TRUE. If the none of the ranges contains occurrences
-(e.g. a list of one object created with the \code{\link{rangemap_bound}} function in which occurrences
-were not used), this parameter will be ignored.}
+\item{add_occurrences}{(logical) if TRUE, species occurrences contained in one of the elements of
+the list \code{ranges} will be ploted in the figure. Default = TRUE. If the none of the ranges
+contains occurrences (e.g. a list of one object created with the \code{\link{rangemap_bound}}
+function in which occurrences were not used), this parameter will be ignored.}
 
 \item{variables}{a RasterStack object of environmental variables that will be used for
 creating the principal components to represent the environmental space.}
@@ -37,9 +37,19 @@ transparency is used for representing most of components of the plot, colors may
 and default colors will be used. Since transparency is used for representing most of components of
 the plot, colors may look different.}
 
-\item{eye_camera}{(numeric) vector of length three defining the adjustment of the camera when plottin
-de figure. Default = c(x = 1.95, y = 1.25, z = 1.35). This argument will be passed to parameter
-eye of the list of parameters of camera in \code{\link[plotly]{layout}}.}
+\item{save_fig}{(logical) if TRUE the figure will be written in the working directory. Default = FALSE.}
+
+\item{name}{(character) if \code{save_fig} = TRUE, name of the figure to be exported. Default = "range_fig".}
+
+\item{format}{(character) if \code{save_fig} = TRUE, format in which the figure will be written. Options
+include "bmp", "png", "jpeg", "tiff", and "pdf". Default = "png".}
+
+\item{resolution}{(numeric) if \code{save_fig} = TRUE, resolution (ppi) in wich the figure will be exported.
+Default = 300.}
+
+\item{width}{(numeric) if \code{save_fig} = TRUE, width of the figure in mm. Default = 166.}
+
+\item{height}{(numeric) if \code{save_fig} = TRUE, height of the figure in mm. Default = 166.}
 }
 \value{
 A figure showing, in the environmental space, the species ranges generated with any
@@ -50,9 +60,6 @@ of the functions: \code{\link{rangemap_buff}}, \code{\link{rangemap_bound}},
 ranges_espace generates a three dimensional comparison of a species'
 ranges created using distinct algortihms, to visualize implications of selecting
 one of them if environmental conditions are considered.
-}
-\details{
-.
 }
 \examples{
 if(!require(rgbif)){

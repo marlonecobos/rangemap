@@ -9,21 +9,24 @@
 #' \code{\link{rangemap_buff}}, \code{\link{rangemap_bound}}, \code{\link{rangemap_hull}},
 #' \code{\link{rangemap_enm}}, and \code{\link{rangemap_tsa}}. For visualization purposes,
 #' using up to three ranges are allowed.
-#' @param occurrences (logical) if TRUE, species occurrences contained in the list of \code{ranges}
-#' will be ploted in the figure.
-#' @param new_occurrences (optional) a data.frame containing a new set of geographic coordinates of
-#' species occurrences, columns must be: Species, Longitude, and Latitude. Geographic coordinates
-#' must be in decimal degrees.
+#' @param add_occurrences (logical) if TRUE, species occurrences contained in one of the elements of
+#' the list \code{ranges} will be ploted in the figure. Default = TRUE. If the none of the ranges
+#' contains occurrences (e.g. a list of one object created with the \code{\link{rangemap_bound}}
+#' function in which occurrences were not used), this parameter will be ignored.
 #' @param variables a RasterStack object of environmental variables that will be used for
-#' creating the principal components to represent the environmental space.
-#' @param save_fig (logical) if TRUE a figure in format = format will be written in the working
-#' directory, appart of the returned object.
+#' representing the environmental factors.
+#' @param save_fig (logical) if TRUE the figure will be written in the working directory. Default = FALSE.
+#' @param name (character) if \code{save_fig} = TRUE, name of the figure to be exported. Default = "range_fig".
+#' @param format (character) if \code{save_fig} = TRUE, format in which the figure will be written. Options
+#' include "bmp", "png", "jpeg", "tiff", and "pdf". Default = "png".
+#' @param resolution (numeric) if \code{save_fig} = TRUE, resolution (ppi) in wich the figure will be exported.
+#' Default = 300.
+#' @param width (numeric) if \code{save_fig} = TRUE, width of the figure in mm. Default = 166.
+#' @param height (numeric) if \code{save_fig} = TRUE, height of the figure in mm. Default = 166.
 #'
-#' @return A figure showing, in the environmental space, the species ranges generated with any
-#' of the functions: \code{\link{rangemap_buff}}, \code{\link{rangemap_bound}},
+#' @return A figure showing species ranges on maps of environmental factors. Ranges should be
+#' generated with any of the functions: \code{\link{rangemap_buff}}, \code{\link{rangemap_bound}},
 #' \code{\link{rangemap_hull}}, \code{\link{rangemap_enm}}, and \code{\link{rangemap_tsa}}.
-#'
-#' @details .
 #'
 #' @examples
 #' if(!require(rgbif)){
@@ -71,11 +74,17 @@
 #'
 #' concave <- rangemap_hull(occurrences = occ_g, hull_type = hull1, buffer_distance = dist1)
 #'
+#' # range based on convex disjunct hulls
+#' split <- TRUE
+#' hull2 <- "convex"
 #'
-#' # ranges comparison in environmental space
+#' convex <- rangemap_hull(occurrences = occ_g, hull_type = hull2, buffer_distance = dist1,
+#'                          split = TRUE, cluster_method = "k-means", n_k_means = 3)
+#'
+#' # ranges representation on environmental factor maps
 #' ## list of ranges
-#' ranges <- list(buff, bound, concave)
-#' names(ranges) <- c("buff", "bound", "concave")
+#' ranges <- list(buff, concave, convex)
+#' names(ranges) <- c("buff", "concave", "convex")
 #'
 #' ## other data for environmental comparisson
 #' if(!require(raster)){
