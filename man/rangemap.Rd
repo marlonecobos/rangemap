@@ -16,6 +16,6 @@ create high quality figures for publication.
 
 \code{\link{rangemap_bound}}, \code{\link{rangemap_buff}}, \code{\link{rangemap_enm}},
 \code{\link{rangemap_explore}}, \code{\link{rangemap_fig}}, \code{\link{rangemap_hull}},
-\code{\link{rangemap_tsa}}, \code{\link{ranges_envcomp}}
+\code{\link{rangemap_tsa}}, \code{\link{ranges_espace}}, \code{\link{ranges_emaps}}
 }
 
