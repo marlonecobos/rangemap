@@ -10,7 +10,7 @@ rangemap_fig(range, polygons, add_extent = FALSE, add_occurrences = FALSE,
   grid_sides = "bottomleft", ylabels_position = 2.3, legend = FALSE,
   legend_position = "bottomright", northarrow = FALSE,
   northarrow_position = "topright", scalebar = FALSE,
-  scalebar_position = "bottomleft", scalebar_length = 100,
+  scalebar_position = "bottomleft", scalebar_length = 100, zoom = 1,
   save_fig = FALSE, name = "range_fig", format = "png",
   resolution = 300, width = 166, height = 166)
 }
@@ -72,6 +72,10 @@ details for options of character indicators of position. Default = bottomleft".}
 
 \item{scalebar_length}{(numeric) length of the scale bar in km. Using entire numbers divisble for
 two is recommended. Default = 100.}
+
+\item{zoom}{(numeric) zoom factor when ploting the species range in a map. Default = 1. Values
+lower than 1 will zoom in into the species range and values bigger than 1 will zoom out. A value of 2
+will duplicate the area that the figure is covering.}
 
 \item{save_fig}{(logical) if TRUE the figure will be written in the working directory. Default = FALSE.}
 

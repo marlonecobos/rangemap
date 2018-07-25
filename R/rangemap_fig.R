@@ -43,6 +43,9 @@
 #' details for options of character indicators of position. Default = bottomleft".
 #' @param scalebar_length (numeric) length of the scale bar in km. Using entire numbers divisble for
 #' two is recommended. Default = 100.
+#' @param zoom (numeric) zoom factor when ploting the species range in a map. Default = 1. Values
+#' lower than 1 will zoom in into the species range and values bigger than 1 will zoom out. A value of 2
+#' will duplicate the area that the figure is covering.
 #' @param save_fig (logical) if TRUE the figure will be written in the working directory. Default = FALSE.
 #' @param name (character) if \code{save_fig} = TRUE, name of the figure to be exported. Default = "range_fig".
 #' @param format (character) if \code{save_fig} = TRUE, format in which the figure will be written. Options
@@ -112,8 +115,8 @@ rangemap_fig <- function(range, polygons, add_extent = FALSE, add_occurrences = 
                          range_color = "darkgreen", extent_color = "blue", occurrences_color = "yellow",
                          grid = FALSE, grid_sides = "bottomleft", ylabels_position = 2.3, legend = FALSE,
                          legend_position = "bottomright", northarrow = FALSE, northarrow_position = "topright",
-                         scalebar = FALSE, scalebar_position = "bottomleft", scalebar_length = 100, save_fig = FALSE,
-                         name = "range_fig", format = "png", resolution = 300, width = 166, height = 166) {
+                         scalebar = FALSE, scalebar_position = "bottomleft", scalebar_length = 100, zoom = 1,
+                         save_fig = FALSE, name = "range_fig", format = "png", resolution = 300, width = 166, height = 166) {
 
   suppressMessages(library(maptools))
 
@@ -153,8 +156,17 @@ rangemap_fig <- function(range, polygons, add_extent = FALSE, add_occurrences = 
 
   # plot a background map and the range
   ## limits of map
-  xlim <- as.numeric(c(range_sp@bbox[1, 1:2]))
-  ylim <- as.numeric(c(range_sp@bbox[2, 1:2]))
+  xbox <- as.numeric(c(range_sp@bbox[1, 1:2]))
+  ybox <- as.numeric(c(range_sp@bbox[2, 1:2]))
+
+  xlim <- c(xbox[1] - ((((xbox[2] - xbox[1]) * zoom) -
+                          (xbox[2] - xbox[1])) / 2),
+            xbox[2] + ((((xbox[2] - xbox[1]) * zoom) -
+                          (xbox[2] - xbox[1])) / 2))
+  ylim <- c(ybox[1] - ((((ybox[2] - ybox[1]) * zoom) -
+                          (ybox[2] - ybox[1])) / 2),
+            ybox[2] + ((((ybox[2] - ybox[1]) * zoom) -
+                          (ybox[2] - ybox[1])) / 2))
 
   ## generic plot
   par(mar = c(0, 0, 0, 0))
