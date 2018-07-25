@@ -81,6 +81,19 @@
 #' tsa <- rangemap_tsa(occurrences = occ_g, region_of_interest = reg,
 #'                     threshold = thr, resolution = res, save_shp = save,
 #'                     name = name)
+#'
+#' # see the species range in a figure
+#' extent <- TRUE
+#' occ <- TRUE
+#' grid <- TRUE
+#' sides <- "bottomleft"
+#' legend <- TRUE
+#' north <- TRUE
+#'
+#' # creating the species range figure
+#' rangemap_fig(tsa, add_extent = extent, add_occurrences = occ,
+#'              grid = grid, grid_sides = sides, legend = legend,
+#'              northarrow = north)
 
 rangemap_tsa <- function(occurrences, region_of_interest, resolution = 5, threshold = 0,
                          simplify_level = 0, save_shp = FALSE, save_tsmodel = FALSE, name) {

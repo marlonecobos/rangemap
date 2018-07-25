@@ -80,7 +80,7 @@ two is recommended. Default = 100.}
 \item{format}{(character) if \code{save_fig} = TRUE, format in which the figure will be written. Options
 include "bmp", "png", "jpeg", "tiff", and "pdf". Default = "png".}
 
-\item{resolution}{(numeric) if \code{save_fig} = TRUE, resolution in ppi in wich the figure will be exported.
+\item{resolution}{(numeric) if \code{save_fig} = TRUE, resolution (ppi) in wich the figure will be exported.
 Default = 300.}
 
 \item{width}{(numeric) if \code{save_fig} = TRUE, width of the figure in mm. Default = 166.}

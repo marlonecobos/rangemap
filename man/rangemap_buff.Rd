@@ -63,4 +63,17 @@ name <- "test"
 
 buff_range <- rangemap_buff(occurrences = occ_g, buffer_distance = dist,
                             save_shp = save, name = name)
+
+# see the species range in a figure
+extent <- TRUE
+occ <- TRUE
+grid <- TRUE
+sides <- "bottomleft"
+legend <- TRUE
+north <- TRUE
+
+# creating the species range figure
+rangemap_fig(buff_range, add_extent = extent, add_occurrences = occ,
+             grid = grid, grid_sides = sides, legend = legend,
+             northarrow = north)
 }

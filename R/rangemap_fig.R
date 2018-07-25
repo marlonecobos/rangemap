@@ -47,7 +47,7 @@
 #' @param name (character) if \code{save_fig} = TRUE, name of the figure to be exported. Default = "range_fig".
 #' @param format (character) if \code{save_fig} = TRUE, format in which the figure will be written. Options
 #' include "bmp", "png", "jpeg", "tiff", and "pdf". Default = "png".
-#' @param resolution (numeric) if \code{save_fig} = TRUE, resolution in ppi in wich the figure will be exported.
+#' @param resolution (numeric) if \code{save_fig} = TRUE, resolution (ppi) in wich the figure will be exported.
 #' Default = 300.
 #' @param width (numeric) if \code{save_fig} = TRUE, width of the figure in mm. Default = 166.
 #' @param height (numeric) if \code{save_fig} = TRUE, height of the figure in mm. Default = 166.

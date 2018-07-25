@@ -70,10 +70,19 @@
 #' hull_range <- rangemap_hull(occurrences = occ_g, hull_type = hull, buffer_distance = dist,
 #'                             split = split, cluster_method = c_method, split_distance = split_d,
 #'                             save_shp = save, name = name)
-
-# Dependencies: sp (SpatialPointsDataFrame, spTransform),
-#               raster (buffer, area), maps (map), maptools (map2SpatialPolygons),
-#               rgeos (gIntersection, gCentroid),
+#'
+#' # see the species range in a figure
+#' extent <- TRUE
+#' occ <- TRUE
+#' grid <- TRUE
+#' sides <- "bottomleft"
+#' legend <- TRUE
+#' north <- TRUE
+#'
+#' # creating the species range figure
+#' rangemap_fig(hull_range, add_extent = extent, add_occurrences = occ,
+#'              grid = grid, grid_sides = sides, legend = legend,
+#'              northarrow = north)
 
 rangemap_hull <- function(occurrences, hull_type = "convex", buffer_distance = 50000,
                           concave_distance_lim = 5000, split = FALSE, cluster_method = "hierarchical",

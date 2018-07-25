@@ -92,4 +92,17 @@ name <- "test"
 hull_range <- rangemap_hull(occurrences = occ_g, hull_type = hull, buffer_distance = dist,
                             split = split, cluster_method = c_method, split_distance = split_d,
                             save_shp = save, name = name)
+
+# see the species range in a figure
+extent <- TRUE
+occ <- TRUE
+grid <- TRUE
+sides <- "bottomleft"
+legend <- TRUE
+north <- TRUE
+
+# creating the species range figure
+rangemap_fig(hull_range, add_extent = extent, add_occurrences = occ,
+             grid = grid, grid_sides = sides, legend = legend,
+             northarrow = north)
 }

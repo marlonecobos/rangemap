@@ -6,11 +6,11 @@
 #' area of occupancy according to the IUCN criteria are also generated. Shapefiles can be saved
 #' in the working directory if it is needed.
 #'
-#' @param occurrences a data.frame containing geographic coordinates of species occurrences,
+#' @param occurrences (optional) a data.frame containing geographic coordinates of species occurrences,
 #' columns must be: Species, Longitude, and Latitude. Geographic coordinates must be in decimal degrees.
 #' If not defined, \code{adm_areas} must be defined and these areas will be used as part
 #' of the species range.
-#' @param adm_areas (character) a vector of names of administrative areas known to be occupied by
+#' @param adm_areas (optional, character) a vector of names of administrative areas known to be occupied by
 #' the species, names depend on the \code{boundary_level} selected. Check the \code{\link{adm_area_names}}
 #' documentation for an idea of how to define names in this parameter. If not defined, \code{occurrences}
 #' must exist.
@@ -82,6 +82,19 @@
 #'
 #' bound_range <- rangemap_bound(occurrences = occ_g, adm_areas = adm, country_code = countries,
 #'                               boundary_level = level, dissolve = dissolve, save_shp = save, name = name)
+#'
+#' # see the species range in a figure
+#' extent <- TRUE
+#' occ <- TRUE
+#' grid <- TRUE
+#' sides <- "bottomleft"
+#' legend <- TRUE
+#' north <- TRUE
+#'
+#' # creating the species range figure
+#' rangemap_fig(bound_range, add_extent = extent, add_occurrences = occ,
+#'              grid = grid, grid_sides = sides, legend = legend,
+#'              northarrow = north)
 
 rangemap_bound <- function(occurrences, adm_areas, country_code, boundary_level = 0, polygons,
                            kept_data = FALSE, dissolve = FALSE, save_shp = FALSE, name) {
