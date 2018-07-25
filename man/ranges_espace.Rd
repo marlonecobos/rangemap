@@ -4,10 +4,11 @@
 \alias{ranges_espace}
 \title{Comparison of species ranges in environmental space}
 \usage{
-ranges_espace(ranges, occurrences = TRUE, variables, max_background = 25000,
-  ranges_representation = "clouds", background_color = "darkolivegreen",
-  range_colors, eye_camera = c(x = 1.95, y = 1.25, z = 1.35),
-  save_fig = FALSE, name = "ranges_espace", width = 1000, height = 800)
+ranges_espace(ranges, add_occurrences = TRUE, variables,
+  max_background = 25000, ranges_representation = "clouds",
+  background_color = "darkolivegreen", range_colors, eye_camera = c(x =
+  1.95, y = 1.25, z = 1.35), save_fig = FALSE, name = "ranges_espace",
+  width = 1000, height = 800)
 }
 \arguments{
 \item{ranges}{object or list of objects produced with any of the following functions:
@@ -15,7 +16,7 @@ ranges_espace(ranges, occurrences = TRUE, variables, max_background = 25000,
 \code{\link{rangemap_enm}}, and \code{\link{rangemap_tsa}}. For visualization purposes,
 using up to three ranges is recommended.}
 
-\item{occurrences}{(logical) if TRUE, species occurrences contained in the list of \code{ranges}
+\item{add_occurrences}{(logical) if TRUE, species occurrences contained in the list of \code{ranges}
 will be ploted in the figure. Default = TRUE. If the none of the ranges contains occurrences
 (e.g. a list of one object created with the \code{\link{rangemap_bound}} function in which occurrences
 were not used), this parameter will be ignored.}
@@ -132,5 +133,6 @@ mask <- as(e, 'SpatialPolygons')
 variables <- crop(vars, mask)
 
 ## comparison
-env_comp <- ranges_espace(occurrences = occ_g, ranges = ranges, variables = variables)
+occur <- TRUE
+env_comp <- ranges_espace(ranges = ranges, add_occurrences = occur, variables = variables)
 }

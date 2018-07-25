@@ -8,7 +8,7 @@
 #' \code{\link{rangemap_buff}}, \code{\link{rangemap_bound}}, \code{\link{rangemap_hull}},
 #' \code{\link{rangemap_enm}}, and \code{\link{rangemap_tsa}}. For visualization purposes,
 #' using up to three ranges is recommended.
-#' @param occurrences (logical) if TRUE, species occurrences contained in the list of \code{ranges}
+#' @param add_occurrences (logical) if TRUE, species occurrences contained in the list of \code{ranges}
 #' will be ploted in the figure. Default = TRUE. If the none of the ranges contains occurrences
 #' (e.g. a list of one object created with the \code{\link{rangemap_bound}} function in which occurrences
 #' were not used), this parameter will be ignored.
@@ -108,9 +108,10 @@
 #' variables <- crop(vars, mask)
 #'
 #' ## comparison
-#' env_comp <- ranges_espace(occurrences = occ_g, ranges = ranges, variables = variables)
+#' occur <- TRUE
+#' env_comp <- ranges_espace(ranges = ranges, add_occurrences = occur, variables = variables)
 
-ranges_espace <- function(ranges, occurrences = TRUE, variables, max_background = 25000,
+ranges_espace <- function(ranges, add_occurrences = TRUE, variables, max_background = 25000,
                           ranges_representation = "clouds", background_color = "darkolivegreen",
                           range_colors, eye_camera = c(x = 1.95, y = 1.25, z = 1.35), save_fig = FALSE,
                           name = "ranges_espace", width = 1000, height = 800) {
@@ -125,7 +126,7 @@ ranges_espace <- function(ranges, occurrences = TRUE, variables, max_background 
   r <- lapply(ranges, unlist)
 
   ## extracting data
-  if (occurrences == TRUE) {
+  if (add_occurrences == TRUE) {
     lranges <- sapply(ranges, length)
 
     if (any(lranges > 2)){
@@ -147,14 +148,14 @@ ranges_espace <- function(ranges, occurrences = TRUE, variables, max_background 
       pdata <- na.omit(cbind(occ1, raster::extract(variables, occ1)))
 
     }else {
-      warning("None of the objects in \"range\" contain occurrences, \"occurrences = TRUE\" ignored.")
+      warning("None of the objects in \"range\" contain occurrences, \"add_occurrences = TRUE\" ignored.")
     }
   }
 
   ## raster to varaibles data
   idata <- raster::rasterToPoints(variables)
 
-  if (occurrences == TRUE & any(lranges > 2)) {
+  if (add_occurrences == TRUE & any(lranges > 2)) {
     ## combining these data
     vdata <- rbind(idata, pdata)
   }else {
@@ -170,7 +171,7 @@ ranges_espace <- function(ranges, occurrences = TRUE, variables, max_background 
   pca_scores = pcav$x
   pc3 <- data.frame(vdata[, 1:2], pca_scores[, 1:3])
 
-  if (occurrences == TRUE & any(lranges > 2)) {
+  if (add_occurrences == TRUE & any(lranges > 2)) {
     pc_occ <- pc3[(length(pc3[, 1]) - length(pdata[, 1]) + 1):length(pc3[, 1]), ]
     pc_points <- sp::SpatialPointsDataFrame(coords = pc_occ[, 1:2], data = pc_occ[, 3:dim(pc3)[2]],
                                             proj4string = WGS84)
@@ -251,7 +252,7 @@ ranges_espace <- function(ranges, occurrences = TRUE, variables, max_background 
                                            opacity = opa1), name = paste("Range", rnames[i]))
     }
   }
-  if (occurrences == TRUE & any(lranges > 2)) {
+  if (add_occurrences == TRUE & any(lranges > 2)) {
     points <- pc_points@data
     p <- plotly::add_trace(p, x = points$PC1, y = points$PC2, z = points$PC3, mode = "markers", type = "scatter3d",
                            marker = list(size = 5, color = "black", symbol = 104), name = "Occurrences")
