@@ -1,5 +1,6 @@
 ---
 title: "rangemap vignette"
+htmlwidgets: TRUE
 output:
   github_document:
     toc: yes
@@ -679,6 +680,8 @@ variables <- crop(vars, mask)
 ## comparison
 occur <- TRUE
 env_comp <- ranges_espace(ranges = ranges, add_occurrences = occur, variables = variables)
+
+env_comp
 # now play around, zoom in and rotate the figure
 ```
 

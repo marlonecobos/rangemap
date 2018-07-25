@@ -22,7 +22,9 @@ rangemap vignette
         -   [Including the extent of occurrence ond species recods](#including-the-extent-of-occurrence-ond-species-recods)
         -   [Including other components](#including-other-components)
         -   [Saving the figure](#saving-the-figure)
-    -   [Species ranges in the environmental space](#species-ranges-in-the-environmental-space)
+    -   [Species ranges and environmental factors](#species-ranges-and-environmental-factors)
+        -   [Species ranges on environmental factor maps](#species-ranges-on-environmental-factor-maps)
+        -   [Species ranges in the environmental space](#species-ranges-in-the-environmental-space)
 
 <br>
 
@@ -41,7 +43,11 @@ The **rangemap** R package presents various tools to create species range maps b
 if(!require(devtools)){
     install.packages("devtools")
 }
+```
 
+    ## Warning: package 'devtools' was built under R version 3.5.1
+
+``` r
 if(!require(rangemap)){
     devtools::install_github("marlonecobos/rangemap")
 }
@@ -54,7 +60,7 @@ library(rangemap)
 
 #### Setting R up
 
-The following code chunk installs (if needed) and loads the R packages that will be used to perform the example analyses with the **rangemap** package.
+The following code chunk installs (if needed) and loads the R packages that will be used to get some data for performing the example analyses with the **rangemap** package.
 
 ``` r
 # pacakges from CRAN
@@ -718,6 +724,8 @@ rangemap_fig(hull_range5, add_extent = extent, add_occurrences = occ,
 #dev.off() # for returning to default par settings
 ```
 
+<br>
+
 ##### Saving the figure
 
 ``` r
@@ -741,14 +749,30 @@ range_map <- rangemap_fig(hull_range5, add_extent = extent, add_occurrences = oc
 
 <br>
 
-#### Species ranges in the environmental space
+#### Species ranges and environmental factors
 
-The *ranges\_envcomp* function generates a three dimensional comparison of a species' ranges created using distinct algortihms, to visualize implications of selecting one of them if environmental conditions are considered.
+##### Species ranges on environmental factor maps
+
+The *ranges\_emaps* function represents one or more ranges of the same species on various maps of environmental factors (e.g. climatic variables) to detect implications of using one or other type of range regarding the environmental conditions in the area.
 
 The function's help can be consulted usign the following line of code:
 
 ``` r
-help(ranges_envcomp)
+help(ranges_emaps)
+```
+
+An example of the use of this function is written below.
+
+<br>
+
+##### Species ranges in the environmental space
+
+The *ranges\_espace* function generates a three dimensional comparison of a species' ranges created using distinct algortihms, to visualize implications of selecting one of them if environmental conditions are considered.
+
+The function's help can be consulted usign the following line of code:
+
+``` r
+help(ranges_espace)
 ```
 
 An example of the use of this function is written below.
@@ -759,7 +783,11 @@ species <- name_lookup(query = "Dasypus kappleri",
                        rank="species", return = "data") # information about the species
 
 occ_count(taxonKey = species$key[14], georeferenced = TRUE) # testing if keys return records
+```
 
+    ## [1] 44
+
+``` r
 key <- species$key[14] # using species key that return information
 
 occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
@@ -768,24 +796,10 @@ occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
 occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
              c("name", "decimalLongitude", "decimalLatitude")]
 
-
 # range based on buffers
 dist <- 500000
 
 buff <- rangemap_buff(occurrences = occ_g, buffer_distance = dist)
-
-
-# range based on boundaries
-## checking which countries may be involved in the analysis
-rangemap_explore(occurrences = occ_g)
-
-level <- 0
-adm <- "Ecuador" # Athough no record is on this country, we know it is in Ecuador
-
-countries <- c("PER", "BRA", "COL", "VEN", "ECU", "GUF", "GUY", "SUR", "BOL")
-
-bound <- rangemap_bound(occurrences = occ_g, adm_areas = adm, country_code = countries,
-                        boundary_level = level)
 
 
 # range based on concave hulls
@@ -793,12 +807,16 @@ dist1 <- 250000
 hull1 <- "concave"
 
 concave <- rangemap_hull(occurrences = occ_g, hull_type = hull1, buffer_distance = dist1)
+```
 
+    ## 
+    ## Hull type: concave
 
+``` r
 # ranges comparison in environmental space
 ## list of ranges
-ranges <- list(buff, bound, concave)
-names(ranges) <- c("buff", "bound", "concave")
+ranges <- list(buff, concave)
+names(ranges) <- c("buff", "concave")
 
 ## other data for environmental comparisson
 vars <- getData("worldclim", var = "bio", res = 5)
@@ -806,16 +824,57 @@ vars <- getData("worldclim", var = "bio", res = 5)
 ## mask variables to region of interest
 WGS84 <- CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
 w_map <- map(database = "world", regions = c("Ecuador", "Peru", "Bolivia", "Colombia", "Venezuela",
-                                             "Suriname", "Guyana", "French Guyana"), 
+                                             "Suriname", "Guyana", "French Guyana"),
              fill = TRUE, plot = FALSE) # map of the world
 w_po <- sapply(strsplit(w_map$names, ":"), function(x) x[1]) # preparing data to create polygon
 reg <- map2SpatialPolygons(w_map, IDs = w_po, proj4string = WGS84) # map to polygon
 
 e <- extent(reg)
-mask <- as(e, 'SpatialPolygons')  
+mask <- as(e, 'SpatialPolygons')
 
 variables <- crop(vars, mask)
 
 ## comparison
-r_env <- ranges_envcomp(occurrences = occ_g, ranges = ranges, variables = variables, save_fig = FALSE)
+occur <- TRUE
+env_comp <- ranges_espace(ranges = ranges, add_occurrences = occur, variables = variables)
+```
+
+    ## 
+    ## Getting environmental conditions inside ranges, please wait...
+    ## Progress:  1 of 2 
+    ## Progress:  2 of 2 
+    ## 
+    ## Creating an interactive visualization...
+    ## 
+    ## For further work with the figure use the object created with the function.
+
+``` r
+env_comp
+```
+
+![](README_files/figure-markdown_github/unnamed-chunk-37-1.png)
+
+``` r
+# now play around, zoom in and rotate the figure
+```
+
+``` r
+# saving this figure may be challenging, try using
+# the following lines of code and check your download directory
+
+op <- options() # save default options
+options(viewer = NULL) # set viewer to web browser
+name <- "ranges_space" # name for figure
+
+# using web browser to save image
+env_comp %>% htmlwidgets::onRender(
+  paste("function(el, x)
+          {var gd = document.getElementById(el.id);
+          Plotly.downloadImage(gd, {format: 'svg', width: ", 1000, ", height: ",
+        800, ", filename: ", paste("\'", name, "\'", sep = ""), "});
+          }", sep = "")
+)
+
+Sys.sleep(2) # waiting for the execution
+options(viewer = op$viewer) # restore viewer to old setting (e.g. RStudio)
 ```
