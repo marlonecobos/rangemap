@@ -6,9 +6,8 @@
 \usage{
 ranges_espace(ranges, add_occurrences = TRUE, variables,
   max_background = 25000, ranges_representation = "clouds",
-  background_color = "darkolivegreen", range_colors, eye_camera = c(x =
-  1.95, y = 1.25, z = 1.35), save_fig = FALSE, name = "ranges_espace",
-  width = 1000, height = 800)
+  background_color = "darkolivegreen", range_colors = NULL,
+  eye_camera = c(x = 1.95, y = 1.25, z = 1.35))
 }
 \arguments{
 \item{ranges}{object or list of objects produced with any of the following functions:
@@ -34,23 +33,13 @@ will be represented. Options are "clouds" and "ellipsoids". Default = "clouds".}
 \item{background_color}{color of the background to be ploted. Default = "darkolivegreen". Since
 transparency is used for representing most of components of the plot, colors may look different.}
 
-\item{range_colors}{vector of colors of the ranges to be represented. If not defined, default colors
-will be used. Since transparency is used for representing most of components of the plot,
-colors may look different.}
+\item{range_colors}{vector of colors of the ranges to be represented. If not defined, default = NULL
+and default colors will be used. Since transparency is used for representing most of components of
+the plot, colors may look different.}
 
 \item{eye_camera}{(numeric) vector of length three defining the adjustment of the camera when plottin
 de figure. Default = c(x = 1.95, y = 1.25, z = 1.35). This argument will be passed to parameter
 eye of the list of parameters of camera in \code{\link[plotly]{layout}}.}
-
-\item{save_fig}{(logical) if TRUE a figure in format = svg will be written in the browser
-download directory.}
-
-\item{name}{(character) if \code{save_fig} = TRUE, name of the figure to be exported.
-Default = "ranges_espace".}
-
-\item{width}{(numeric) if \code{save_fig} = TRUE, width of the figure in pixels. Default = 1000.}
-
-\item{height}{(numeric) if \code{save_fig} = TRUE, height of the figure in pixels. Default = 800.}
 }
 \value{
 A figure showing, in the environmental space, the species ranges generated with any
@@ -85,14 +74,10 @@ occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
 occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
              c("name", "decimalLongitude", "decimalLatitude")]
 
-# range based on boundaries
-level <- 0
-adm <- "Ecuador" # Athough no record is on this country, we know it is in Ecuador
+# range based on buffers
+dist <- 500000
 
-countries <- c("PER", "BRA", "COL", "VEN", "ECU", "GUF", "GUY", "SUR", "BOL")
-
-bound <- rangemap_bound(occurrences = occ_g, adm_areas = adm, country_code = countries,
-                        boundary_level = level)
+buff <- rangemap_buff(occurrences = occ_g, buffer_distance = dist)
 
 
 # range based on concave hulls
@@ -104,8 +89,8 @@ concave <- rangemap_hull(occurrences = occ_g, hull_type = hull1, buffer_distance
 
 # ranges comparison in environmental space
 ## list of ranges
-ranges <- list(bound, concave)
-names(ranges) <- c("bound", "concave")
+ranges <- list(buff, concave)
+names(ranges) <- c("buff", "concave")
 
 ## other data for environmental comparisson
 if(!require(raster)){
@@ -135,4 +120,26 @@ variables <- crop(vars, mask)
 ## comparison
 occur <- TRUE
 env_comp <- ranges_espace(ranges = ranges, add_occurrences = occur, variables = variables)
+
+
+# now play around, zoom in and rotate the figure
+
+# saving this figure may be challenging, try using
+# the following lines of code and check your download directory
+
+op <- options() # save default options
+options(viewer = NULL) # Set viewer to web browser
+name <- "ranges_space" # name for figure
+
+# using web browser to save image
+p \%>\% htmlwidgets::onRender(
+  paste("function(el, x)
+          {var gd = document.getElementById(el.id);
+          Plotly.downloadImage(gd, {format: 'svg', width: ", 1000, ", height: ",
+        800, ", filename: ", paste("\\'", name, "\\'", sep = ""), "});
+          }", sep = "")
+)
+
+Sys.sleep(2) # wait for the execution
+options(viewer = op$viewer) # restore viewer to old setting (e.g. RStudio)
 }

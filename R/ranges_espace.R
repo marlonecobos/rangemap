@@ -21,18 +21,12 @@
 #' will be represented. Options are "clouds" and "ellipsoids". Default = "clouds".
 #' @param background_color color of the background to be ploted. Default = "darkolivegreen". Since
 #' transparency is used for representing most of components of the plot, colors may look different.
-#' @param range_colors vector of colors of the ranges to be represented. If not defined, default colors
-#' will be used. Since transparency is used for representing most of components of the plot,
-#' colors may look different.
+#' @param range_colors vector of colors of the ranges to be represented. If not defined, default = NULL
+#' and default colors will be used. Since transparency is used for representing most of components of
+#' the plot, colors may look different.
 #' @param eye_camera (numeric) vector of length three defining the adjustment of the camera when plottin
 #' de figure. Default = c(x = 1.95, y = 1.25, z = 1.35). This argument will be passed to parameter
 #' eye of the list of parameters of camera in \code{\link[plotly]{layout}}.
-#' @param save_fig (logical) if TRUE a figure in format = svg will be written in the browser
-#' download directory.
-#' @param name (character) if \code{save_fig} = TRUE, name of the figure to be exported.
-#' Default = "ranges_espace".
-#' @param width (numeric) if \code{save_fig} = TRUE, width of the figure in pixels. Default = 1000.
-#' @param height (numeric) if \code{save_fig} = TRUE, height of the figure in pixels. Default = 800.
 #'
 #' @return A figure showing, in the environmental space, the species ranges generated with any
 #' of the functions: \code{\link{rangemap_buff}}, \code{\link{rangemap_bound}},
@@ -60,14 +54,10 @@
 #' occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
 #'              c("name", "decimalLongitude", "decimalLatitude")]
 #'
-#' # range based on boundaries
-#' level <- 0
-#' adm <- "Ecuador" # Athough no record is on this country, we know it is in Ecuador
+#' # range based on buffers
+#' dist <- 500000
 #'
-#' countries <- c("PER", "BRA", "COL", "VEN", "ECU", "GUF", "GUY", "SUR", "BOL")
-#'
-#' bound <- rangemap_bound(occurrences = occ_g, adm_areas = adm, country_code = countries,
-#'                         boundary_level = level)
+#' buff <- rangemap_buff(occurrences = occ_g, buffer_distance = dist)
 #'
 #'
 #' # range based on concave hulls
@@ -79,8 +69,8 @@
 #'
 #' # ranges comparison in environmental space
 #' ## list of ranges
-#' ranges <- list(bound, concave)
-#' names(ranges) <- c("bound", "concave")
+#' ranges <- list(buff, concave)
+#' names(ranges) <- c("buff", "concave")
 #'
 #' ## other data for environmental comparisson
 #' if(!require(raster)){
@@ -110,11 +100,32 @@
 #' ## comparison
 #' occur <- TRUE
 #' env_comp <- ranges_espace(ranges = ranges, add_occurrences = occur, variables = variables)
+#'
+#'
+#' # now play around, zoom in and rotate the figure
+#'
+#' # saving this figure may be challenging, try using
+#' # the following lines of code and check your download directory
+#'
+#' op <- options() # save default options
+#' options(viewer = NULL) # Set viewer to web browser
+#' name <- "ranges_space" # name for figure
+#'
+#' # using web browser to save image
+#' p %>% htmlwidgets::onRender(
+#'   paste("function(el, x)
+#'           {var gd = document.getElementById(el.id);
+#'           Plotly.downloadImage(gd, {format: 'svg', width: ", 1000, ", height: ",
+#'         800, ", filename: ", paste("\'", name, "\'", sep = ""), "});
+#'           }", sep = "")
+#' )
+#'
+#' Sys.sleep(2) # wait for the execution
+#' options(viewer = op$viewer) # restore viewer to old setting (e.g. RStudio)
 
 ranges_espace <- function(ranges, add_occurrences = TRUE, variables, max_background = 25000,
                           ranges_representation = "clouds", background_color = "darkolivegreen",
-                          range_colors, eye_camera = c(x = 1.95, y = 1.25, z = 1.35), save_fig = FALSE,
-                          name = "ranges_espace", width = 1000, height = 800) {
+                          range_colors = NULL, eye_camera = c(x = 1.95, y = 1.25, z = 1.35)) {
 
   # testing potential issues
 
@@ -202,17 +213,16 @@ ranges_espace <- function(ranges, add_occurrences = TRUE, variables, max_backgro
 
   rnames <- names(ranges)
 
-  if (missing(range_colors)) {
+  if (is.null(range_colors)) {
     colors <- c("darkorange", "mediumblue", "pink", "turquoise1", "black", "purple", "green")
   }else {
     colors <- range_colors
   }
 
-
   # plot
   cat("\nCreating an interactive visualization...\n")
   if (ranges_representation == "clouds") {
-    opa <- 0.05
+    opa <- 0.06
     opa1 <- 0.03
   }
   if (ranges_representation == "ellipsoids") {
@@ -261,11 +271,6 @@ ranges_espace <- function(ranges, add_occurrences = TRUE, variables, max_backgro
   # present the figure
   print(p)
 
-  # saving the figure
-  if (save_fig == TRUE) {
-    save_rgs_espace(p, name = name, width = width, height = height)
-  }
-
   cat("\nFor further work with the figure use the object created with the function.\n")
 
   # return results
@@ -280,44 +285,4 @@ isnested <- function(l) {
     if (is.list(i)) return(TRUE)
   }
   return(FALSE)
-}
-
-#' Helper function to save plotly figures.
-#' @param p object containing the plotly plot.
-#' @param name (character) name of the figure to be saved, default = "ranges_espace".
-#' @param width (numeric) width of the figure in pixels, default = 4150.
-#' @param height (numeric) height of the figure in pixels, default = 3320.
-
-save_rgs_espace <- function(p, name = "ranges_espace",
-                            width = 1000, height = 800) {
-  # checking internet conection and saving figure
-  connection <- !is.null(curl::nslookup("r-project.org", error = FALSE))
-  if (connection == FALSE) {
-    stop("\nInternet conection is required to download the figure.\n")
-
-  }else {
-    cat("\nExporting the figure, this process may take some time, please wait...\n")
-    # save viewer settings (e.g. RStudio viewer panel)
-    op <- options()
-
-    # Set viewer to web browser
-    options(viewer = NULL)
-
-    # use web browser to save image
-    p %>% htmlwidgets::onRender(
-      paste("function(el, x)
-            {var gd = document.getElementById(el.id);
-            Plotly.downloadImage(gd, {format: 'svg', width: ", width, ", height: ",
-            height, ", filename: ", paste("\'", name, "\'", sep = ""), "});
-            }", sep = "")
-    )
-
-    # restore viewer to old setting (e.g. RStudio)
-    Sys.sleep(5)
-
-    options(viewer = op$viewer)
-
-    cat(paste("\nFigure is being saved in your browser download folder as",
-              paste(name, ".svg.\n", sep = "")))
-  }
 }
