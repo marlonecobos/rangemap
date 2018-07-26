@@ -10,10 +10,10 @@
 #' If not provided, a simplified world map will be used.
 #' @param add_extent (logical) if TRUE the extent of occurrence of the species will be added to
 #' the figure. Ignored if the \code{range} is product of the \code{\link{rangemap_bound}} function
-#' and administrative areas were selected only based on names.
+#' and administrative areas were selected only based on names. Default = FALSE.
 #' @param add_occurrences (logical) if TRUE the species occurrence records will be added to
 #' the figure. Ignored if the \code{range} is product of the \code{\link{rangemap_bound}} function
-#' and administrative areas were selected only based on names.
+#' and administrative areas were selected only based on names. Default = FALSE.
 #' @param basemap_color color for the basemap (\code{polygons}) to be ploted in the figure.
 #' Default = "grey93".
 #' @param range_color color for the species \code{range} to be ploted in the figure.
@@ -23,21 +23,23 @@
 #' @param occurrences_color color for the species \code{occurrences} to be ploted in the figure.
 #' Default = "yellow".
 #' @param grid (logical) if TRUE labels and grid division ticks will be inserted in \code{grid_sides}.
+#' Default = FALSE.
 #' @param grid_sides (character) sides in which the labels will be placed in the figure. Options
 #' are the same than for other position character indicators (see details). Default = "bottomleft".
 #' @param ylabels_position (numeric) if \code{grid} = TRUE, separation (in lines) of y axis labels from
 #' the axis. Bigger numbers will increase separation. Default = 2.3.
-#' @param legend (logical) if TRUE a legend of the plotted features will be added to the figure in
-#' \code{legend_position}.
+#' @param legend (logical) if TRUE a legend of the plotted features will be added to the figure at
+#' \code{legend_position}. Default = FALSE.
 #' @param legend_position (numeric or character) site in the figure where the north legend will be placed. If
 #' numeric, vector of leght two indicating x and y coordinates to be used to position the legend. See
 #' details for options of character indicators of position. Default = "bottomright".
 #' @param northarrow (logical) if TRUE, a simple north arrow will be placed in \code{northarrow_position}.
+#' Default = FALSE.
 #' @param northarrow_position (numeric or character) site in the figure where the north legend will be placed. If
 #' numeric, vector of leght two indicating x and y coordinates to be used to position the north arrow. See
 #' details for options of character indicators of position. Default = "topright".
 #' @param scalebar (logical) if TRUE a simple scale bar will be inserted in the figure at
-#' \code{scalebar_position} with a length of \code{scalebar_length}.
+#' \code{scalebar_position} with a length of \code{scalebar_length}. Default = FALSE.
 #' @param scalebar_position (numeric or character) site in the figure where the north legend will be placed. If
 #' numeric, vector of leght two indicating x and y coordinates to be used to position the scale bar. See
 #' details for options of character indicators of position. Default = bottomleft".

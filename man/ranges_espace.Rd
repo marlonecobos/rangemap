@@ -21,7 +21,8 @@ contains occurrences (e.g. a list of one object created with the \code{\link{ran
 function in which occurrences were not used), this parameter will be ignored.}
 
 \item{variables}{a RasterStack object of environmental variables that will be used for
-creating the principal components to represent the environmental space.}
+creating the principal components to represent the environmental space. Projection is assumed
+to be Geographic (longitude and latitude).}
 
 \item{max_background}{(numeric) maximum number of data from variables to be used for representation
 of the environmental space. Default = 25000. Increasing this number results in more detailed
@@ -114,7 +115,7 @@ vars <- getData("worldclim", var = "bio", res = 5)
 ## mask variables to region of interest
 WGS84 <- CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
 w_map <- map(database = "world", regions = c("Ecuador", "Peru", "Bolivia", "Colombia", "Venezuela",
-                                             "Suriname", "Guyana", "French Guyana"),
+                                             "Suriname", "Guyana", "French Guyana", "Brazil"),
              fill = TRUE, plot = FALSE) # map of the world
 w_po <- sapply(strsplit(w_map$names, ":"), function(x) x[1]) # preparing data to create polygon
 reg <- map2SpatialPolygons(w_map, IDs = w_po, proj4string = WGS84) # map to polygon

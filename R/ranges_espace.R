@@ -13,7 +13,8 @@
 #' contains occurrences (e.g. a list of one object created with the \code{\link{rangemap_bound}}
 #' function in which occurrences were not used), this parameter will be ignored.
 #' @param variables a RasterStack object of environmental variables that will be used for
-#' creating the principal components to represent the environmental space.
+#' creating the principal components to represent the environmental space. Projection is assumed
+#' to be Geographic (longitude and latitude).
 #' @param max_background (numeric) maximum number of data from variables to be used for representation
 #' of the environmental space. Default = 25000. Increasing this number results in more detailed
 #' views of the available environment but preforming analyses will take longer.
@@ -90,7 +91,7 @@
 #' ## mask variables to region of interest
 #' WGS84 <- CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
 #' w_map <- map(database = "world", regions = c("Ecuador", "Peru", "Bolivia", "Colombia", "Venezuela",
-#'                                              "Suriname", "Guyana", "French Guyana"),
+#'                                              "Suriname", "Guyana", "French Guyana", "Brazil"),
 #'              fill = TRUE, plot = FALSE) # map of the world
 #' w_po <- sapply(strsplit(w_map$names, ":"), function(x) x[1]) # preparing data to create polygon
 #' reg <- map2SpatialPolygons(w_map, IDs = w_po, proj4string = WGS84) # map to polygon
@@ -134,7 +135,7 @@ ranges_espace <- function(ranges, add_occurrences = TRUE, variables, max_backgro
 
   # preparing data
   ## plain projection
-  WGS84 <- CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
+  WGS84 <- sp::CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
 
   ## unlist nested lists
   r <- lapply(ranges, unlist)
@@ -216,6 +217,7 @@ ranges_espace <- function(ranges, add_occurrences = TRUE, variables, max_backgro
 
   rnames <- names(ranges)
 
+  # range colors
   if (is.null(range_colors)) {
     colors <- c("darkorange", "mediumblue", "pink", "turquoise1", "black", "purple", "green")
   }else {
