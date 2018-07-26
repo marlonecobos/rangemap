@@ -8,21 +8,38 @@
 #' list of objects produced with any of the following functions:
 #' \code{\link{rangemap_buff}}, \code{\link{rangemap_bound}}, \code{\link{rangemap_hull}},
 #' \code{\link{rangemap_enm}}, and \code{\link{rangemap_tsa}}. For visualization purposes,
-#' using up to three ranges are allowed.
+#' using up to three ranges is recommended.
 #' @param add_occurrences (logical) if TRUE, species occurrences contained in one of the elements of
 #' the list \code{ranges} will be ploted in the figure. Default = TRUE. If the none of the ranges
 #' contains occurrences (e.g. a list of one object created with the \code{\link{rangemap_bound}}
 #' function in which occurrences were not used), this parameter will be ignored.
 #' @param variables a RasterStack object of environmental variables that will be used for
-#' representing the environmental factors.
+#' representing the environmental factors. Projection is assumed to be Geographic (longitude and
+#' latitude). Consider that depending on the species range, more than 9 variables
+#' may create a figure that does not fit in an A4 sheet of paper. A maximum of 21
+#' variables is allowed, if the limit is surpassed other variables will be ignored.
+#' @param range_colors vector of colors of the range borders to be represented. If not defined, default = NULL
+#' and default colors will be used. If more than 7 objects are included in \code{ranges}, default
+#' colors will be recycled; therefore, defining colors here is recommended in those cases.
+#' @param ranges_legend (logical) if TRUE a legend of the plotted ranges will be added to the
+#' last figure at \code{legend_position}. Default = TRUE.
+#' @param legend_position (numeric or character) site in the figure where the north legend will be placed. If
+#' numeric, vector of leght two indicating x and y coordinates to be used to position the legend. See
+#' details for options of character indicators of position. Default = "bottomright".
+#' @param legend_size (numeric) size of the legend with respect to each of the panels.
+#' Default = 0.7.
+#' @param zoom (numeric) zoom factor when ploting the species range in a map based on the biggest
+#' range. Default = 1.3. Lower #' values will zoom in into the species range and bigger values will
+#' zoom out. A value of 2 will duplicate the area that the biggest range is covering.
 #' @param save_fig (logical) if TRUE the figure will be written in the working directory. Default = FALSE.
-#' @param name (character) if \code{save_fig} = TRUE, name of the figure to be exported. Default = "range_fig".
+#' @param name (character) if \code{save_fig} = TRUE, name of the figure to be exported.
+#' Default = "ranges_emaps".
 #' @param format (character) if \code{save_fig} = TRUE, format in which the figure will be written. Options
 #' include "bmp", "png", "jpeg", "tiff", and "pdf". Default = "png".
 #' @param resolution (numeric) if \code{save_fig} = TRUE, resolution (ppi) in wich the figure will be exported.
 #' Default = 300.
 #' @param width (numeric) if \code{save_fig} = TRUE, width of the figure in mm. Default = 166.
-#' @param height (numeric) if \code{save_fig} = TRUE, height of the figure in mm. Default = 166.
+#' Height will be adjusted considering the amount of variables that will be plotted.
 #'
 #' @return A figure showing species ranges on maps of environmental factors. Ranges should be
 #' generated with any of the functions: \code{\link{rangemap_buff}}, \code{\link{rangemap_bound}},
@@ -55,24 +72,12 @@
 #' buff <- rangemap_buff(occurrences = occ_g, buffer_distance = dist)
 #'
 #'
-#' # range based on boundaries
-#' ## checking which countries may be involved in the analysis
-#' rangemap_explore(occurrences = occ_g)
-#'
-#' level <- 0
-#' adm <- "Ecuador" # Athough no record is on this country, we know it is in Ecuador
-#'
-#' countries <- c("PER", "BRA", "COL", "VEN", "ECU", "GUF", "GUY", "SUR", "BOL")
-#'
-#' bound <- rangemap_bound(occurrences = occ_g, adm_areas = adm, country_code = countries,
-#'                         boundary_level = level)
-#'
-#'
 #' # range based on concave hulls
 #' dist1 <- 250000
 #' hull1 <- "concave"
 #'
 #' concave <- rangemap_hull(occurrences = occ_g, hull_type = hull1, buffer_distance = dist1)
+#'
 #'
 #' # range based on convex disjunct hulls
 #' split <- TRUE
@@ -96,12 +101,14 @@
 #' library(maps)
 #' }
 #'
-#' vars <- getData("worldclim", var = "bio", res = 5)
+#' ## geting bioclimatic variables (some of them)
+#' vars <- getData("worldclim", var = "bio", res = 5)[[c("bio1", "bio7", "bio12", "bio15")]]
+#' ## after the first view try with distinct or more variables
 #'
 #' ## mask variables to region of interest
 #' WGS84 <- CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
 #' w_map <- map(database = "world", regions = c("Ecuador", "Peru", "Bolivia", "Colombia", "Venezuela",
-#'                                              "Suriname", "Guyana", "French Guyana"),
+#'                                              "Suriname", "Guyana", "French Guyana", "Brazil"),
 #'              fill = TRUE, plot = FALSE) # map of the world
 #' w_po <- sapply(strsplit(w_map$names, ":"), function(x) x[1]) # preparing data to create polygon
 #' reg <- map2SpatialPolygons(w_map, IDs = w_po, proj4string = WGS84) # map to polygon
@@ -110,150 +117,262 @@
 #' mask <- as(e, 'SpatialPolygons')
 #'
 #' variables <- crop(vars, mask)
+#' save = TRUE
+#' name = "test"
 #'
-#' ## comparison
-#' env_comp <- ranges_envcomp(occurrences = occ_g, ranges = ranges, variables = variables)
+#' ## ranges on evironmental factor maps
+#' ranges_emaps(ranges = ranges, variables = variables, save_fig = save,
+#'              name = name)
+#'
+#' #dev.off() # for returning to default par settings
 
-ranges_emaps <- function(ranges, occurrences, new_occurrences, variables, save_fig = FALSE) {
+ranges_emaps <- function(ranges, add_occurrences = TRUE, variables, range_colors = NULL,
+                         ranges_legend = TRUE, legend_position = "bottomright", legend_size = 0.7,
+                         zoom = 1.3, save_fig = FALSE, name = "ranges_emaps", format = "png",
+                         resolution = 300, width = 166) {
 
   # testing potential issues
 
   # preparing data
-  ## ocurrencias
-  occ <- as.data.frame(unique(occurrences))[, 1:3]
-  colnames(occ) <- c("Species", "Longitude", "Latitude")
+  ## plain projection
+  WGS84 <- sp::CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
 
-  occ1 <- occ[, 2:3]
-  colnames(occ1) <- c("x", "y")
+  ## unlist nested lists
+  r <- lapply(ranges, unlist)
 
-  ## projection
-  WGS84 <- CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
+  ## extracting data
+  if (add_occurrences == TRUE) {
+    lranges <- sapply(ranges, length)
 
-  # pca
-  ## raster to varaibles data
-  idata <- raster::rasterToPoints(variables)
-
-  ## varaible data in occurrences
-  pdata <- na.omit(cbind(occ1, raster::extract(variables, occ1)))
-
-  ## combining these data
-  vdata <- rbind(idata, pdata)
-
-  ## pca with vdata
-  pcav <- prcomp(na.omit(vdata[, 3:dim(vdata)[2]]), center = TRUE,
-                  scale = TRUE)
-
-  ## getting the data of components in points
-  pca_scores = pcav$x
-  pc3 <- data.frame(vdata[, 1:2], pca_scores[, 1:3])
-
-  pc_occ <- pc3[(length(pc3[, 1]) - length(pdata[, 1]) + 1):length(pc3[, 1]), ]
-
-  pc_points <- sp::SpatialPointsDataFrame(coords = pc_occ[, 1:2], data = pc_occ[, 3:dim(pc3)[2]],
-                                          proj4string = WGS84)
-
-  if (dim(pc3)[1] > 50000) {
-    pc3 <- pc3[sample(row.names(pc3), 50000), ]
-  }
-
-  pc_var <- sp::SpatialPointsDataFrame(coords = pc3[, 1:2], data = pc3[, 3:dim(pc3)[2]],
-                                          proj4string = WGS84)
-
-  # project the points using their centriods as reference
-  centroid <- rgeos::gCentroid(pc_points, byid = FALSE)
-
-  AEQD <- sp::CRS(paste("+proj=aeqd +lat_0=", centroid@coords[2], " +lon_0=", centroid@coords[1],
-                        " +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs", sep = ""))
-
-  pc_spp <- sp::spTransform(pc_points, AEQD)
-
-  pc_varp <- sp::spTransform(pc_var, AEQD)
-
-  # getting the species ranges from objects in ranges
-  if (class(unlist(ranges)) == "list") {
-    sp_ranges <- list()
-    for (i in 1:length(ranges)) {
-      sp_ranges[[i]] <- sp::spTransform(ranges[[i]][[3]], AEQD)
+    if (any(lranges > 2)){
+      n <- which(lranges > 2)[1]
+      ## occurrences
+      if (isnested(r)) {
+        sp_rec <- ranges[[n]]$Species_unique_records
+        AEQD <- ranges[[n]]$Species_range@proj4string # initial projection of ranges
+      }else {
+        sp_rec <- ranges$Species_unique_records
+        AEQD <- ranges$Species_range@proj4string
+      }
+    }else {
+      AEQD <- ranges[[n]]$Species_range@proj4string
+      warning("None of the objects in \"range\" contain occurrences, \"add_occurrences = TRUE\" ignored.")
     }
-  }else {
-    sp_ranges <- ranges
   }
 
+  # variable treatment
+  ## reducing
+  if (dim(variables)[3] > 21) {
+    nvar <- dim(variables)[3]
+    variables <- variables[[1:21]]
+    warning(paste("Only 21 of the", nvar, "variables will be used. See function documentation."))
+  }
+
+  ## projecting
+  variables <- raster::projectRaster(variables, crs = WGS84)
+  variables <- raster::projectRaster(variables, crs = AEQD)
+
+  # getting the species ranges and x and y limits of plots
+  if (isnested(r)) {
+    sp_ranges <- list()
+    xboxs1 <- vector()
+    xboxs2 <- vector()
+    yboxs1 <- vector()
+    yboxs2 <- vector()
+
+    for (i in 1:length(ranges)) {
+      sp_ranges[[i]] <- ranges[[i]]$Species_range
+      xboxs1[i] <- as.numeric(c(sp_ranges[[i]]@bbox[1, 1]))
+      xboxs2[i] <- as.numeric(c(sp_ranges[[i]]@bbox[1, 2]))
+      yboxs1[i] <- as.numeric(c(sp_ranges[[i]]@bbox[2, 1]))
+      yboxs2[i] <- as.numeric(c(sp_ranges[[i]]@bbox[2, 2]))
+    }
+    xbox <- as.numeric(c(min(xboxs1), max(xboxs2)))
+    ybox <- as.numeric(c(min(yboxs1), max(yboxs2)))
+
+  }else {
+    sp_ranges <- ranges$Species_range
+
+    xbox <- as.numeric(c(sp_ranges@bbox[1, 1:2]))
+    ybox <- as.numeric(c(sp_ranges@bbox[2, 1:2]))
+  }
 
   rnames <- names(ranges)
 
-  # getting environmental (PCs) data in ranges
-  cat("\nGetting environmental conditions in ranges, please wait...\n")
-  env_ranges <- list()
-  for (i in 1:length(ranges)) {
-    env_ranges[[i]] <- pc_varp[sp_ranges[[i]], ]
+  # range colors
+  if (is.null(range_colors)) {
+    cols <- c("black", "blue", "red", "purple", "cyan", "purple", "magenta",
+              "black", "blue", "red", "purple", "cyan", "purple", "magenta")
+    if (isnested(r)) {
+      colors <- cols[1:length(ranges)]
+    }else {
+      colors <- cols[1]
+    }
+  }else {
+    colors <- range_colors
   }
-
-  env_ranges1 <- env_ranges
-
-  colors <- c("black", "blue", "yellow", "purple", "red", "brown", "pink", "green")
 
   # plot
-  cat("\nCreating an interactive visualization...\n")
-  p <- plotly::plot_ly()
-  for(i in 1:length(env_ranges1)){
-    ell <- rgl::ellipse3d(cov(env_ranges1[[i]]@data))
-    p <- plotly::add_trace(p, x = ell$vb[1, ], y = ell$vb[2, ], z = ell$vb[3, ],
-                           type = "scatter3d", size = 1,
-                           mode = "markers",
-                           marker = list(color = colors[i],
-                                         opacity = 0.01), name = rnames[i])
+  ## limits of map
+  xlim <- c(xbox[1] - ((((xbox[2] - xbox[1]) * zoom) -
+                          (xbox[2] - xbox[1])) / 2),
+            xbox[2] + ((((xbox[2] - xbox[1]) * zoom) -
+                          (xbox[2] - xbox[1])) / 2))
+  ylim <- c(ybox[1] - ((((ybox[2] - ybox[1]) * zoom) -
+                          (ybox[2] - ybox[1])) / 2),
+            ybox[2] + ((((ybox[2] - ybox[1]) * zoom) -
+                          (ybox[2] - ybox[1])) / 2))
+
+  ## par options
+  fig_conf <- list(c(1, 1), c(1, 2), c(1, 3), c(2, 2), c(2, 3), c(2, 3), c(3, 3), c(3, 3),
+                   c(3, 3), c(4, 3), c(4, 3), c(4, 3), c(5, 3), c(5, 3), c(5, 3), c(6, 3),
+                   c(6, 3), c(6, 3), c(7, 3), c(7, 3), c(7, 3))
+  for (i in 1:dim(variables)[3]) {
+    if (dim(variables)[3] == i) {fig_config <- fig_conf[[i]]}
   }
 
-  points <- pc_points@data
+  par(mar = c(0, 0, 0, 2), mfrow = fig_config)
 
-  p <- plotly::add_trace(p, x = pc_varp$PC1, y = pc_varp$PC2, z = pc_varp$PC3, mode = "markers", type = "scatter3d",
-                      marker = list(size = 2, color = "gray65",
-                                    opacity = 0.02, symbol = 104), name = "Available space") %>%
-    plotly::add_trace(x = points$PC1, y = points$PC2, z = points$PC3, mode = "markers", type = "scatter3d",
-              marker = list(size = 6, color = "black", symbol = 104), name = "Occurrences") %>%
-    plotly::layout(scene = list(xaxis = list(title = "PC 1", backgroundcolor="white", showbackground=TRUE,
-                                     titlefont = list(color = "black", family = "Arial", size = 16)),
-                        yaxis = list(title = "PC 2", backgroundcolor="white", showbackground=TRUE,
-                                     titlefont = list(color = "black", family = "Arial", size = 16)),
-                        zaxis = list(title = "PC 3", backgroundcolor="white", showbackground=TRUE,
-                                     titlefont = list(color = "black", family = "Arial", size = 16)),
-                        camera = list(eye = list(x = 1.95, y = 1.25, z = 1.35))))
+  ## the plot and variable legends
+  for (i in 1:dim(variables)[3]) {
+    raster::plot(variables[[i]], col = rev(terrain.colors(255)), xlim = xlim,
+                 ylim = ylim, legend = FALSE, axes = FALSE)
 
-  # present the figure
-  print(p)
-
-  # saving the figure
-  if (save_fig == TRUE) {
-    connection <- !is.null(curl::nslookup("r-project.org", error = FALSE))
-    if (connection == FALSE) {
-      stop("\nInternet conection is required to download the figure.\n")
-
+    if (isnested(r)) {
+      for (j in 1:length(sp_ranges)) {
+        sp::plot(sp_ranges[[j]], col = "transparent", border = colors[j], add = TRUE)
+      }
     }else {
-      cat("\nExporting the figure, this process may take some time, please wait...\n")
-      # Save viewer settings (e.g. RStudio viewer pane)
-      op <- options()
+      sp::plot(sp_ranges, col = "transparent", border = colors[1])
+    }
 
-      # Set viewer to web browser
-      options(viewer = NULL)
+    if (add_occurrences == TRUE & any(lranges > 2)) {
+      points(sp_rec, pch = 20, cex = 1)
+    }
 
-      # Use web browser to save image
-      p %>% htmlwidgets::onRender(
-        "function(el, x) {
-           var gd = document.getElementById(el.id);
-           Plotly.downloadImage(gd, {format: 'svg', width: 1000, height: 800, filename: 'ranges_env_comparison'});
-        }"
-      )
+    var_range <- c(ceiling(minValue(variables[[i]])),
+                   floor(maxValue(variables[[i]])))
 
-      # Restore viewer to old setting (e.g. RStudio)
-      options(viewer = op$viewer)
+    raster::plot(variables[[i]], legend.only = TRUE, col = rev(terrain.colors(255)),
+                 legend.width = 1, legend.shrink = 0.8,
+                 axis.args = list(at = c(var_range[1], var_range[2]),
+                                  labels = c(var_range[1], var_range[2]),
+                                  line = -0.519, cex.axis = 0.8),
+                 legend.args = list(text = names(variables)[i], side = 4, font = 2,
+                                    line = 0.5, cex = 0.9))
+  }
 
-      cat("\nFigure saved in your browser download folder as ranges_env_comparison.svg.\n")
+  ## ranges legends
+  if (ranges_legend == TRUE) {
+    if (class(legend_position) == "character") {
+      if (add_occurrences == TRUE & any(lranges > 2)) {
+        legend(legend_position, legend = c("Occurrences", rnames),  bty = "n", inset = 0.03,
+               pch = c(20, rep(22, length(rnames))), pt.cex = c(1, rep(1.5, length(rnames))),
+               cex = legend_size, col = c("black", colors))
+      }else {
+        legend(legend_position, legend = c(rnames),  bty = "n", inset = 0.03,
+               pch = c(rep(22, length(rnames))), pt.cex = c(rep(1.5, length(rnames))),
+               cex = legend_size, col = c(colors))
+      }
+    }else {
+      xleg <- legend_position[1]
+      yleg <- legend_position[2]
+      if (add_occurrences == TRUE & any(lranges > 2)) {
+        legend(x = xleg, y = yleg, legend = c("Occurrences", rnames),  bty = "n", inset = 0.03,
+               pch = c(20, rep(22, length(rnames))), pt.cex = c(1, rep(1.5, length(rnames))),
+               cex = legend_size, col = c("black", colors))
+      }else {
+        legend(x = xleg, y = yleg, legend = c(rnames),  bty = "n", inset = 0.03,
+               pch = c(rep(22, length(rnames))), pt.cex = c(rep(1.5, length(rnames))),
+               cex = legend_size, col = c(colors))
+      }
     }
   }
 
-  cat("\nFor further work with the figure use the object created with the function.\n")
+  # saving the figure
+  h_rate <- (ybox[2] - ybox[1]) / (xbox[2] - xbox[1])
+  height <- width * h_rate / fig_config[2] * fig_config[1]
 
-  # return results
-  return(p)
+  if (save_fig == TRUE) {
+    cat("\nWriting figure in working directory.\n")
+    if (format == "bmp") {
+      bmp(filename = paste(name, "bmp", sep = "."), width = width, height = height,
+          units = "mm", res = resolution)
+    }
+    if (format == "png") {
+      png(filename = paste(name, "png", sep = "."), width = width, height = height,
+          units = "mm", res = resolution)
+    }
+    if (format == "jpeg") {
+      jpeg(filename = paste(name, "jpg", sep = "."), width = width, height = height,
+           units = "mm", res = resolution)
+    }
+    if (format == "tiff") {
+      tiff(filename = paste(name, "tif", sep = "."), width = width, height = height,
+           units = "mm", res = resolution)
+    }
+    if (format == "pdf") {
+      pdf(file = paste(name, "pdf", sep = "."), width = width)
+    }
+
+    par(mar = c(0, 0, 0, 2), mfrow = fig_config)
+
+    ## the plot and variable legends
+    for (i in 1:dim(variables)[3]) {
+      raster::plot(variables[[i]], col = rev(terrain.colors(255)), xlim = xlim,
+                   ylim = ylim, legend = FALSE, axes = FALSE)
+
+      if (isnested(r)) {
+        for (j in 1:length(sp_ranges)) {
+          sp::plot(sp_ranges[[j]], col = "transparent", border = colors[j], add = TRUE)
+        }
+      }else {
+        sp::plot(sp_ranges, col = "transparent", border = colors[1])
+      }
+
+      if (add_occurrences == TRUE & any(lranges > 2)) {
+        points(sp_rec, pch = 20, cex = 1)
+      }
+
+      var_range <- c(ceiling(minValue(variables[[i]])),
+                     floor(maxValue(variables[[i]])))
+
+      raster::plot(variables[[i]], legend.only = TRUE, col = rev(terrain.colors(255)),
+                   legend.width = 1, legend.shrink = 0.8,
+                   axis.args = list(at = c(var_range[1], var_range[2]),
+                                    labels = c(var_range[1], var_range[2]),
+                                    line = -0.519, cex.axis = 0.8),
+                   legend.args = list(text = names(variables)[i], side = 4, font = 2,
+                                      line = 0.5, cex = 0.9))
+    }
+
+    ## ranges legends
+    if (ranges_legend == TRUE) {
+      if (class(legend_position) == "character") {
+        if (add_occurrences == TRUE & any(lranges > 2)) {
+          legend(legend_position, legend = c("Occurrences", rnames),  bty = "n", inset = 0.03,
+                 pch = c(20, rep(22, length(rnames))), pt.cex = c(1, rep(1.5, length(rnames))),
+                 cex = legend_size, col = c("black", colors))
+        }else {
+          legend(legend_position, legend = c(rnames),  bty = "n", inset = 0.03,
+                 pch = c(rep(22, length(rnames))), pt.cex = c(rep(1.5, length(rnames))),
+                 cex = legend_size, col = c(colors))
+        }
+      }else {
+        xleg <- legend_position[1]
+        yleg <- legend_position[2]
+        if (add_occurrences == TRUE & any(lranges > 2)) {
+          legend(x = xleg, y = yleg, legend = c("Occurrences", rnames),  bty = "n", inset = 0.03,
+                 pch = c(20, rep(22, length(rnames))), pt.cex = c(1, rep(1.5, length(rnames))),
+                 cex = legend_size, col = c("black", colors))
+        }else {
+          legend(x = xleg, y = yleg, legend = c(rnames),  bty = "n", inset = 0.03,
+                 pch = c(rep(22, length(rnames))), pt.cex = c(rep(1.5, length(rnames))),
+                 cex = legend_size, col = c(colors))
+        }
+      }
+    }
+
+    invisible(dev.off())
+  }
 }
