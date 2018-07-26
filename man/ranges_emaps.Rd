@@ -121,8 +121,12 @@ if(!require(raster)){
   library(raster)
 }
 if(!require(maps)){
-install.packages("maps")
-library(maps)
+  install.packages("maps")
+  library(maps)
+}
+if(!require(maptools)){
+  install.packages("maptools")
+  library(maptools)
 }
 
 ## geting bioclimatic variables (some of them)
