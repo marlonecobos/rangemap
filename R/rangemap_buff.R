@@ -16,7 +16,8 @@
 #' area of occupancy will be written in the working directory. Default = FALSE.
 #' @param name (character) valid if \code{save_shp} = TRUE. The name of the shapefile to be exported.
 #' A suffix will be added to \code{name} depending on the object as follows: species extent of occurrence =
-#' "_extent_occ", area of occupancy = "_area_occ", and occurrences = "_unique_records".
+#' "_extent_occ", area of occupancy = "_area_occ", and occurrences = "_unique_records". Default =
+#' "range_buffer".
 #'
 #' @return A named list containing: (1) a data.frame with information about the species range, and
 #' SpatialPolygon objects of (2) unique occurrences, (3) species range, (4) extent of occurrence, and
@@ -63,7 +64,8 @@
 #'              grid = grid, grid_sides = sides, legend = legend,
 #'              northarrow = north)
 
-rangemap_buff <- function(occurrences, buffer_distance = 100000, polygons, save_shp = FALSE, name) {
+rangemap_buff <- function(occurrences, buffer_distance = 100000, polygons, save_shp = FALSE,
+                          name = "range_buffer") {
   # testing potential issues
   if (missing(occurrences)) {
     stop("Argument occurrences is necessary to perform the analysis")

@@ -30,7 +30,7 @@
 #' the axis. Bigger numbers will increase separation. Default = 2.3.
 #' @param legend (logical) if TRUE a legend of the plotted features will be added to the figure at
 #' \code{legend_position}. Default = FALSE.
-#' @param legend_position (numeric or character) site in the figure where the north legend will be placed. If
+#' @param legend_position (numeric or character) site in the figure where the legend will be placed. If
 #' numeric, vector of leght two indicating x and y coordinates to be used to position the legend. See
 #' details for options of character indicators of position. Default = "bottomright".
 #' @param northarrow (logical) if TRUE, a simple north arrow will be placed in \code{northarrow_position}.
@@ -40,9 +40,9 @@
 #' details for options of character indicators of position. Default = "topright".
 #' @param scalebar (logical) if TRUE a simple scale bar will be inserted in the figure at
 #' \code{scalebar_position} with a length of \code{scalebar_length}. Default = FALSE.
-#' @param scalebar_position (numeric or character) site in the figure where the north legend will be placed. If
+#' @param scalebar_position (numeric or character) site in the figure where the scale bar will be placed. If
 #' numeric, vector of leght two indicating x and y coordinates to be used to position the scale bar. See
-#' details for options of character indicators of position. Default = bottomleft".
+#' details for options of character indicators of position. Default = "bottomleft".
 #' @param scalebar_length (numeric) length of the scale bar in km. Using entire numbers divisble for
 #' two is recommended. Default = 100.
 #' @param zoom (numeric) zoom factor when ploting the species range in a map. Default = 1. Values
@@ -118,9 +118,15 @@ rangemap_fig <- function(range, polygons, add_extent = FALSE, add_occurrences = 
                          grid = FALSE, grid_sides = "bottomleft", ylabels_position = 2.3, legend = FALSE,
                          legend_position = "bottomright", northarrow = FALSE, northarrow_position = "topright",
                          scalebar = FALSE, scalebar_position = "bottomleft", scalebar_length = 100, zoom = 1,
-                         save_fig = FALSE, name = "range_fig", format = "png", resolution = 300, width = 166, height = 166) {
+                         save_fig = FALSE, name = "range_fig", format = "png", resolution = 300,
+                         width = 166, height = 166) {
 
   suppressMessages(library(maptools))
+
+  # testing for potential errors
+  if (missing(range)) {
+    stop("range must exist. Check the function's help for more details.")
+  }
 
   # projections
   if (class(range) == "list") {
@@ -136,8 +142,8 @@ rangemap_fig <- function(range, polygons, add_extent = FALSE, add_occurrences = 
   if (missing(polygons)) {
     data(wrld_simpl)
     polygons <- wrld_simpl
+    rm("wrld_simpl", pos = ".GlobalEnv")
   }
-  rm("wrld_simpl", pos = ".GlobalEnv")
 
   # project for mantaining shapes
   polygons <- sp::spTransform(polygons, ROBIN) # base map
@@ -283,24 +289,8 @@ rangemap_fig <- function(range, polygons, add_extent = FALSE, add_occurrences = 
     text(x = xpos , y = ypos, cex = 0.6, labels = "N")
   }
 
-  ## scale
+  ## scale bar
   if (scalebar == TRUE) {
-    scalebarf <- function(loc, length, unit = "km", division.cex = .8,...) {
-      if(missing(loc)) stop("loc is missing")
-      if(missing(length)) stop("length is missing")
-      x <- c(0, length / c(4, 2, 4 / 3, 1), length * 1.1) + loc[1]
-      y <- c(0, length / (10 * 3:1)) + loc[2]
-      cols <- rep(c("black", "white"),2)
-      for (i in 1:4) rect(x[i], y[1], x[i + 1], y[2], col = cols[i])
-      for (i in 1:5) segments(x[i], y[2], x[i], y[3])
-      n_op <- options()
-      options(scipen = 999)
-      labels <- (x[c(1, 3)] - loc[1]) /1000
-      labels <- append(labels, paste((x[5] - loc[1]) / 1000, unit))
-      text(x[c(1, 3, 5)], y[4], labels = labels, adj = .5, cex = division.cex)
-      options(n_op)
-    }
-
     if (class(scalebar_position) == "character") {
       if (scalebar_position == "topright"){
         xscale <- xlim[1] + ((xlim[2] - xlim[1]) * 0.80)
@@ -523,7 +513,7 @@ rangemap_fig <- function(range, polygons, add_extent = FALSE, add_occurrences = 
       text(x = xpos , y = ypos, cex = 0.6, labels = "N")
     }
 
-    ## scale
+    ## scale bar
     if (scalebar == TRUE) {
       if (class(scalebar_position) == "character") {
         if (scalebar_position == "topright"){
@@ -616,3 +606,28 @@ rangemap_fig <- function(range, polygons, add_extent = FALSE, add_occurrences = 
   }
 }
 
+#' Helper function to plot a scale bar.
+#' @param loc (numeric) vector (x, y) of coordinates where the scale bar will be plotted.
+#' @param length (numeric) length of the scale bar. Try to use numbers divisive to 2.
+#' @param unit (character) units in which the scale will be represented. Default "km"
+#' @param division.cex (numeric) cex of the scale components.
+#' @param ... other graphical arguments.
+#'
+#' @details this function is a modification of the "scalebar" function developed by T
+#' animura et al. (2007) (see \url{http://hdl.handle.net/10.18637/jss.v019.c01}).
+
+scalebarf <- function(loc, length, unit = "km", division.cex = 0.8,...) {
+  if(missing(loc)) stop("loc is missing")
+  if(missing(length)) stop("length is missing")
+  x <- c(0, length / c(4, 2, 4 / 3, 1), length * 1.1) + loc[1]
+  y <- c(0, length / (10 * 3:1)) + loc[2]
+  cols <- rep(c("black", "white"),2)
+  for (i in 1:4) rect(x[i], y[1], x[i + 1], y[2], col = cols[i])
+  for (i in 1:5) segments(x[i], y[2], x[i], y[3])
+  n_op <- options()
+  options(scipen = 999)
+  labels <- (x[c(1, 3)] - loc[1]) /1000
+  labels <- append(labels, paste((x[5] - loc[1]) / 1000, unit))
+  text(x[c(1, 3, 5)], y[4], labels = labels, adj = .5, cex = division.cex)
+  options(n_op)
+}

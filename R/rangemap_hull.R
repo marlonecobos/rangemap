@@ -33,7 +33,8 @@
 #' area of occupancy will be written in the working directory. Default = FALSE.
 #' @param name (character) valid if \code{save_shp} = TRUE. The name of the shapefile to be exported.
 #' A suffix will be added to \code{name} depending on the object as follows: species extent of occurrence =
-#' "_extent_occ", area of occupancy = "_area_occ", and occurrences = "_unique_records".
+#' "_extent_occ", area of occupancy = "_area_occ", and occurrences = "_unique_records". Default =
+#' "range_hull".
 #'
 #' @return A named list containing: (1) a data.frame with information about the species range, and
 #' SpatialPolygon objects of (2) unique occurrences, (3) species range, (4) extent of occurrence, and
@@ -86,7 +87,7 @@
 
 rangemap_hull <- function(occurrences, hull_type = "convex", buffer_distance = 50000,
                           concave_distance_lim = 5000, split = FALSE, cluster_method = "hierarchical",
-                          split_distance, n_k_means, polygons, save_shp = FALSE, name) {
+                          split_distance, n_k_means, polygons, save_shp = FALSE, name = "range_hull") {
   # testing potential issues
   if (missing(occurrences)) {
     stop("Argument occurrences is necessary to perform the analysis")

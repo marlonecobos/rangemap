@@ -22,12 +22,21 @@
 #' and default colors will be used. If more than 7 objects are included in \code{ranges}, default
 #' colors will be recycled; therefore, defining colors here is recommended in those cases.
 #' @param ranges_legend (logical) if TRUE a legend of the plotted ranges will be added to the
-#' last figure at \code{legend_position}. Default = TRUE.
-#' @param legend_position (numeric or character) site in the figure where the north legend will be placed. If
+#' last panel at \code{legend_position}. Default = TRUE.
+#' @param variables_color a color palette like terrain.colors, heat.colors, topo.colors, or your own.
+#' Default = NULL. If not provided, rev(terrain.colors(255)) is used.
+#' @param legend_position (numeric or character) site in the figure where the legend will be placed. If
 #' numeric, vector of leght two indicating x and y coordinates to be used to position the legend. See
 #' details for options of character indicators of position. Default = "bottomright".
-#' @param legend_size (numeric) size of the legend with respect to each of the panels.
+#' @param legend_size (numeric) size of the legend with respect to one of the panels.
 #' Default = 0.7.
+#' @param scalebar (logical) if TRUE a simple scale bar will be inserted in the last panel at
+#' \code{scalebar_position} with a length of \code{scalebar_length}. Default = FALSE.
+#' @param scalebar_position (numeric or character) site in the figure where the scale bar will be placed. If
+#' numeric, vector of leght two indicating x and y coordinates to be used to position the scale bar. See
+#' details for options of character indicators of position. Default = "bottomleft".
+#' @param scalebar_length (numeric) length of the scale bar in km. Using entire numbers divisble for
+#' two is recommended. Default = 100.
 #' @param zoom (numeric) zoom factor when ploting the species range in a map based on the biggest
 #' range. Default = 1.3. Lower #' values will zoom in into the species range and bigger values will
 #' zoom out. A value of 2 will duplicate the area that the biggest range is covering.
@@ -131,11 +140,15 @@
 #' #dev.off() # for returning to default par settings
 
 ranges_emaps <- function(ranges, add_occurrences = TRUE, variables, range_colors = NULL,
-                         ranges_legend = TRUE, legend_position = "bottomright", legend_size = 0.7,
-                         zoom = 1.3, save_fig = FALSE, name = "ranges_emaps", format = "png",
-                         resolution = 300, width = 166) {
+                         variables_color = NULL, ranges_legend = TRUE, legend_position = "bottomright",
+                         legend_size = 0.7, scalebar = FALSE, scalebar_position = "bottomleft",
+                         scalebar_length = 100, zoom = 1.3, save_fig = FALSE, name = "ranges_emaps",
+                         format = "png", resolution = 300, width = 166) {
 
   # testing potential issues
+  if (missing(ranges)) {
+    stop("ranges must exist. See the function's help for more details.")
+  }
 
   # preparing data
   ## plain projection
@@ -203,7 +216,7 @@ ranges_emaps <- function(ranges, add_occurrences = TRUE, variables, range_colors
 
   rnames <- names(ranges)
 
-  # range colors
+  # range and variable colors
   if (is.null(range_colors)) {
     cols <- c("black", "blue", "red", "purple", "cyan", "purple", "magenta",
               "black", "blue", "red", "purple", "cyan", "purple", "magenta")
@@ -214,6 +227,10 @@ ranges_emaps <- function(ranges, add_occurrences = TRUE, variables, range_colors
     }
   }else {
     colors <- range_colors
+  }
+
+  if (is.null(variables_color)) {
+    variables_color <- rev(terrain.colors(255))
   }
 
   # plot
@@ -239,7 +256,7 @@ ranges_emaps <- function(ranges, add_occurrences = TRUE, variables, range_colors
 
   ## the plot and variable legends
   for (i in 1:dim(variables)[3]) {
-    raster::plot(variables[[i]], col = rev(terrain.colors(255)), xlim = xlim,
+    raster::plot(variables[[i]], col = variables_color, xlim = xlim,
                  ylim = ylim, legend = FALSE, axes = FALSE)
 
     if (isnested(r)) {
@@ -257,13 +274,41 @@ ranges_emaps <- function(ranges, add_occurrences = TRUE, variables, range_colors
     var_range <- c(ceiling(minValue(variables[[i]])),
                    floor(maxValue(variables[[i]])))
 
-    raster::plot(variables[[i]], legend.only = TRUE, col = rev(terrain.colors(255)),
+    raster::plot(variables[[i]], legend.only = TRUE, col = variables_color,
                  legend.width = 1, legend.shrink = 0.8,
                  axis.args = list(at = c(var_range[1], var_range[2]),
                                   labels = c(var_range[1], var_range[2]),
                                   line = -0.519, cex.axis = 0.8),
                  legend.args = list(text = names(variables)[i], side = 4, font = 2,
                                     line = 0.5, cex = 0.9))
+  }
+
+  ## scale bar
+  if (scalebar == TRUE) {
+    if (class(scalebar_position) == "character") {
+      if (scalebar_position == "topright"){
+        xscale <- xlim[1] + ((xlim[2] - xlim[1]) * 0.80)
+        yscale <- ylim[1] + ((ylim[2] - ylim[1]) * 0.93)
+      }
+      if (scalebar_position == "topleft") {
+        xscale <- xlim[1] + ((xlim[2] - xlim[1]) * 0.02)
+        yscale <- ylim[1] + ((ylim[2] - ylim[1]) * 0.93)
+      }
+      if (scalebar_position == "bottomleft") {
+        xscale <- xlim[1] + ((xlim[2] - xlim[1]) * 0.02)
+        yscale <- ylim[1] + ((ylim[2] - ylim[1]) * 0.04)
+      }
+      if (scalebar_position == "bottomright") {
+        xscale <- xlim[1] + ((xlim[2] - xlim[1]) * 0.80)
+        yscale <- ylim[1] + ((ylim[2] - ylim[1]) * 0.04)
+      }
+    }else {
+      xscale <- scalebar_position[1]
+      yscale <- scalebar_position[2]
+    }
+
+    scalebarf(loc = c(xscale, yscale), length = (scalebar_length * 1000),
+              division.cex = 0.7)
   }
 
   ## ranges legends
@@ -323,7 +368,7 @@ ranges_emaps <- function(ranges, add_occurrences = TRUE, variables, range_colors
 
     ## the plot and variable legends
     for (i in 1:dim(variables)[3]) {
-      raster::plot(variables[[i]], col = rev(terrain.colors(255)), xlim = xlim,
+      raster::plot(variables[[i]], col = variables_color, xlim = xlim,
                    ylim = ylim, legend = FALSE, axes = FALSE)
 
       if (isnested(r)) {
@@ -341,13 +386,41 @@ ranges_emaps <- function(ranges, add_occurrences = TRUE, variables, range_colors
       var_range <- c(ceiling(minValue(variables[[i]])),
                      floor(maxValue(variables[[i]])))
 
-      raster::plot(variables[[i]], legend.only = TRUE, col = rev(terrain.colors(255)),
+      raster::plot(variables[[i]], legend.only = TRUE, col = variables_color,
                    legend.width = 1, legend.shrink = 0.8,
                    axis.args = list(at = c(var_range[1], var_range[2]),
                                     labels = c(var_range[1], var_range[2]),
                                     line = -0.519, cex.axis = 0.8),
                    legend.args = list(text = names(variables)[i], side = 4, font = 2,
                                       line = 0.5, cex = 0.9))
+    }
+
+    ## scale bar
+    if (scalebar == TRUE) {
+      if (class(scalebar_position) == "character") {
+        if (scalebar_position == "topright"){
+          xscale <- xlim[1] + ((xlim[2] - xlim[1]) * 0.75)
+          yscale <- ylim[1] + ((ylim[2] - ylim[1]) * 1.01)
+        }
+        if (scalebar_position == "topleft") {
+          xscale <- xlim[1] + ((xlim[2] - xlim[1]) * 0.07)
+          yscale <- ylim[1] + ((ylim[2] - ylim[1]) * 1.01)
+        }
+        if (scalebar_position == "bottomleft") {
+          xscale <- xlim[1] + ((xlim[2] - xlim[1]) * 0.07)
+          yscale <- ylim[1] + ((ylim[2] - ylim[1]) * -0.01)
+        }
+        if (scalebar_position == "bottomright") {
+          xscale <- xlim[1] + ((xlim[2] - xlim[1]) * 0.75)
+          yscale <- ylim[1] + ((ylim[2] - ylim[1]) * -0.01)
+        }
+      }else {
+        xscale <- scalebar_position[1]
+        yscale <- scalebar_position[2]
+      }
+
+      scalebarf(loc = c(xscale, yscale), length = (scalebar_length * 1000),
+                division.cex = 0.7)
     }
 
     ## ranges legends

@@ -5,7 +5,7 @@
 \title{Species distributional ranges based on buffered occurrences}
 \usage{
 rangemap_buff(occurrences, buffer_distance = 1e+05, polygons,
-  save_shp = FALSE, name)
+  save_shp = FALSE, name = "range_buffer")
 }
 \arguments{
 \item{occurrences}{a data.frame containing geographic coordinates of species occurrences,
@@ -23,7 +23,8 @@ area of occupancy will be written in the working directory. Default = FALSE.}
 
 \item{name}{(character) valid if \code{save_shp} = TRUE. The name of the shapefile to be exported.
 A suffix will be added to \code{name} depending on the object as follows: species extent of occurrence =
-"_extent_occ", area of occupancy = "_area_occ", and occurrences = "_unique_records".}
+"_extent_occ", area of occupancy = "_area_occ", and occurrences = "_unique_records". Default =
+"range_buffer".}
 }
 \value{
 A named list containing: (1) a data.frame with information about the species range, and

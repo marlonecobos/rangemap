@@ -7,7 +7,7 @@
 rangemap_hull(occurrences, hull_type = "convex", buffer_distance = 50000,
   concave_distance_lim = 5000, split = FALSE,
   cluster_method = "hierarchical", split_distance, n_k_means, polygons,
-  save_shp = FALSE, name)
+  save_shp = FALSE, name = "range_hull")
 }
 \arguments{
 \item{occurrences}{a data.frame containing geographic coordinates of species occurrences,
@@ -47,7 +47,8 @@ area of occupancy will be written in the working directory. Default = FALSE.}
 
 \item{name}{(character) valid if \code{save_shp} = TRUE. The name of the shapefile to be exported.
 A suffix will be added to \code{name} depending on the object as follows: species extent of occurrence =
-"_extent_occ", area of occupancy = "_area_occ", and occurrences = "_unique_records".}
+"_extent_occ", area of occupancy = "_area_occ", and occurrences = "_unique_records". Default =
+"range_hull".}
 }
 \value{
 A named list containing: (1) a data.frame with information about the species range, and

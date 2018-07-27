@@ -136,6 +136,9 @@ ranges_espace <- function(ranges, add_occurrences = TRUE, variables, max_backgro
                           range_colors = NULL, eye_camera = c(x = 1.95, y = 1.25, z = 1.35)) {
 
   # testing potential issues
+  if (missing(ranges)) {
+    stop("ranges must exist. See the function's help for more details.")
+  }
 
   # preparing data
   ## plain projection

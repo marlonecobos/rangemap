@@ -54,7 +54,7 @@ the axis. Bigger numbers will increase separation. Default = 2.3.}
 \item{legend}{(logical) if TRUE a legend of the plotted features will be added to the figure at
 \code{legend_position}. Default = FALSE.}
 
-\item{legend_position}{(numeric or character) site in the figure where the north legend will be placed. If
+\item{legend_position}{(numeric or character) site in the figure where the legend will be placed. If
 numeric, vector of leght two indicating x and y coordinates to be used to position the legend. See
 details for options of character indicators of position. Default = "bottomright".}
 
@@ -68,9 +68,9 @@ details for options of character indicators of position. Default = "topright".}
 \item{scalebar}{(logical) if TRUE a simple scale bar will be inserted in the figure at
 \code{scalebar_position} with a length of \code{scalebar_length}. Default = FALSE.}
 
-\item{scalebar_position}{(numeric or character) site in the figure where the north legend will be placed. If
+\item{scalebar_position}{(numeric or character) site in the figure where the scale bar will be placed. If
 numeric, vector of leght two indicating x and y coordinates to be used to position the scale bar. See
-details for options of character indicators of position. Default = bottomleft".}
+details for options of character indicators of position. Default = "bottomleft".}
 
 \item{scalebar_length}{(numeric) length of the scale bar in km. Using entire numbers divisble for
 two is recommended. Default = 100.}

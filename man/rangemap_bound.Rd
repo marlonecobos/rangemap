@@ -5,7 +5,8 @@
 \title{Species distributional ranges based on administrative boundaries}
 \usage{
 rangemap_bound(occurrences, adm_areas, country_code, boundary_level = 0,
-  polygons, kept_data = FALSE, dissolve = FALSE, save_shp = FALSE, name)
+  polygons, kept_data = FALSE, dissolve = FALSE, save_shp = FALSE,
+  name = "range_boundaries")
 }
 \arguments{
 \item{occurrences}{(optional) a data.frame containing geographic coordinates of species occurrences,
@@ -49,7 +50,8 @@ area of occupancy will be written in the working directory. Default = FALSE.}
 
 \item{name}{(character) valid if \code{save_shp} = TRUE. The name of the shapefile to be exported.
 A suffix will be added to \code{name} depending on the object as follows: species extent of occurrence =
-"_extent_occ", area of occupancy = "_area_occ", and occurrences = "_unique_records".}
+"_extent_occ", area of occupancy = "_area_occ", and occurrences = "_unique_records". Default =
+"range_boundaries".}
 }
 \value{
 A named list containing: (1) a data.frame with information about the species range, and

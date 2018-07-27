@@ -39,7 +39,8 @@
 #' area of occupancy will be written in the working directory. Default = FALSE.
 #' @param name (character) valid if \code{save_shp} = TRUE. The name of the shapefile to be exported.
 #' A suffix will be added to \code{name} depending on the object as follows: species extent of occurrence =
-#' "_extent_occ", area of occupancy = "_area_occ", and occurrences = "_unique_records".
+#' "_extent_occ", area of occupancy = "_area_occ", and occurrences = "_unique_records". Default =
+#' "range_boundaries".
 #'
 #' @return A named list containing: (1) a data.frame with information about the species range, and
 #' SpatialPolygon objects of (2) unique occurrences, (3) species range, (4) extent of occurrence, and
@@ -97,13 +98,15 @@
 #'              northarrow = north)
 
 rangemap_bound <- function(occurrences, adm_areas, country_code, boundary_level = 0, polygons,
-                           kept_data = FALSE, dissolve = FALSE, save_shp = FALSE, name) {
+                           kept_data = FALSE, dissolve = FALSE, save_shp = FALSE,
+                           name = "range_boundaries") {
   # testing potential issues
   if (!missing(polygons)) {
-    if (class(polygons) != "SpatialPolygonsDataFrame")
-    stop("If defined, polygons must be a SpatialPolygonsDataFrame object. If adm_areas",
-         "\nis defined, one of the fields (columns) of polygons data must be named \"adm_areas\"",
-         "\nand contain names of administrative areas for selection.", sep = "")
+    if (class(polygons) != "SpatialPolygonsDataFrame"){
+      stop("If defined, polygons must be a SpatialPolygonsDataFrame object. If adm_areas",
+           "\nis defined, one of the fields (columns) of polygons data must be named \"adm_areas\"",
+           "\nand contain names of administrative areas for selection.", sep = "")
+    }
   }
 
   if (missing(occurrences) & missing(adm_areas)) {

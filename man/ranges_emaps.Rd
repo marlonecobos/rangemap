@@ -5,9 +5,11 @@
 \title{Species ranges on maps of environmental factors}
 \usage{
 ranges_emaps(ranges, add_occurrences = TRUE, variables, range_colors = NULL,
-  ranges_legend = TRUE, legend_position = "bottomright",
-  legend_size = 0.7, zoom = 1.3, save_fig = FALSE,
-  name = "ranges_emaps", format = "png", resolution = 300, width = 166)
+  variables_color = NULL, ranges_legend = TRUE,
+  legend_position = "bottomright", legend_size = 0.7, scalebar = FALSE,
+  scalebar_position = "bottomleft", scalebar_length = 100, zoom = 1.3,
+  save_fig = FALSE, name = "ranges_emaps", format = "png",
+  resolution = 300, width = 166)
 }
 \arguments{
 \item{ranges}{(list) of SpatialPolygons or SpatialPolygonsDataFrame or a
@@ -31,15 +33,28 @@ variables is allowed, if the limit is surpassed other variables will be ignored.
 and default colors will be used. If more than 7 objects are included in \code{ranges}, default
 colors will be recycled; therefore, defining colors here is recommended in those cases.}
 
-\item{ranges_legend}{(logical) if TRUE a legend of the plotted ranges will be added to the
-last figure at \code{legend_position}. Default = TRUE.}
+\item{variables_color}{a color palette like terrain.colors, heat.colors, topo.colors, or your own.
+Default = NULL. If not provided, rev(terrain.colors(255)) is used.}
 
-\item{legend_position}{(numeric or character) site in the figure where the north legend will be placed. If
+\item{ranges_legend}{(logical) if TRUE a legend of the plotted ranges will be added to the
+last panel at \code{legend_position}. Default = TRUE.}
+
+\item{legend_position}{(numeric or character) site in the figure where the legend will be placed. If
 numeric, vector of leght two indicating x and y coordinates to be used to position the legend. See
 details for options of character indicators of position. Default = "bottomright".}
 
-\item{legend_size}{(numeric) size of the legend with respect to each of the panels.
+\item{legend_size}{(numeric) size of the legend with respect to one of the panels.
 Default = 0.7.}
+
+\item{scalebar}{(logical) if TRUE a simple scale bar will be inserted in the last panel at
+\code{scalebar_position} with a length of \code{scalebar_length}. Default = FALSE.}
+
+\item{scalebar_position}{(numeric or character) site in the figure where the scale bar will be placed. If
+numeric, vector of leght two indicating x and y coordinates to be used to position the scale bar. See
+details for options of character indicators of position. Default = "bottomleft".}
+
+\item{scalebar_length}{(numeric) length of the scale bar in km. Using entire numbers divisble for
+two is recommended. Default = 100.}
 
 \item{zoom}{(numeric) zoom factor when ploting the species range in a map based on the biggest
 range. Default = 1.3. Lower #' values will zoom in into the species range and bigger values will

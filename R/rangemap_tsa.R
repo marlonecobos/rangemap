@@ -26,7 +26,7 @@
 #' @param name (character) valid if \code{save_shp} = TRUE. The name of the geographic files to be exported.
 #' A suffix will be added to \code{name} depending on the object as follows: species extent of occurrence =
 #' "_extent_occ", area of occupancy = "_area_occ", occurrences = "_unique_records", and, if \code{save_tsmodel}
-#' = TRUE, trend surface model "_tsa".
+#' = TRUE, trend surface model "_tsa". Default = "range_tsa".
 #'
 #' @return A named list containing: (1) a data.frame with information about the species range, and
 #' SpatialPolygon objects of (2) unique occurrences, (3) species range, (4) extent of occurrence, and
@@ -96,18 +96,20 @@
 #'              northarrow = north)
 
 rangemap_tsa <- function(occurrences, region_of_interest, resolution = 5, threshold = 0,
-                         simplify_level = 0, save_shp = FALSE, save_tsmodel = FALSE, name) {
+                         simplify_level = 0, save_shp = FALSE, save_tsmodel = FALSE,
+                         name = "range_tsa") {
   # testing potential issues
   if (missing(occurrences)) {
     stop("Argument occurrences is necessary to perform the analysis")
   }
-
   if (dim(occurrences)[2] != 3) {
     stop("occurrences data.frame must have the following columns: \nSpecies, Longitude, and Latitude")
   }
-
   if (missing(region_of_interest)) {
     stop("Argument region_of_interest is necessary to perform the analysis")
+  }
+  if (threshold > 0) {
+    warning("Since threshold > 0, some occurrences may be excluded form the species range.")
   }
 
   # erase duplicate records
