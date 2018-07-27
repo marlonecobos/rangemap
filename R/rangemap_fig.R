@@ -629,5 +629,6 @@ scalebarf <- function(loc, length, unit = "km", division.cex = 0.8,...) {
   labels <- (x[c(1, 3)] - loc[1]) /1000
   labels <- append(labels, paste((x[5] - loc[1]) / 1000, unit))
   text(x[c(1, 3, 5)], y[4], labels = labels, adj = .5, cex = division.cex)
+  Sys.sleep(0.2)
   options(n_op)
 }
