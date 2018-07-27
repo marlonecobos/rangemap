@@ -109,13 +109,13 @@ An example of the use of this function is written below.
 species <- name_lookup(query = "Dasypus kappleri",
                        rank="species", return = "data") # information about the species
 
-occ_count(taxonKey = species$key[10], georeferenced = TRUE) # testing if keys return records
+occ_count(taxonKey = species$key[14], georeferenced = TRUE) # testing if keys return records
 ```
 
     ## [1] 44
 
 ``` r
-key <- species$key[10] # using species key that return information
+key <- species$key[14] # using species key that return information
 
 occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
 
@@ -228,13 +228,13 @@ Following there is an example in wich administrative areas will be selected usin
 species <- name_lookup(query = "Dasypus kappleri",
                        rank="species", return = "data") # information about the species
 
-occ_count(taxonKey = species$key[10], georeferenced = TRUE) # testing if keys return records
+occ_count(taxonKey = species$key[14], georeferenced = TRUE) # testing if keys return records
 ```
 
     ## [1] 44
 
 ``` r
-key <- species$key[10] # using species key that return information
+key <- species$key[14] # using species key that return information
 
 occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
 
@@ -337,13 +337,13 @@ An example of using both occurrences and administrative areas for creating speci
 species <- name_lookup(query = "Dasypus kappleri",
                        rank="species", return = "data") # information about the species
 
-occ_count(taxonKey = species$key[10], georeferenced = TRUE) # testing if keys return records
+occ_count(taxonKey = species$key[14], georeferenced = TRUE) # testing if keys return records
 ```
 
     ## [1] 44
 
 ``` r
-key <- species$key[10] # using species key that return information
+key <- species$key[14] # using species key that return information
 
 occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
 
@@ -400,13 +400,13 @@ With the example provided below, a species range will be constructed using conve
 species <- name_lookup(query = "Dasypus kappleri",
 rank="species", return = "data") # information about the species
 
-occ_count(taxonKey = species$key[10], georeferenced = TRUE) # testing if keys return records
+occ_count(taxonKey = species$key[14], georeferenced = TRUE) # testing if keys return records
 ```
 
     ## [1] 44
 
 ``` r
-key <- species$key[10] # using species key that return information
+key <- species$key[14] # using species key that return information
 
 occ <- occ_search(taxonKey = key, return = "data", limit = 2000) # using the taxon key
 
@@ -732,7 +732,7 @@ grid <- TRUE # grid
 legend <- TRUE # leggend of objects included
 scale <- TRUE # scale bar
 north <- TRUE # north arrow
-zoom1 <- 1.3 # normally 1
+zoom1 <- 1.25 # normally 1
 
 
 # creating the species range figure
