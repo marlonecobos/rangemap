@@ -109,13 +109,13 @@ An example of the use of this function is written below.
 species <- name_lookup(query = "Dasypus kappleri",
                        rank="species", return = "data") # information about the species
 
-occ_count(taxonKey = species$key[14], georeferenced = TRUE) # testing if keys return records
+occ_count(taxonKey = species$key[10], georeferenced = TRUE) # testing if keys return records
 ```
 
     ## [1] 44
 
 ``` r
-key <- species$key[14] # using species key that return information
+key <- species$key[10] # using species key that return information
 
 occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
 
@@ -228,13 +228,13 @@ Following there is an example in wich administrative areas will be selected usin
 species <- name_lookup(query = "Dasypus kappleri",
                        rank="species", return = "data") # information about the species
 
-occ_count(taxonKey = species$key[14], georeferenced = TRUE) # testing if keys return records
+occ_count(taxonKey = species$key[10], georeferenced = TRUE) # testing if keys return records
 ```
 
     ## [1] 44
 
 ``` r
-key <- species$key[14] # using species key that return information
+key <- species$key[10] # using species key that return information
 
 occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
 
@@ -337,13 +337,13 @@ An example of using both occurrences and administrative areas for creating speci
 species <- name_lookup(query = "Dasypus kappleri",
                        rank="species", return = "data") # information about the species
 
-occ_count(taxonKey = species$key[14], georeferenced = TRUE) # testing if keys return records
+occ_count(taxonKey = species$key[10], georeferenced = TRUE) # testing if keys return records
 ```
 
     ## [1] 44
 
 ``` r
-key <- species$key[14] # using species key that return information
+key <- species$key[10] # using species key that return information
 
 occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
 
@@ -400,13 +400,13 @@ With the example provided below, a species range will be constructed using conve
 species <- name_lookup(query = "Dasypus kappleri",
 rank="species", return = "data") # information about the species
 
-occ_count(taxonKey = species$key[14], georeferenced = TRUE) # testing if keys return records
+occ_count(taxonKey = species$key[10], georeferenced = TRUE) # testing if keys return records
 ```
 
     ## [1] 44
 
 ``` r
-key <- species$key[14] # using species key that return information
+key <- species$key[10] # using species key that return information
 
 occ <- occ_search(taxonKey = key, return = "data", limit = 2000) # using the taxon key
 
@@ -644,7 +644,7 @@ Let's take a look at the results.
 
 ``` r
 # creating the species range figure
-rangemap_fig(tsa_r)
+rangemap_fig(tsa_r, zoom = 3)
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-29-1.png)
@@ -732,12 +732,13 @@ grid <- TRUE # grid
 legend <- TRUE # leggend of objects included
 scale <- TRUE # scale bar
 north <- TRUE # north arrow
+zoom1 <- 1.3 # normally 1
 
 
 # creating the species range figure
 rangemap_fig(hull_range5, add_extent = extent, add_occurrences = occ,
              grid = grid, legend = legend, scalebar = scale, 
-             scalebar_length = 1000, northarrow = north)
+             scalebar_length = 500, zoom = zoom1, northarrow = north)
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-34-1.png)
@@ -758,13 +759,12 @@ grid <- TRUE # grid
 legend <- TRUE # leggend of objects included
 scale <- TRUE # scale bar
 north <- TRUE # north arrow
-save <-  TRUE
-
+save <-  FALSE # if true, the figure will be saved
 
 # creating the species range figure
 range_map <- rangemap_fig(hull_range5, add_extent = extent, add_occurrences = occ,
-                          grid = grid, legend = legend, scalebar = scale, 
-                          northarrow = north, save_fig = save)
+                          grid = grid, legend = legend, scalebar = scale, scalebar_length = 500, 
+                          northarrow = north, zoom = zoom1, save_fig = save)
 
 #dev.off() # for returning to default par settings
 ```
@@ -781,20 +781,6 @@ The function's help can be consulted usign the following line of code:
 
 ``` r
 help(ranges_emaps)
-```
-
-An example of the use of this function is written below.
-
-<br>
-
-##### Species ranges in the environmental space
-
-The *ranges\_espace* function generates a three dimensional comparison of a species' ranges created using distinct algortihms, to visualize implications of selecting one of them if environmental conditions are considered.
-
-The function's help can be consulted usign the following line of code:
-
-``` r
-help(ranges_espace)
 ```
 
 An example of the use of this function is written below.
@@ -818,35 +804,51 @@ occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
 occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
              c("name", "decimalLongitude", "decimalLatitude")]
 
-# range based on buffers
-dist <- 500000
 
-buff <- rangemap_buff(occurrences = occ_g, buffer_distance = dist)
+# range based on buffers
+dist1 <- 500000
+
+buff <- rangemap_buff(occurrences = occ_g, buffer_distance = dist1)
 
 
 # range based on concave hulls
-dist1 <- 250000
-hull1 <- "concave"
+dist2 <- 250000
+hullt <- "concave"
 
-concave <- rangemap_hull(occurrences = occ_g, hull_type = hull1, buffer_distance = dist1)
+concave <- rangemap_hull(occurrences = occ_g, hull_type = hullt, buffer_distance = dist2)
 ```
 
     ## 
     ## Hull type: concave
 
 ``` r
-# ranges comparison in environmental space
-## list of ranges
-ranges <- list(buff, concave)
-names(ranges) <- c("buff", "concave")
+# range based on convex disjunct hulls
+split3 <- TRUE
+hullt1 <- "convex"
 
-## other data for environmental comparisson
-vars <- getData("worldclim", var = "bio", res = 5)
+convex <- rangemap_hull(occurrences = occ_g, hull_type = hullt1, buffer_distance = dist1,
+                         split = split3, cluster_method = "k-means", n_k_means = 3)
+```
+
+    ## 
+    ## Clustering method: k-means
+    ## 
+    ## Hull type: convex
+
+``` r
+# ranges representation on environmental factor maps
+## list of ranges
+ranges <- list(buff, concave, convex)
+names(ranges) <- c("buff", "concave", "convex_split")
+
+## geting bioclimatic variables (some of them)
+vars <- getData("worldclim", var = "bio", res = 5)[[c("bio1", "bio7", "bio12", "bio15")]]
+## after the first view try with distinct or more variables
 
 ## mask variables to region of interest
 WGS84 <- CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
 w_map <- map(database = "world", regions = c("Ecuador", "Peru", "Bolivia", "Colombia", "Venezuela",
-                                             "Suriname", "Guyana", "French Guyana"),
+                                             "Suriname", "Guyana", "French Guyana", "Brazil"),
              fill = TRUE, plot = FALSE) # map of the world
 w_po <- sapply(strsplit(w_map$names, ":"), function(x) x[1]) # preparing data to create polygon
 reg <- map2SpatialPolygons(w_map, IDs = w_po, proj4string = WGS84) # map to polygon
@@ -855,10 +857,48 @@ e <- extent(reg)
 mask <- as(e, 'SpatialPolygons')
 
 variables <- crop(vars, mask)
+save <- FALSE # if TRUE, the figure will be saved in your directory
+name <- "test"
+
+## ranges on evironmental factor maps
+ranges_emaps(ranges = ranges, variables = variables, save_fig = save,
+             name = name)
+```
+
+![](README_files/figure-markdown_github/unnamed-chunk-37-1.png)
+
+``` r
+#dev.off() # for returning to default par settings
+```
+
+<br>
+
+##### Species ranges in the environmental space
+
+The *ranges\_espace* function generates a three dimensional comparison of a species' ranges created using distinct algortihms, to visualize implications of selecting one of them if environmental conditions are considered.
+
+The function's help can be consulted usign the following line of code:
+
+``` r
+help(ranges_espace)
+```
+
+An example of the use of this function is written below.
+
+``` r
+# ranges comparison in environmental space
+## list of ranges
+ranges1 <- list(buff, concave)
+names(ranges1) <- c("buff", "concave")
+
+## other data for environmental comparisson
+vars <- getData("worldclim", var = "bio", res = 5)
+
+variables <- crop(vars, mask)
 
 ## comparison
 occur <- TRUE
-env_comp <- ranges_espace(ranges = ranges, add_occurrences = occur, variables = variables)
+env_comp <- ranges_espace(ranges = ranges1, add_occurrences = occur, variables = variables)
 ```
 
     ## 
@@ -871,16 +911,10 @@ env_comp <- ranges_espace(ranges = ranges, add_occurrences = occur, variables = 
     ## For further work with the figure use the object created with the function.
 
 ``` r
+# use the created object to see again the figure
 env_comp
-```
-
-![](README_files/figure-markdown_github/unnamed-chunk-39-1.png)
-
-``` r
 # now play around, zoom in and rotate the figure
-```
 
-``` r
 # saving this figure may be challenging, try using
 # the following lines of code and check your download directory
 

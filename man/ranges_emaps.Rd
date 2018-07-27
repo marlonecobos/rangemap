@@ -123,7 +123,7 @@ split <- TRUE
 hull2 <- "convex"
 
 convex <- rangemap_hull(occurrences = occ_g, hull_type = hull2, buffer_distance = dist1,
-                         split = TRUE, cluster_method = "k-means", n_k_means = 3)
+                         split = split, cluster_method = "k-means", n_k_means = 3)
 
 # ranges representation on environmental factor maps
 ## list of ranges
@@ -160,8 +160,8 @@ e <- extent(reg)
 mask <- as(e, 'SpatialPolygons')
 
 variables <- crop(vars, mask)
-save = TRUE
-name = "test"
+save <- TRUE
+name <- "test"
 
 ## ranges on evironmental factor maps
 ranges_emaps(ranges = ranges, variables = variables, save_fig = save,
