@@ -156,7 +156,7 @@ rangemap_enm <- function(occurrences, model, threshold_value, threshold_omission
   }
 
   # project area and occurrences using the area centriod as reference
-  centroid <- rgeos::gCentroid(enm_range, byid = FALSE)
+  centroid <- suppressWarnings(rgeos::gCentroid(enm_range, byid = FALSE))
 
   AEQD <- sp::CRS(paste("+proj=aeqd +lat_0=", centroid@coords[2], " +lon_0=", centroid@coords[1],
                         " +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs", sep = ""))
