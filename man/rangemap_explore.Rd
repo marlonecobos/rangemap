@@ -9,11 +9,12 @@ rangemap_explore(occurrences, show_countries = FALSE,
 }
 \arguments{
 \item{occurrences}{a data.frame containing geographic coordinates of species occurrences,
-columns must be: Species, Longitude, and Latitude. Geographic coordinates must be in decimal degrees.}
+columns must be: Species, Longitude, and Latitude. Geographic coordinates must be in
+decimal degrees.}
 
-\item{show_countries}{(logical) if TRUE ISO 3 country codes will label country polygons.}
+\item{show_countries}{(logical) if TRUE, ISO 3 country codes will label country polygons.}
 
-\item{graphic_device}{(logical) if TRUE a new graphic device is opened to plot the figure.
+\item{graphic_device}{(logical) if TRUE, a new graphic device is opened to plot the figure.
 Default = FALSE.}
 }
 \value{

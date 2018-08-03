@@ -1,6 +1,6 @@
 #' List of country names and ISO codes
 #'
-#' A dataset containing codes for identifying countries according to ISO
+#' @description A dataset containing codes for identifying countries according to ISO
 #' norms.
 #'
 #' @format A data frame with 247 rows and 4 columns.

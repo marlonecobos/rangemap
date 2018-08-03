@@ -1,7 +1,7 @@
-#' List of names of administrative areas available form the GADM data base
+#' List of names of administrative areas form the GADM data base
 #'
-#' A dataset containing names of all the avilable administrative areas from the
-#' GADM data base. Names describe distict administrative boundaries at five levels.
+#' @description A dataset containing names of all the avilable administrative areas from the
+#' GADM data base. Names describe distict administrative areas in five levels.
 #'
 #' @format A data frame with 339127 rows and 17 columns.
 #' \describe{

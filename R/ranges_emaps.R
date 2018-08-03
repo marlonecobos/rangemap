@@ -9,50 +9,66 @@
 #' \code{\link{rangemap_buff}}, \code{\link{rangemap_bound}}, \code{\link{rangemap_hull}},
 #' \code{\link{rangemap_enm}}, and \code{\link{rangemap_tsa}}. For visualization purposes,
 #' using up to three ranges is recommended.
-#' @param add_occurrences (logical) if TRUE, species occurrences contained in one of the elements of
-#' the list \code{ranges} will be ploted in the figure. Default = TRUE. If the none of the ranges
-#' contains occurrences (e.g. a list of one object created with the \code{\link{rangemap_bound}}
-#' function in which occurrences were not used), this parameter will be ignored.
+#' @param add_occurrences (logical) if TRUE, species occurrences contained in one of the
+#' elements of the list \code{ranges} will be ploted in the figure. Default = TRUE. If the
+#' none of the ranges contains occurrences (e.g. a list of one object created with the
+#' \code{\link{rangemap_bound}} function in which occurrences were not used), this parameter
+#' will be ignored.
 #' @param variables a RasterStack object of environmental variables that will be used for
-#' representing the environmental factors. Projection is assumed to be Geographic (longitude and
-#' latitude). Consider that depending on the species range, more than 9 variables
+#' representing the environmental factors. Projection is assumed to be Geographic (longitude
+#' and latitude). Consider that depending on the species range, more than 9 variables
 #' may create a figure that does not fit in an A4 sheet of paper. A maximum of 21
-#' variables is allowed, if the limit is surpassed other variables will be ignored.
-#' @param range_colors vector of colors of the range borders to be represented. If not defined, default = NULL
-#' and default colors will be used. If more than 7 objects are included in \code{ranges}, default
-#' colors will be recycled; therefore, defining colors here is recommended in those cases.
-#' @param ranges_legend (logical) if TRUE a legend of the plotted ranges will be added to the
-#' last panel at \code{legend_position}. Default = TRUE.
-#' @param variables_color a color palette like terrain.colors, heat.colors, topo.colors, or your own.
-#' Default = NULL. If not provided, rev(terrain.colors(255)) is used.
-#' @param legend_position (numeric or character) site in the figure where the legend will be placed. If
-#' numeric, vector of leght two indicating x and y coordinates to be used to position the legend. See
-#' details for options of character indicators of position. Default = "bottomright".
+#' variables is allowed, if this limit is surpassed, other variables will be ignored.
+#' @param range_colors vector of colors of the range borders to be represented. If not
+#' defined, default = NULL and default colors will be used. If more than 7 objects are
+#' included in \code{ranges}, default colors will be recycled; therefore, defining colors
+#' here is recommended in those cases.
+#' @param ranges_legend (logical) if TRUE, a legend of the plotted ranges will be added
+#' to the last panel at \code{legend_position}. Default = TRUE.
+#' @param variables_color a color palette like terrain.colors, heat.colors, topo.colors,
+#' or your own. Default = NULL. If not provided, rev(terrain.colors(255)) is used.
+#' @param legend_position (numeric or character) site in the figure where the legend will
+#' be placed. If numeric, vector of leght two indicating x and y coordinates to be used
+#' to position the legend. See details for options of character indicators of position.
+#' Default = "bottomright".
 #' @param legend_size (numeric) size of the legend with respect to one of the panels.
 #' Default = 0.7.
-#' @param scalebar (logical) if TRUE a simple scale bar will be inserted in the last panel at
-#' \code{scalebar_position} with a length of \code{scalebar_length}. Default = FALSE.
-#' @param scalebar_position (numeric or character) site in the figure where the scale bar will be placed. If
-#' numeric, vector of leght two indicating x and y coordinates to be used to position the scale bar. See
-#' details for options of character indicators of position. Default = "bottomleft".
-#' @param scalebar_length (numeric) length of the scale bar in km. Using entire numbers divisble for
-#' two is recommended. Default = 100.
-#' @param zoom (numeric) zoom factor when ploting the species range in a map based on the biggest
-#' range. Default = 1.3. Lower #' values will zoom in into the species range and bigger values will
-#' zoom out. A value of 2 will duplicate the area that the biggest range is covering.
-#' @param save_fig (logical) if TRUE the figure will be written in the working directory. Default = FALSE.
+#' @param scalebar (logical) if TRUE, a simple scale bar will be inserted in the last panel
+#' at \code{scalebar_position} with a length of \code{scalebar_length}. Default = FALSE.
+#' @param scalebar_position (numeric or character) site in the figure where the scale bar
+#' will be placed. If numeric, vector of leght two indicating x and y coordinates to be
+#' used to position the scale bar. See details for options of character indicators of
+#' position. Default = "bottomleft".
+#' @param scalebar_length (numeric) length of the scale bar in km. Using entire numbers
+#' divisble for two is recommended. Default = 100.
+#' @param zoom (numeric) zoom factor when ploting the species range in a map based on the
+#' biggest range. Default = 1.3. Lower #' values will zoom in into the species range and
+#' bigger values will zoom out. A value of 2 will duplicate the area that the biggest range
+#' is covering.
+#' @param save_fig (logical) if TRUE, the figure will be written in the working directory.
+#' Default = FALSE.
 #' @param name (character) if \code{save_fig} = TRUE, name of the figure to be exported.
 #' Default = "ranges_emaps".
-#' @param format (character) if \code{save_fig} = TRUE, format in which the figure will be written. Options
-#' include "bmp", "png", "jpeg", "tiff", and "pdf". Default = "png".
-#' @param resolution (numeric) if \code{save_fig} = TRUE, resolution (ppi) in wich the figure will be exported.
-#' Default = 300.
+#' @param format (character) if \code{save_fig} = TRUE, format in which the figure will be
+#' written. Options include "bmp", "png", "jpeg", "tiff", and "pdf". Default = "png".
+#' @param resolution (numeric) if \code{save_fig} = TRUE, resolution (ppi) in wich the figure
+#' will be exported. Default = 300.
 #' @param width (numeric) if \code{save_fig} = TRUE, width of the figure in mm. Default = 166.
 #' Height will be adjusted considering the amount of variables that will be plotted.
 #'
-#' @return A figure showing species ranges on maps of environmental factors. Ranges should be
-#' generated with any of the functions: \code{\link{rangemap_buff}}, \code{\link{rangemap_bound}},
-#' \code{\link{rangemap_hull}}, \code{\link{rangemap_enm}}, and \code{\link{rangemap_tsa}}.
+#' @return A figure showing species ranges on maps of environmental factors.
+#'
+#' @details Ranges should be generated with any of the functions: \code{\link{rangemap_buff}},
+#' \code{\link{rangemap_bound}}, \code{\link{rangemap_hull}}, \code{\link{rangemap_enm}}, and
+#' \code{\link{rangemap_tsa}}.
+#'
+#' Position of distinct elements depend on the spatial configuration of the species range.
+#' Therefore, their position may need to be changed if the elements are needed. Position
+#' options are: "bottomright", "bottomleft", "topleft", and "topright". Numerical descriptions
+#' of positions are also allowed.
+#'
+#' Scale bar is ploted using a modification of the "scalebar" function developed by
+#' Tanimura et al. (2007) \url{http://hdl.handle.net/10.18637/jss.v019.c01}.
 #'
 #' @examples
 #' if(!require(rgbif)){
@@ -120,9 +136,11 @@
 #'
 #' ## mask variables to region of interest
 #' WGS84 <- CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
-#' w_map <- map(database = "world", regions = c("Ecuador", "Peru", "Bolivia", "Colombia", "Venezuela",
-#'                                              "Suriname", "Guyana", "French Guyana", "Brazil"),
+#' w_map <- map(database = "world", regions = c("Ecuador", "Peru", "Bolivia", "Colombia",
+#'                                              "Venezuela", "Suriname", "Guyana",
+#'                                              "French Guyana", "Brazil"),
 #'              fill = TRUE, plot = FALSE) # map of the world
+#'
 #' w_po <- sapply(strsplit(w_map$names, ":"), function(x) x[1]) # preparing data to create polygon
 #' reg <- map2SpatialPolygons(w_map, IDs = w_po, proj4string = WGS84) # map to polygon
 #'
@@ -134,16 +152,18 @@
 #' name <- "test"
 #'
 #' ## ranges on evironmental factor maps
-#' ranges_emaps(ranges = ranges, variables = variables, save_fig = save,
-#'              name = name)
+#' ranges_emaps(ranges = ranges, variables = variables,
+#'              save_fig = save, name = name)
 #'
 #' #dev.off() # for returning to default par settings
 
 ranges_emaps <- function(ranges, add_occurrences = TRUE, variables, range_colors = NULL,
-                         variables_color = NULL, ranges_legend = TRUE, legend_position = "bottomright",
-                         legend_size = 0.7, scalebar = FALSE, scalebar_position = "bottomleft",
-                         scalebar_length = 100, zoom = 1.3, save_fig = FALSE, name = "ranges_emaps",
-                         format = "png", resolution = 300, width = 166) {
+                         variables_color = NULL, ranges_legend = TRUE,
+                         legend_position = "bottomright", legend_size = 0.7,
+                         scalebar = FALSE, scalebar_position = "bottomleft",
+                         scalebar_length = 100, zoom = 1.3, save_fig = FALSE,
+                         name = "ranges_emaps", format = "png", resolution = 300,
+                         width = 166) {
 
   # testing potential issues
   if (missing(ranges)) {

@@ -9,7 +9,8 @@ rangemap_buff(occurrences, buffer_distance = 1e+05, polygons,
 }
 \arguments{
 \item{occurrences}{a data.frame containing geographic coordinates of species occurrences,
-columns must be: Species, Longitude, and Latitude. Geographic coordinates must be in decimal degrees.}
+columns must be: Species, Longitude, and Latitude. Geographic coordinates must be in decimal
+degrees.}
 
 \item{buffer_distance}{(numeric) distance, in meters, to be used for creating the buffer areas
 around occurrences, default = 100000.}
@@ -18,18 +19,19 @@ around occurrences, default = 100000.}
 range and other polygons to these limits. Projection must be Geographic (longitude, latitude).
 If not defined, a default, simple world map will be used.}
 
-\item{save_shp}{(logical) if TRUE shapefiles of the species range, occurrences, extent of occurrence and
-area of occupancy will be written in the working directory. Default = FALSE.}
+\item{save_shp}{(logical) if TRUE, shapefiles of the species range, occurrences, extent of
+occurrence and area of occupancy will be written in the working directory. Default = FALSE.}
 
-\item{name}{(character) valid if \code{save_shp} = TRUE. The name of the shapefile to be exported.
-A suffix will be added to \code{name} depending on the object as follows: species extent of occurrence =
-"_extent_occ", area of occupancy = "_area_occ", and occurrences = "_unique_records". Default =
-"range_buffer".}
+\item{name}{(character) valid if \code{save_shp} = TRUE. The name of the shapefile to be
+exported. A suffix will be added to \code{name} depending on the object as follows: species
+extent of occurrence = "_extent_occ", area of occupancy = "_area_occ", and occurrences =
+"_unique_records". Default = "range_buffer".}
 }
 \value{
-A named list containing: (1) a data.frame with information about the species range, and
-SpatialPolygon objects of (2) unique occurrences, (3) species range, (4) extent of occurrence, and
-(5) area of occurpancy. All Spatial objects will be in Azimuthal equal area projection.
+A named list containing: (1) a data.frame with information about the species range,
+and SpatialPolygon objects of (2) unique occurrences, (3) species range, (4) extent of
+occurrence, and (5) area of occurpancy. All Spatial objects will be in Azimuthal Equal Area
+projection.
 }
 \description{
 rangemap_buff generates a distributional range for a given species by
@@ -68,13 +70,10 @@ buff_range <- rangemap_buff(occurrences = occ_g, buffer_distance = dist,
 # see the species range in a figure
 extent <- TRUE
 occ <- TRUE
-grid <- TRUE
-sides <- "bottomleft"
 legend <- TRUE
 north <- TRUE
 
 # creating the species range figure
 rangemap_fig(buff_range, add_extent = extent, add_occurrences = occ,
-             grid = grid, grid_sides = sides, legend = legend,
-             northarrow = north)
+             legend = legend, northarrow = north)
 }

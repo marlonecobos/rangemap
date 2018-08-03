@@ -7,38 +7,40 @@
 #' saved in the working directory if it is needed.
 #'
 #' @param occurrences a data.frame containing geographic coordinates of species occurrences,
-#' columns must be: Species, Longitude, and Latitude. Geographic coordinates must be in decimal degrees.
-#' @param hull_type (character) type of hull polygons to be created. Available options are: "convex"
-#' or "concave" hulls. Default = "convex".
+#' columns must be: Species, Longitude, and Latitude. Geographic coordinates must be in decimal
+#' degrees.
+#' @param hull_type (character) type of hull polygons to be created. Available options are:
+#' "convex" or "concave" hulls. Default = "convex".
 #' @param concave_distance_lim (numeric) distance, in meters, to be passed to the length_threshold
 #' parameter of the \code{\link[concaveman]{concaveman}} funcion. Default = 5000. Ignored if
 #' \code{hull_type} is not "concave".
-#' @param buffer_distance (numeric) distance, in meters, to be used for creating the buffer areas
-#' around occurrences, default = 50000.
-#' @param split (logical) if TRUE a distance (for hierarchical clustering) or a number (for K-means
-#' clustering) is used to separate distinct chunks of occurrences. Recommended when the species of
-#' interest has a disjunct distribution. Default = FALSE.
-#' @param cluster_method (character) name of the method to be used for clustering the occurrences. Options
-#' are "hierarchical" and "k-means"; default = "hierarchical". Note that this parameter is ignored when
-#' \code{split} = FALSE.
-#' @param split_distance (numeric) distance in meters that will limit connectivity among
-#' hull polygons created with chunks of points separated by long distances. This parameter is used when
-#' \code{cluster_method} = "hierarchical" and \code{split} = TRUE.
-#' @param n_k_means (numeric) if \code{split} = TRUE, number of clusters in which the species occurrences
-#' will be grouped when using the "k-means" \code{cluster_method}.
-#' @param polygons (optional) a SpatialPolygon object to clip the obtained areas and adjust the species
-#' range and other polygons to these limits. Projection must be Geographic (longitude, latitude).
-#' If not defined, a default, simple world map will be used.
-#' @param save_shp (logical) if TRUE shapefiles of the species range, occurrences, extent of occurrence and
-#' area of occupancy will be written in the working directory. Default = FALSE.
-#' @param name (character) valid if \code{save_shp} = TRUE. The name of the shapefile to be exported.
-#' A suffix will be added to \code{name} depending on the object as follows: species extent of occurrence =
-#' "_extent_occ", area of occupancy = "_area_occ", and occurrences = "_unique_records". Default =
-#' "range_hull".
+#' @param buffer_distance (numeric) distance, in meters, to be used for creating the buffer
+#' areas around occurrences, default = 50000.
+#' @param split (logical) if TRUE, a distance (for hierarchical clustering) or a number (for
+#' K-means clustering) is used to separate distinct chunks of occurrences. Recommended when
+#' the species of interest has a disjunct distribution. Default = FALSE.
+#' @param cluster_method (character) name of the method to be used for clustering the occurrences.
+#' Options are "hierarchical" and "k-means"; default = "hierarchical". Note that this parameter is
+#' ignored when \code{split} = FALSE.
+#' @param split_distance (numeric) distance in meters that will limit connectivity among hull
+#' polygons created with chunks of points separated by long distances. This parameter is used
+#' when \code{cluster_method} = "hierarchical" and \code{split} = TRUE.
+#' @param n_k_means (numeric) if \code{split} = TRUE, number of clusters in which the species
+#' occurrences will be grouped when using the "k-means" \code{cluster_method}.
+#' @param polygons (optional) a SpatialPolygon object to clip the obtained areas and adjust the
+#' species range and other polygons to these limits. Projection must be Geographic (longitude,
+#' latitude). If not defined, a default, simple world map will be used.
+#' @param save_shp (logical) if TRUE, shapefiles of the species range, occurrences, extent of
+#' occurrence and area of occupancy will be written in the working directory. Default = FALSE.
+#' @param name (character) valid if \code{save_shp} = TRUE. The name of the shapefile to be
+#' exported. A suffix will be added to \code{name} depending on the object as follows: species
+#' extent of occurrence = "_extent_occ", area of occupancy = "_area_occ", and occurrences =
+#' "_unique_records". Default = "range_hull".
 #'
-#' @return A named list containing: (1) a data.frame with information about the species range, and
-#' SpatialPolygon objects of (2) unique occurrences, (3) species range, (4) extent of occurrence, and
-#' (5) area of occurpancy. All Spatial objects will be in Azimuthal equal area projection.
+#' @return A named list containing: (1) a data.frame with information about the species range,
+#' and SpatialPolygon objects of (2) unique occurrences, (3) species range, (4) extent of
+#' occurrence, and (5) area of occurpancy. All Spatial objects will be in Azimuthal equal area
+#' projection.
 #'
 #' @examples
 #' if(!require(rgbif)){
@@ -75,19 +77,17 @@
 #' # see the species range in a figure
 #' extent <- TRUE
 #' occ <- TRUE
-#' grid <- TRUE
-#' sides <- "bottomleft"
 #' legend <- TRUE
 #' north <- TRUE
 #'
 #' # creating the species range figure
 #' rangemap_fig(hull_range, add_extent = extent, add_occurrences = occ,
-#'              grid = grid, grid_sides = sides, legend = legend,
-#'              northarrow = north)
+#'              legend = legend, northarrow = north)
 
 rangemap_hull <- function(occurrences, hull_type = "convex", buffer_distance = 50000,
-                          concave_distance_lim = 5000, split = FALSE, cluster_method = "hierarchical",
-                          split_distance, n_k_means, polygons, save_shp = FALSE, name = "range_hull") {
+                          concave_distance_lim = 5000, split = FALSE,
+                          cluster_method = "hierarchical", split_distance, n_k_means,
+                          polygons, save_shp = FALSE, name = "range_hull") {
   # testing potential issues
   if (missing(occurrences)) {
     stop("Argument occurrences is necessary to perform the analysis")

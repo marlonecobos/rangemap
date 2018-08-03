@@ -4,9 +4,10 @@
 #' data in the geographic space before using other functions of this package.
 #'
 #' @param occurrences a data.frame containing geographic coordinates of species occurrences,
-#' columns must be: Species, Longitude, and Latitude. Geographic coordinates must be in decimal degrees.
-#' @param show_countries (logical) if TRUE ISO 3 country codes will label country polygons.
-#' @param graphic_device (logical) if TRUE a new graphic device is opened to plot the figure.
+#' columns must be: Species, Longitude, and Latitude. Geographic coordinates must be in
+#' decimal degrees.
+#' @param show_countries (logical) if TRUE, ISO 3 country codes will label country polygons.
+#' @param graphic_device (logical) if TRUE, a new graphic device is opened to plot the figure.
 #' Default = FALSE.
 #'
 #' @return A simple figure of the species occurrences in a geographical context.

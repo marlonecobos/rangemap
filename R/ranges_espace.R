@@ -8,34 +8,40 @@
 #' \code{\link{rangemap_buff}}, \code{\link{rangemap_bound}}, \code{\link{rangemap_hull}},
 #' \code{\link{rangemap_enm}}, and \code{\link{rangemap_tsa}}. For visualization purposes,
 #' using up to three ranges is recommended.
-#' @param add_occurrences (logical) if TRUE, species occurrences contained in one of the elements of
-#' the list \code{ranges} will be ploted in the figure. Default = TRUE. If the none of the ranges
-#' contains occurrences (e.g. a list of one object created with the \code{\link{rangemap_bound}}
-#' function in which occurrences were not used), this parameter will be ignored.
-#' @param variables a RasterStack object of environmental variables that will be used for
-#' creating the principal components to represent the environmental space. Projection is assumed
-#' to be Geographic (longitude and latitude).
-#' @param max_background (numeric) maximum number of data from variables to be used for representation
-#' of the environmental space. Default = 25000. Increasing this number results in more detailed
-#' views of the available environment but preforming analyses will take longer.
-#' @param ranges_representation (character) form in which the environmental space withing the ranges
-#' will be represented. Options are "clouds" and "ellipsoids". Default = "clouds".
-#' @param background_color color of the background to be ploted. Default = "darkolivegreen". Since
-#' transparency is used for representing most of components of the plot, colors may look different.
-#' @param range_colors vector of colors of the ranges to be represented. If not defined, default = NULL
-#' and default colors will be used. Since transparency is used for representing most of components of
-#' the plot, colors may look different.
-#' @param save_fig (logical) if TRUE the figure will be written in the working directory. Default = FALSE.
-#' @param name (character) if \code{save_fig} = TRUE, name of the figure to be exported. Default = "range_fig".
-#' @param format (character) if \code{save_fig} = TRUE, format in which the figure will be written. Options
-#' include "bmp", "png", "jpeg", "tiff", and "pdf". Default = "png".
-#' @param resolution (numeric) if \code{save_fig} = TRUE, resolution (ppi) in wich the figure will be exported.
-#' Default = 300.
+#' @param add_occurrences (logical) if TRUE, species occurrences contained in one of
+#' the elements of the list \code{ranges} will be ploted in the figure. Default = TRUE.
+#' If the none of the ranges contains occurrences (e.g. a list of one object created
+#' with the \code{\link{rangemap_bound}} function in which occurrences were not used),
+#' this parameter will be ignored.
+#' @param variables a RasterStack object of environmental variables that will be used
+#' for creating the principal components to represent the environmental space. Projection
+#' is assumed to be Geographic (longitude and latitude).
+#' @param max_background (numeric) maximum number of data from variables to be used for
+#' representation of the environmental space. Default = 25000. Increasing this number
+#' results in more detailed views of the available environment but preforming analyses
+#' will take longer.
+#' @param ranges_representation (character) form in which the environmental space
+#' withing the ranges will be represented. Options are "clouds" and "ellipsoids".
+#' Default = "clouds".
+#' @param background_color color of the background to be ploted. Default = "darkolivegreen".
+#' Since transparency is used for representing most of components of the plot, colors may
+#' look different.
+#' @param range_colors vector of colors of the ranges to be represented. If not defined,
+#' default = NULL and default colors will be used. Since transparency is used for
+#' representing most of components of the plot, colors may look different.
+#' @param save_fig (logical) if TRUE, the figure will be written in the working directory.
+#' Default = FALSE.
+#' @param name (character) if \code{save_fig} = TRUE, name of the figure to be exported.
+#' Default = "range_fig".
+#' @param format (character) if \code{save_fig} = TRUE, format in which the figure will
+#' be written. Options include "bmp", "png", "jpeg", "tiff", and "pdf". Default = "png".
+#' @param resolution (numeric) if \code{save_fig} = TRUE, resolution (ppi) in wich the
+#' figure will be exported. Default = 300.
 #' @param width (numeric) if \code{save_fig} = TRUE, width of the figure in mm. Default = 166.
 #' @param height (numeric) if \code{save_fig} = TRUE, height of the figure in mm. Default = 166.
 #'
-#' @return A figure showing, in the environmental space, the species ranges generated with any
-#' of the functions: \code{\link{rangemap_buff}}, \code{\link{rangemap_bound}},
+#' @return A figure showing, in the environmental space, the species ranges generated with
+#' any of the functions: \code{\link{rangemap_buff}}, \code{\link{rangemap_bound}},
 #' \code{\link{rangemap_hull}}, \code{\link{rangemap_enm}}, and \code{\link{rangemap_tsa}}.
 #'
 #' @examples

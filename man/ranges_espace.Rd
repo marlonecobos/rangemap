@@ -15,46 +15,52 @@ ranges_espace(ranges, add_occurrences = TRUE, variables,
 \code{\link{rangemap_enm}}, and \code{\link{rangemap_tsa}}. For visualization purposes,
 using up to three ranges is recommended.}
 
-\item{add_occurrences}{(logical) if TRUE, species occurrences contained in one of the elements of
-the list \code{ranges} will be ploted in the figure. Default = TRUE. If the none of the ranges
-contains occurrences (e.g. a list of one object created with the \code{\link{rangemap_bound}}
-function in which occurrences were not used), this parameter will be ignored.}
+\item{add_occurrences}{(logical) if TRUE, species occurrences contained in one of
+the elements of the list \code{ranges} will be ploted in the figure. Default = TRUE.
+If the none of the ranges contains occurrences (e.g. a list of one object created
+with the \code{\link{rangemap_bound}} function in which occurrences were not used),
+this parameter will be ignored.}
 
-\item{variables}{a RasterStack object of environmental variables that will be used for
-creating the principal components to represent the environmental space. Projection is assumed
-to be Geographic (longitude and latitude).}
+\item{variables}{a RasterStack object of environmental variables that will be used
+for creating the principal components to represent the environmental space. Projection
+is assumed to be Geographic (longitude and latitude).}
 
-\item{max_background}{(numeric) maximum number of data from variables to be used for representation
-of the environmental space. Default = 25000. Increasing this number results in more detailed
-views of the available environment but preforming analyses will take longer.}
+\item{max_background}{(numeric) maximum number of data from variables to be used for
+representation of the environmental space. Default = 25000. Increasing this number
+results in more detailed views of the available environment but preforming analyses
+will take longer.}
 
-\item{ranges_representation}{(character) form in which the environmental space withing the ranges
-will be represented. Options are "clouds" and "ellipsoids". Default = "clouds".}
+\item{ranges_representation}{(character) form in which the environmental space
+withing the ranges will be represented. Options are "clouds" and "ellipsoids".
+Default = "clouds".}
 
-\item{background_color}{color of the background to be ploted. Default = "darkolivegreen". Since
-transparency is used for representing most of components of the plot, colors may look different.}
+\item{background_color}{color of the background to be ploted. Default = "darkolivegreen".
+Since transparency is used for representing most of components of the plot, colors may
+look different.}
 
-\item{range_colors}{vector of colors of the ranges to be represented. If not defined, default = NULL
-and default colors will be used. Since transparency is used for representing most of components of
-the plot, colors may look different.}
+\item{range_colors}{vector of colors of the ranges to be represented. If not defined,
+default = NULL and default colors will be used. Since transparency is used for
+representing most of components of the plot, colors may look different.}
 
-\item{save_fig}{(logical) if TRUE the figure will be written in the working directory. Default = FALSE.}
+\item{save_fig}{(logical) if TRUE, the figure will be written in the working directory.
+Default = FALSE.}
 
-\item{name}{(character) if \code{save_fig} = TRUE, name of the figure to be exported. Default = "range_fig".}
+\item{name}{(character) if \code{save_fig} = TRUE, name of the figure to be exported.
+Default = "range_fig".}
 
-\item{format}{(character) if \code{save_fig} = TRUE, format in which the figure will be written. Options
-include "bmp", "png", "jpeg", "tiff", and "pdf". Default = "png".}
+\item{format}{(character) if \code{save_fig} = TRUE, format in which the figure will
+be written. Options include "bmp", "png", "jpeg", "tiff", and "pdf". Default = "png".}
 
-\item{resolution}{(numeric) if \code{save_fig} = TRUE, resolution (ppi) in wich the figure will be exported.
-Default = 300.}
+\item{resolution}{(numeric) if \code{save_fig} = TRUE, resolution (ppi) in wich the
+figure will be exported. Default = 300.}
 
 \item{width}{(numeric) if \code{save_fig} = TRUE, width of the figure in mm. Default = 166.}
 
 \item{height}{(numeric) if \code{save_fig} = TRUE, height of the figure in mm. Default = 166.}
 }
 \value{
-A figure showing, in the environmental space, the species ranges generated with any
-of the functions: \code{\link{rangemap_buff}}, \code{\link{rangemap_bound}},
+A figure showing, in the environmental space, the species ranges generated with
+any of the functions: \code{\link{rangemap_buff}}, \code{\link{rangemap_bound}},
 \code{\link{rangemap_hull}}, \code{\link{rangemap_enm}}, and \code{\link{rangemap_tsa}}.
 }
 \description{

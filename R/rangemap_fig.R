@@ -6,67 +6,77 @@
 #' @param range an object produced with any of the following functions:
 #' \code{\link{rangemap_buff}}, \code{\link{rangemap_bound}}, \code{\link{rangemap_hull}},
 #' \code{\link{rangemap_enm}}, and \code{\link{rangemap_tsa}}.
-#' @param polygons a SpatialPolygon object to be used as base map for plotting the species range.
-#' If not provided, a simplified world map will be used.
-#' @param add_extent (logical) if TRUE the extent of occurrence of the species will be added to
-#' the figure. Ignored if the \code{range} is product of the \code{\link{rangemap_bound}} function
-#' and administrative areas were selected only based on names. Default = FALSE.
-#' @param add_occurrences (logical) if TRUE the species occurrence records will be added to
-#' the figure. Ignored if the \code{range} is product of the \code{\link{rangemap_bound}} function
-#' and administrative areas were selected only based on names. Default = FALSE.
+#' @param polygons a SpatialPolygon object to be used as base map for plotting the species
+#' range. If not provided, a simplified world map will be used.
+#' @param add_extent (logical) if TRUE, the extent of occurrence of the species will be
+#' added to the figure. Ignored if the \code{range} is product of the \code{\link{rangemap_bound}}
+#' function and administrative areas were selected only based on names. Default = FALSE.
+#' @param add_occurrences (logical) if TRUE, the species occurrence records will be added
+#' to the figure. Ignored if the \code{range} is product of the \code{\link{rangemap_bound}}
+#' function and administrative areas were selected only based on names. Default = FALSE.
 #' @param basemap_color color for the basemap (\code{polygons}) to be ploted in the figure.
 #' Default = "grey93".
 #' @param range_color color for the species \code{range} to be ploted in the figure.
 #' Default = "darkgreen".
 #' @param extent_color color for the species extent of occurrence to be ploted in the figure.
 #' Default = "blue".
-#' @param occurrences_color color for the species \code{occurrences} to be ploted in the figure.
-#' Default = "yellow".
-#' @param grid (logical) if TRUE labels and grid division ticks will be inserted in \code{grid_sides}.
-#' Default = FALSE.
-#' @param grid_sides (character) sides in which the labels will be placed in the figure. Options
-#' are the same than for other position character indicators (see details). Default = "bottomleft".
-#' @param ylabels_position (numeric) if \code{grid} = TRUE, separation (in lines) of y axis labels from
-#' the axis. Bigger numbers will increase separation. Default = 2.3.
-#' @param legend (logical) if TRUE a legend of the plotted features will be added to the figure at
-#' \code{legend_position}. Default = FALSE.
-#' @param legend_position (numeric or character) site in the figure where the legend will be placed. If
-#' numeric, vector of leght two indicating x and y coordinates to be used to position the legend. See
-#' details for options of character indicators of position. Default = "bottomright".
-#' @param northarrow (logical) if TRUE, a simple north arrow will be placed in \code{northarrow_position}.
-#' Default = FALSE.
-#' @param northarrow_position (numeric or character) site in the figure where the north legend will be placed. If
-#' numeric, vector of leght two indicating x and y coordinates to be used to position the north arrow. See
-#' details for options of character indicators of position. Default = "topright".
-#' @param scalebar (logical) if TRUE a simple scale bar will be inserted in the figure at
+#' @param occurrences_color color for the species \code{occurrences} to be ploted in the
+#' figure. Default = "yellow".
+#' @param grid (logical) if TRUE, labels and grid division ticks will be inserted in
+#' \code{grid_sides}. Default = FALSE.
+#' @param grid_sides (character) sides in which the labels will be placed in the figure.
+#' Options are the same than for other position character indicators (see details). Default =
+#' "bottomleft".
+#' @param ylabels_position (numeric) if \code{grid} = TRUE, separation (in lines) of y axis
+#' labels from the axis. Bigger numbers will increase separation. Default = 2.3.
+#' @param legend (logical) if TRUE, a legend of the plotted features will be added to the
+#' figure at \code{legend_position}. Default = FALSE.
+#' @param legend_position (numeric or character) site in the figure where the legend will
+#' be placed. If numeric, vector of leght two indicating x and y coordinates to be used to
+#' position the legend. See details for options of character indicators of position. Default =
+#' "bottomright".
+#' @param northarrow (logical) if TRUE, a simple north arrow will be placed in
+#' \code{northarrow_position}. Default = FALSE.
+#' @param northarrow_position (numeric or character) site in the figure where the north
+#' legend will be placed. If numeric, vector of leght two indicating x and y coordinates
+#' to be used to position the north arrow. See details for options of character indicators
+#' of position. Default = "topright".
+#' @param scalebar (logical) if TRUE, a simple scale bar will be inserted in the figure at
 #' \code{scalebar_position} with a length of \code{scalebar_length}. Default = FALSE.
-#' @param scalebar_position (numeric or character) site in the figure where the scale bar will be placed. If
-#' numeric, vector of leght two indicating x and y coordinates to be used to position the scale bar. See
-#' details for options of character indicators of position. Default = "bottomleft".
-#' @param scalebar_length (numeric) length of the scale bar in km. Using entire numbers divisble for
-#' two is recommended. Default = 100.
-#' @param zoom (numeric) zoom factor when ploting the species range in a map. Default = 1. Values
-#' lower than 1 will zoom in into the species range and values bigger than 1 will zoom out. A value of 2
-#' will duplicate the area that the figure is covering.
-#' @param save_fig (logical) if TRUE the figure will be written in the working directory. Default = FALSE.
-#' @param name (character) if \code{save_fig} = TRUE, name of the figure to be exported. Default = "range_fig".
-#' @param format (character) if \code{save_fig} = TRUE, format in which the figure will be written. Options
-#' include "bmp", "png", "jpeg", "tiff", and "pdf". Default = "png".
-#' @param resolution (numeric) if \code{save_fig} = TRUE, resolution (ppi) in wich the figure will be exported.
-#' Default = 300.
+#' @param scalebar_position (numeric or character) site in the figure where the scale bar
+#' will be placed. If numeric, vector of leght two indicating x and y coordinates to be used
+#' to position the scale bar. See details for options of character indicators of position.
+#' Default = "bottomleft".
+#' @param scalebar_length (numeric) length of the scale bar in km. Using entire numbers
+#' divisble for two is recommended. Default = 100.
+#' @param zoom (numeric) zoom factor when ploting the species range in a map. Default = 1.
+#' Values lower than 1 will zoom in into the species range and values bigger than 1 will
+#' zoom out. A value of 2 will duplicate the area that the figure is covering.
+#' @param save_fig (logical) if TRUE, the figure will be written in the working directory.
+#' Default = FALSE.
+#' @param name (character) if \code{save_fig} = TRUE, name of the figure to be exported.
+#' Default = "range_fig".
+#' @param format (character) if \code{save_fig} = TRUE, format in which the figure will be
+#' written. Options include "bmp", "png", "jpeg", "tiff", and "pdf". Default = "png".
+#' @param resolution (numeric) if \code{save_fig} = TRUE, resolution (ppi) in wich the figure
+#' will be exported. Default = 300.
 #' @param width (numeric) if \code{save_fig} = TRUE, width of the figure in mm. Default = 166.
 #' @param height (numeric) if \code{save_fig} = TRUE, height of the figure in mm. Default = 166.
 #'
-#' @return A figure of the species distributional range in a geographical context, with map components
-#' defined by the user.
+#' @return A figure of the species distributional range in a geographical context, with map
+#' components defined by the user.
 #'
-#' @details Position of distinct elements depend on the spatial configuration of the species range.
-#' Therefore, their position may need to be changed if the elements are needed. Position options are:
-#' "bottomright", "bottomleft", "topleft", and "topright". Future releases will include numerical options
-#' for positioning these elememts.
+#' @details Ranges should be generated with any of the functions: \code{\link{rangemap_buff}},
+#' \code{\link{rangemap_bound}}, \code{\link{rangemap_hull}}, \code{\link{rangemap_enm}}, and
+#' \code{\link{rangemap_tsa}}.
 #'
-#' Scale bar is ploted using a modification of the "scalebar" function developed by Tanimura et al. (2007)
-#' \url{http://hdl.handle.net/10.18637/jss.v019.c01}.
+#' Position of distinct elements depend on the spatial configuration of the species range.
+#' Therefore, their position may need to be changed if the elements are needed. Position
+#' options are: "bottomright", "bottomleft", "topleft", and "topright". Numerical descriptions
+#' of positions are also allowed.
+#'
+#' Scale bar is ploted using a modification of the "scalebar" function developed by Tanimura
+#' et al. (2007) \url{http://hdl.handle.net/10.18637/jss.v019.c01}.
 #'
 #' @examples
 #' if(!require(rgbif)){
@@ -101,23 +111,21 @@
 #' # arguments for the species range figure
 #' extent <- TRUE
 #' occ <- TRUE
-#' grid <- TRUE
-#' sides <- "bottomleft"
 #' legend <- TRUE
 #' north <- TRUE
 #'
 #' # creating the species range figure
 #' rangemap_fig(range, add_extent = extent, add_occurrences = occ,
-#'              grid = grid, grid_sides = sides, legend = legend,
-#'              northarrow = north)
+#'              legend = legend, northarrow = north)
 #'
 #' #dev.off() # for returning to default par settings
 
-rangemap_fig <- function(range, polygons, add_extent = FALSE, add_occurrences = FALSE, basemap_color = "grey93",
-                         range_color = "darkgreen", extent_color = "blue", occurrences_color = "yellow",
-                         grid = FALSE, grid_sides = "bottomleft", ylabels_position = 2.3, legend = FALSE,
-                         legend_position = "bottomright", northarrow = FALSE, northarrow_position = "topright",
-                         scalebar = FALSE, scalebar_position = "bottomleft", scalebar_length = 100, zoom = 1,
+rangemap_fig <- function(range, polygons, add_extent = FALSE, add_occurrences = FALSE,
+                         basemap_color = "grey93", range_color = "darkgreen", extent_color = "blue",
+                         occurrences_color = "yellow", grid = FALSE, grid_sides = "bottomleft",
+                         ylabels_position = 2.3, legend = FALSE, legend_position = "bottomright",
+                         northarrow = FALSE, northarrow_position = "topright", scalebar = FALSE,
+                         scalebar_position = "bottomleft", scalebar_length = 100, zoom = 1,
                          save_fig = FALSE, name = "range_fig", format = "png", resolution = 300,
                          width = 166, height = 166) {
 
@@ -314,7 +322,7 @@ rangemap_fig <- function(range, polygons, add_extent = FALSE, add_occurrences = 
     }
 
     scalebarf(loc = c(xscale, yscale), length = (scalebar_length * 1000),
-             division.cex = 0.7)
+             division.cex = 0.65)
   }
 
   ## legend
@@ -538,7 +546,7 @@ rangemap_fig <- function(range, polygons, add_extent = FALSE, add_occurrences = 
       }
 
       scalebarf(loc = c(xscale, yscale), length = (scalebar_length * 1000),
-                division.cex = 0.7)
+                division.cex = 0.65)
     }
 
     ## legend

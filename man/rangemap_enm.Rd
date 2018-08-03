@@ -10,24 +10,24 @@ rangemap_enm(occurrences, model, threshold_value, threshold_omission,
 }
 \arguments{
 \item{occurrences}{a data.frame containing geographic coordinates of species occurrences,
-columns must be: Species, Longitude, and Latitude. Geographic coordinates must be in decimal degrees.
-occurrences may not exist but \code{threshold_value} must be defined.}
+columns must be: Species, Longitude, and Latitude. Geographic coordinates must be in decimal
+degrees. occurrences may not exist but \code{threshold_value} must be defined.}
 
-\item{model}{a RasterLayer object that will be binarized using the \code{threshold_value} defined
-by the user or a value calculated based on an omission level (from 0 - 100) defined in
+\item{model}{a RasterLayer object that will be binarized using the \code{threshold_value}
+defined by the user or a value calculated based on an omission level (from 0 - 100) defined in
 \code{threshold_omission}. If model is projected, this projection must be Geographic (longitude,
 latitude). If not projected, the Geographic projection will be assigned for the analysis.}
 
 \item{threshold_value}{(numeric) value used for reclasifying the model. This value will
 be the lowest considered as suitable for the species nad must be inside the range of values
-present in \code{model}. If defined, \code{threshold_omission} will be ignored. If \code{occurrences}
-is not defined, this parameter is mandatory.}
+present in \code{model}. If defined, \code{threshold_omission} will be ignored. If
+\code{occurrences} is not defined, this parameter is mandatory.}
 
-\item{threshold_omission}{(numeric) percentage of occurrence records to be excluded from suitable areas
-considering their values of suitability in the continuous model (e.g., 0, 5, or 10). Ignored if
-\code{threshold_value} is included.}
+\item{threshold_omission}{(numeric) percentage of occurrence records to be excluded from
+suitable areas considering their values of suitability in the continuous model (e.g., 0, 5,
+or 10). Ignored if \code{threshold_value} is provided.}
 
-\item{simplify}{(logical) if TRUE polygons of suitable areas will be simplified at a tolerance
+\item{simplify}{(logical) if TRUE, polygons of suitable areas will be simplified at a tolerance
 defined in \code{simplify_level}. Default = FALSE.}
 
 \item{simplify_level}{(numeric) tolerance at the moment of simplifying polygons created from
@@ -39,20 +39,20 @@ more similar to the original geometry. Default = 0. If simplify is needed, try n
 Projection must be Geographic (longitude, latitude). If not defined, a default, simple world
 map will be used.}
 
-\item{save_shp}{(logical) if TRUE shapefiles of the species range, occurrences, extent of occurrence and
-area of occupancy will be written in the working directory. Default = FALSE.}
+\item{save_shp}{(logical) if TRUE, shapefiles of the species range, occurrences, extent of
+occurrence and area of occupancy will be written in the working directory. Default = FALSE.}
 
 \item{name}{(character) valid if \code{save_shp} = TRUE. The name of the shapefile to be exported.
-A suffix will be added to \code{name} depending on the object as follows: species extent of occurrence =
-"_extent_occ", area of occupancy = "_area_occ", and occurrences = "_unique_records". Default =
-"range_enm".}
+A suffix will be added to \code{name} depending on the object as follows: species extent of
+occurrence = "_extent_occ", area of occupancy = "_area_occ", and occurrences = "_unique_records".
+Default = "range_enm".}
 }
 \value{
 A named list containing: (1) a data.frame with information about the species range, and
-SpatialPolygon objects of (2) unique occurrences, (3) species range, (4) extent of occurrence, and
-(5) area of occurpancy. All Spatial objects will be in Azimuthal equal area projection. If
-\code{occurrences} are not provided, the result will be a list of two elements: (1) a data.frame with
-information about the species range, and (2) a SpatialPolygon object of the species range.
+SpatialPolygon objects of (2) unique occurrences, (3) species range, (4) extent of occurrence,
+and (5) area of occurpancy. All Spatial objects will be in Azimuthal equal area projection. If
+\code{occurrences} are not provided, the result will be a list of two elements: (1) a data.frame
+with information about the species range, and (2) a SpatialPolygon object of the species range.
 }
 \description{
 rangemap_enm generates a distributional range for a given species
@@ -78,8 +78,10 @@ library(kuenm)
 }
 
 # parameters
-data(sp_mod)
-data(sp_train)
+sp_mod <- raster::raster(list.files(system.file("extdata", package = "kuenm"),
+                                    pattern = "sp_model.tif", full.names = TRUE))
+sp_train <- read.csv(list.files(system.file("extdata", package = "kuenm"),
+                                pattern = "sp_train.csv", full.names = TRUE))
 occ_sp <- data.frame("A_americanum", sp_train)
 thres <- 5
 save <- TRUE
@@ -91,13 +93,10 @@ enm_range <- rangemap_enm(occurrences = occ_sp, model = sp_mod,  threshold_omiss
 # see the species range in a figure
 extent <- TRUE
 occ <- TRUE
-grid <- TRUE
-sides <- "bottomleft"
 legend <- TRUE
 north <- TRUE
 
 # creating the species range figure
 rangemap_fig(enm_range, add_extent = extent, add_occurrences = occ,
-             grid = grid, grid_sides = sides, legend = legend,
-             northarrow = north)
+             legend = legend, northarrow = north)
 }

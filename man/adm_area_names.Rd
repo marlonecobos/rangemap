@@ -3,7 +3,7 @@
 \docType{data}
 \name{adm_area_names}
 \alias{adm_area_names}
-\title{List of names of administrative areas available form the GADM data base}
+\title{List of names of administrative areas form the GADM data base}
 \format{A data frame with 339127 rows and 17 columns.
 \describe{
   \item{ISO3}{character, country code.}
@@ -21,7 +21,7 @@ adm_area_names
 }
 \description{
 A dataset containing names of all the avilable administrative areas from the
-GADM data base. Names describe distict administrative boundaries at five levels.
+GADM data base. Names describe distict administrative areas in five levels.
 }
 \examples{
 data(adm_area_names)

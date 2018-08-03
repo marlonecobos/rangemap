@@ -6,22 +6,24 @@
 #' are also generated. Shapefiles can be saved in the working directory if it is needed.
 #'
 #' @param occurrences a data.frame containing geographic coordinates of species occurrences,
-#' columns must be: Species, Longitude, and Latitude. Geographic coordinates must be in decimal degrees.
+#' columns must be: Species, Longitude, and Latitude. Geographic coordinates must be in decimal
+#' degrees.
 #' @param buffer_distance (numeric) distance, in meters, to be used for creating the buffer areas
 #' around occurrences, default = 100000.
 #' @param polygons (optional) a SpatialPolygon object to clip buffer areas and adjust the species
 #' range and other polygons to these limits. Projection must be Geographic (longitude, latitude).
 #' If not defined, a default, simple world map will be used.
-#' @param save_shp (logical) if TRUE shapefiles of the species range, occurrences, extent of occurrence and
-#' area of occupancy will be written in the working directory. Default = FALSE.
-#' @param name (character) valid if \code{save_shp} = TRUE. The name of the shapefile to be exported.
-#' A suffix will be added to \code{name} depending on the object as follows: species extent of occurrence =
-#' "_extent_occ", area of occupancy = "_area_occ", and occurrences = "_unique_records". Default =
-#' "range_buffer".
+#' @param save_shp (logical) if TRUE, shapefiles of the species range, occurrences, extent of
+#' occurrence and area of occupancy will be written in the working directory. Default = FALSE.
+#' @param name (character) valid if \code{save_shp} = TRUE. The name of the shapefile to be
+#' exported. A suffix will be added to \code{name} depending on the object as follows: species
+#' extent of occurrence = "_extent_occ", area of occupancy = "_area_occ", and occurrences =
+#' "_unique_records". Default = "range_buffer".
 #'
-#' @return A named list containing: (1) a data.frame with information about the species range, and
-#' SpatialPolygon objects of (2) unique occurrences, (3) species range, (4) extent of occurrence, and
-#' (5) area of occurpancy. All Spatial objects will be in Azimuthal equal area projection.
+#' @return A named list containing: (1) a data.frame with information about the species range,
+#' and SpatialPolygon objects of (2) unique occurrences, (3) species range, (4) extent of
+#' occurrence, and (5) area of occurpancy. All Spatial objects will be in Azimuthal Equal Area
+#' projection.
 #'
 #' @examples
 #' if(!require(rgbif)){
@@ -54,15 +56,12 @@
 #' # see the species range in a figure
 #' extent <- TRUE
 #' occ <- TRUE
-#' grid <- TRUE
-#' sides <- "bottomleft"
 #' legend <- TRUE
 #' north <- TRUE
 #'
 #' # creating the species range figure
 #' rangemap_fig(buff_range, add_extent = extent, add_occurrences = occ,
-#'              grid = grid, grid_sides = sides, legend = legend,
-#'              northarrow = north)
+#'              legend = legend, northarrow = north)
 
 rangemap_buff <- function(occurrences, buffer_distance = 100000, polygons, save_shp = FALSE,
                           name = "range_buffer") {
