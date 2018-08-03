@@ -8,6 +8,7 @@ Authors@R: c(
     person("Narayani", "Barve", email = "narayani.ku@gmail.com", role = "aut"),
     person("Alberto", "Jiménez-Valverde", email = "alberto.jimenez.valverde@gmail.com", role = "aut"))
 Maintainer: Marlon E. Cobos <manubio13@gmail.com>
+Date: 2018-08-03
 Description: This package presents various tools to create species
     range maps based on occurrence data, statistics, and distinct 
     shapefiles. Other tools of this package can be used to analyze
