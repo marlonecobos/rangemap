@@ -1,5 +1,7 @@
 rangemap vignette
 ================
+Marlon E. Cobos, Vijay Barve, Narayani Barve, and Alberto Jiménez-Valverde
+2018-08-04
 
 -   [Package description](#package-description)
 -   [Installing the package](#installing-the-package)

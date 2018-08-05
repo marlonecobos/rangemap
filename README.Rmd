@@ -1,5 +1,7 @@
 ---
 title: "rangemap vignette"
+author: "Marlon E. Cobos, Vijay Barve, Narayani Barve, and Alberto Jiménez-Valverde"
+date: "`r Sys.Date()`"
 output:
   github_document:
     toc: yes
