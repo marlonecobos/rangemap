@@ -1,7 +1,7 @@
 #' Species distributional ranges based on trend surface analyses
 #'
-#' @description rangemap_tsa generates distributional range for a given species
-#' using a trend surface analysis. AAn approach to the species extent of occurrence
+#' @description rangemap_tsa generates a distributional range for a given species
+#' using a trend surface analysis. An approach to the species extent of occurrence
 #' (using convex hulls) and the area of occupancy according to the IUCN criteria
 #' are also generated. Shapefiles can be saved in the working directory if it is needed.
 #'

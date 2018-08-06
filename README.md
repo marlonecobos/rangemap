@@ -32,7 +32,7 @@ Marlon E. Cobos, Vijay Barve, Narayani Barve, and Alberto Jiménez-Valverde
 
 ### Package description
 
-The **rangemap** R package presents various tools to create species range maps based on occurrence data, statistics, and distinct shapefiles. Other tools of this package can be used to analyze environmental characteristics of the species ranges and to create high quality figures of these maps. All the functions that create species ranges also generate an approach to the species extent of occurrence (using convex hulls) and the area of occupancy according to the IUCN criteria are also generated. Shapefiles of the resultan polygons can be saved in the working directory if it is needed.
+The **rangemap** R package presents various tools to create species range maps based on occurrence data, statistics, and and SpatialPolygons objects. Other tools of this package can be used to analyze environmental characteristics of the species ranges and to create high quality figures of these maps. All the functions that create species ranges also generate an approach to the species extent of occurrence (using convex hulls) and the area of occupancy according to the IUCN criteria. Shapefiles of the resultan polygons can be saved in the working directory if it is needed.
 
 <br>
 

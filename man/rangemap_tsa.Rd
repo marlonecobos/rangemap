@@ -49,8 +49,8 @@ occurrence, and (5) area of occurpancy. If \code{save_tsmodel} = TRUE, the (6) t
 will be included as well. All Spatial objects will be in Azimuthal equal area projection.
 }
 \description{
-rangemap_tsa generates distributional range for a given species
-using a trend surface analysis. AAn approach to the species extent of occurrence
+rangemap_tsa generates a distributional range for a given species
+using a trend surface analysis. An approach to the species extent of occurrence
 (using convex hulls) and the area of occupancy according to the IUCN criteria
 are also generated. Shapefiles can be saved in the working directory if it is needed.
 }
