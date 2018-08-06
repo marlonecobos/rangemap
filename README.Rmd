@@ -29,7 +29,7 @@ At the moment we have completed all the proposed tasks. Some of the planned func
 
 All commits made can be seen at the <a href="https://github.com/marlonecobos/rangemap/commits/master" target="_blank">complete list of commits</a>.
 
-Following you can find a brief description of the produced R package, as well as some examples of its.
+Following you can find a brief description of the produced R package, as well as some examples of its use.
 
 <br>
 
