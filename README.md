@@ -1,12 +1,12 @@
-rangemap vignette
+rangemap: Species range maps in R
 ================
-Marlon E. Cobos, Vijay Barve, Narayani Barve, and Alberto Jiménez-Valverde
-2018-08-04
+2018-08-06
 
+-   [Project description](#project-description)
 -   [Package description](#package-description)
 -   [Installing the package](#installing-the-package)
 -   [Using the package functions](#using-the-package-functions)
-    -   [Setting R up](#setting-r-up)
+    -   [Preparing R](#preparing-r)
     -   [Simple graphical exploration of your data.](#simple-graphical-exploration-of-your-data.)
     -   [Species ranges from buffered occurrences](#species-ranges-from-buffered-occurrences)
     -   [Species ranges from boundaries](#species-ranges-from-boundaries)
@@ -27,6 +27,22 @@ Marlon E. Cobos, Vijay Barve, Narayani Barve, and Alberto Jiménez-Valverde
     -   [Species ranges and environmental factors](#species-ranges-and-environmental-factors)
         -   [Species ranges on environmental factor maps](#species-ranges-on-environmental-factor-maps)
         -   [Species ranges in the environmental space](#species-ranges-in-the-environmental-space)
+
+<br>
+
+**This repository is for the GSoC 2018 project "Species range maps in R".**
+
+### Project description
+
+Student: Marlon E. Cobos
+
+Mentors: Narayani Barve, Vijay Barve, and Alberto Jiménez Valverde
+
+The species range maps project is motivated by the importance of information about species distribution for processes of conservation planning and the study of spatial patterns of biodiversity. In the face of multiple threats related to Global Change, protection and mitigation actions are crucial for maintaining the health of the planet, and knowing where species are located constitutes in primary information for starting these efforts. Currently, generation of species ranges maps may take several steps and the use of specialized software. Thanks to the recent development of specialized packages, R is rapidly becoming an excellent alternative for analyzing the spatial patterns of biodiversity. Taking advantage of these packages and the versatility of R, the aim of this project was offering handily and robust open source tools to obtain reliable proposals of species distribution ranges and to analyze their geographical patterns. A large community of students, researchers, and conservation managers can be benefited by this project since these tools will be freely available and will improve the way in which studies of species distributions are developed.
+
+All commits can be seen at the <a href="https://github.com/marlonecobos/rangemap/commits/master" target="_blank">complete list of commits</a>.
+
+Following you can find a brief description of the produced R package, as well as some examples of its.
 
 <br>
 
@@ -56,7 +72,7 @@ library(rangemap)
 
 ### Using the package functions
 
-#### Setting R up
+#### Preparing R
 
 The following code chunk installs (if needed) and loads the R packages that will be used to get and prepare some data for performing the example analyses with the **rangemap** package.
 
