@@ -6,7 +6,7 @@
 \usage{
 ranges_espace(ranges, add_occurrences = TRUE, variables,
   max_background = 25000, ranges_representation = "clouds",
-  background_color = "darkolivegreen", range_colors = NULL,
+  background_color = "darkolivegreen", range_colors = NULL, alpha = 0.03,
   eye_camera = c(x = 1.95, y = 1.25, z = 1.35))
 }
 \arguments{
@@ -42,21 +42,12 @@ look different.}
 default = NULL and default colors will be used. Since transparency is used for
 representing most of components of the plot, colors may look different.}
 
-\item{save_fig}{(logical) if TRUE, the figure will be written in the working directory.
-Default = FALSE.}
+\item{alpha}{(numeric) degree of opacity with which the species ranges will be
+represented in the plot. Default = 0.03.}
 
-\item{name}{(character) if \code{save_fig} = TRUE, name of the figure to be exported.
-Default = "range_fig".}
-
-\item{format}{(character) if \code{save_fig} = TRUE, format in which the figure will
-be written. Options include "bmp", "png", "jpeg", "tiff", and "pdf". Default = "png".}
-
-\item{resolution}{(numeric) if \code{save_fig} = TRUE, resolution (ppi) in wich the
-figure will be exported. Default = 300.}
-
-\item{width}{(numeric) if \code{save_fig} = TRUE, width of the figure in mm. Default = 166.}
-
-\item{height}{(numeric) if \code{save_fig} = TRUE, height of the figure in mm. Default = 166.}
+\item{eye_camera}{(numeric) vector of values to be passed to eye in the list of
+arguments of the parameter camera in layour of \code{\link[plotly]{plotly}}. This
+values control how the figur is seen in the plot.}
 }
 \value{
 A figure showing, in the environmental space, the species ranges generated with

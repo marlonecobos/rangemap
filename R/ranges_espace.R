@@ -29,16 +29,11 @@
 #' @param range_colors vector of colors of the ranges to be represented. If not defined,
 #' default = NULL and default colors will be used. Since transparency is used for
 #' representing most of components of the plot, colors may look different.
-#' @param save_fig (logical) if TRUE, the figure will be written in the working directory.
-#' Default = FALSE.
-#' @param name (character) if \code{save_fig} = TRUE, name of the figure to be exported.
-#' Default = "range_fig".
-#' @param format (character) if \code{save_fig} = TRUE, format in which the figure will
-#' be written. Options include "bmp", "png", "jpeg", "tiff", and "pdf". Default = "png".
-#' @param resolution (numeric) if \code{save_fig} = TRUE, resolution (ppi) in wich the
-#' figure will be exported. Default = 300.
-#' @param width (numeric) if \code{save_fig} = TRUE, width of the figure in mm. Default = 166.
-#' @param height (numeric) if \code{save_fig} = TRUE, height of the figure in mm. Default = 166.
+#' @param alpha (numeric) degree of opacity with which the species ranges will be
+#' represented in the plot. Default = 0.03.
+#' @param eye_camera (numeric) vector of values to be passed to eye in the list of
+#' arguments of the parameter camera in layour of \code{\link[plotly]{plotly}}. This
+#' values control how the figur is seen in the plot.
 #'
 #' @return A figure showing, in the environmental space, the species ranges generated with
 #' any of the functions: \code{\link{rangemap_buff}}, \code{\link{rangemap_bound}},
@@ -139,7 +134,7 @@
 
 ranges_espace <- function(ranges, add_occurrences = TRUE, variables, max_background = 25000,
                           ranges_representation = "clouds", background_color = "darkolivegreen",
-                          range_colors = NULL, eye_camera = c(x = 1.95, y = 1.25, z = 1.35)) {
+                          range_colors = NULL, alpha = 0.03, eye_camera = c(x = 1.95, y = 1.25, z = 1.35)) {
 
   # testing potential issues
   if (missing(ranges)) {
@@ -241,11 +236,11 @@ ranges_espace <- function(ranges, add_occurrences = TRUE, variables, max_backgro
   cat("\nCreating an interactive visualization...\n")
   if (ranges_representation == "clouds") {
     opa <- 0.06
-    opa1 <- 0.03
+    opa1 <- alpha
   }
   if (ranges_representation == "ellipsoids") {
     opa <- 0.06
-    opa1 <- 0.015
+    opa1 <- alpha
   }
 
   p <- plotly::plot_ly()
