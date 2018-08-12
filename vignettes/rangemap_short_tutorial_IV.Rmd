@@ -1,0 +1,186 @@
+---
+title: "rangemap short tutorial IV"
+author: "Marlon E. Cobos, Vijay Barve, Narayani Barve, and Alberto Jiménez-Valverde"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{rangemap short tutorial IV}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}{inputenc}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Figures with rangemap
+
+If you haven't seen the rangemap short tutorial I, II, and III, take a look at them for more background on the **rangemap** R package. 
+
+In this example we will explore three functions of this package that allow the users to crate species range maps usign the outputs of the functions *rangemap_bound*, *rangemap_buff*, *rangemap_enm*, *rangemap_hull*, and *rangemap_tsa*.
+
+### Installing or loading the needed packages
+
+```{r, message=FALSE, warning=FALSE}
+# devtools would help us to install rangemap from GitHub
+if(!require(devtools)){
+  install.packages("devtools")
+}
+
+# installing rangemap
+if(!require(rangemap)){
+  devtools::install_github("marlonecobos/rangemap")
+  library(rangemap)
+}
+
+# rgibif would help us to get some species occurrence data in our example
+if(!require(rgbif)){
+  install.packages("rgbif")
+  library(rgbif)
+}
+
+# maps and maptools will help us to get geographic data for using one of the functions
+if(!require(maps)){
+install.packages("maps")
+library(maps)
+}
+if(!require(maptools)){
+ install.packages("maptools")
+ library(maptools)
+}
+if(!require(raster)){
+  install.packages("raster")
+  library(raster)
+}
+```
+
+### Getting and exploring the species occurrence data
+
+Lest's first get some data from the GBIF database. Of course you can use your own data instead.
+
+```{r, cache=TRUE}
+# getting the data from GBIF
+species <- name_lookup(query = "Eumyias thalassinus",
+                       rank="species", return = "data") # information about the species
+
+species$key # to see all the keys we can try
+
+# key 4 was the one with georeferenced occurrences
+occ_count(taxonKey = species$key[6], georeferenced = TRUE) 
+key <- species$key[6] # using species key that return information
+
+occ <- occ_search(taxonKey = key, return = "data", limit = 5000) # using the taxon key
+
+# keeping only species name, and coordinates
+occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
+            c("name", "decimalLongitude", "decimalLatitude")]
+```
+
+Now let's see how this species records are geographically distributed using the *rangemap_explore* function.
+
+```{r, warning=FALSE, cache=TRUE}
+# checking which countries may be involved in the analysis
+rangemap_explore(occurrences = occ_g)
+```
+
+### Species distribution ranges usign three disticnt algorithms
+
+**Species range based on buffers**
+
+The function *rangemap_buff* generates a distributional range for a given species by buffering provided occurrences using a defined distance. See the function's help for more details.
+
+```{r, cache=TRUE}
+# Defining parameters
+dist <- 300000 # buffer distance in meters
+
+# Now we can create the species range based on buffers
+buff_range <- rangemap_buff(occurrences = occ_g, buffer_distance = dist)
+```
+
+**Species range based on convex hulls**
+
+With the *rangemap_hull* function we can generate a distributional range for a given species by buffering provided occurrences using a defined distance. See the function's help for more details.
+
+```{r, cache=TRUE}
+# Defining parameters
+dist <- 200000
+hull <- "convex"
+
+# Now we can create the species range based on administrative areas
+hull_range <- rangemap_hull(occurrences = occ_g, hull_type = hull, buffer_distance = dist)
+```
+
+**Species range based on concave hulls**
+
+The function *rangemap_hull* generates a distributional range for a given species based on provided occurrences and two distinct type of hulls, covex and concave. See the function's help for more details.
+
+```{r, cache=TRUE}
+# Defining parameters
+dist <- 200000
+hull <- "concave"
+
+# Now we can create the species range based on administrative areas
+hull_range1 <- rangemap_hull(occurrences = occ_g, hull_type = hull, buffer_distance = dist)
+```
+
+**Now the figure of our results**
+
+The other one with the potential extent of occurrence, the species occurrences and other map details. But lest's first define the characteristics we want in the figure.
+
+```{r, fig.show='hold', warning=FALSE}
+rangemap_fig(buff_range, add_occurrences = TRUE, 
+             northarrow = TRUE, range_color = "transparent")
+rangemap_fig(buff_range)
+rangemap_fig(hull_range)
+rangemap_fig(hull_range1, legend = TRUE, legend_position = "bottomleft")
+```
+
+
+### Species distribution ranges on environmental maps
+
+The function *ranges_emaps* represents one or more ranges of the same species on various maps of environmental factors (e.g. climatic variables) to detect implications of using one or other type of range regarding the environmental conditions in the areas.
+
+```{r, cache=TRUE}
+# Getting bioclimatic variables (some of them)
+vars <- getData("worldclim", var = "bio", res = 10)[[c("bio1", "bio7", "bio12", "bio15")]]
+vars_c <- crop(vars, extent(60, 140, -15, 45)) # crop vairable sto a smaller extent
+
+# List of ranges
+ranges <- list(buffer = buff_range, convex = hull_range, concave = hull_range1)
+```
+
+**Seeing all ranges on environmental maps**
+
+```{r, warning=FALSE, fig.width=6.2, fig.height=4.7}
+ranges_emaps(ranges = ranges, variables = vars_c, 
+             legend_position = "bottomleft")
+```
+
+### Species distribution ranges in environmental space
+
+The function *ranges_espace* generates a three dimensional comparison of a species' ranges created using distinct algortihms, to visualize implications of selecting one of them if environmental conditions are considered.
+
+```{r, eval=FALSE}
+# For avoiding too much complexity we will use only two of the previous ranges
+ranges1 <- ranges[1:2]
+
+# now the figure (the figure does not appear in this tutorial, but you will see it in your viewer)
+espace_claud <- ranges_espace(ranges = ranges1, variables = vars_c,
+                              ranges_representation = "clouds", 
+                              range_colors = c("red", "yellow"),
+                              add_occurrences = FALSE)
+```
+
+
+```{r, eval=FALSE}
+# same figure but distinct representation
+# the figure does not appear in this tutorial, but you will see it in your viewer
+espace_ellip <- ranges_espace(ranges = ranges1, variables = vars_c,
+                              ranges_representation = "ellipsoids", 
+                              range_colors = c("blue", "yellow"), 
+                              add_occurrences = FALSE, alpha = 0.08)
+```
+

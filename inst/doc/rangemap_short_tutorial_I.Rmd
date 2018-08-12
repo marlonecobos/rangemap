@@ -1,0 +1,165 @@
+---
+title: "rangemap short tutorial I"
+author: "Marlon E. Cobos, Vijay Barve, Narayani Barve, and Alberto Jiménez-Valverde"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{rangemap short tutorial I}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}{inputenc}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Package description
+
+The **rangemap** R package presents various tools to create species range maps based on occurrence data, statistics, and SpatialPolygons objects. Other tools of this package can be used to analyze environmental characteristics of the species ranges and to create high quality figures of these maps. 
+
+## Functions in this package
+
+The main functions of this package are:
+
+- *rangemap_explore*, generates simple figures to visualize species occurrence data in the geographic space before using other functions of this package.
+- *rangemap_bound*, generates a distributional range for a given species by considering all the polygons of administrative entities in which the species has been detected.
+- *rangemap_buff*, generates a distributional range for a given species by buffering provided occurrences using a defined distance. 
+- *rangemap_enm*, generates a distributional range for a given species using a continuous raster layer produced with an ecological niche modeling algorithm.
+- *rangemap_hull*, generates a distributional range for a given species by creating convex or concave hull polygons based on occurrence data.
+- *rangemap_tsa*, generates distributional range for a given species using a trend surface analysis.
+- *rangemap_fig*, generates customizable figures of species range maps using objects produced by other functions of this package.
+- *ranges_emaps*, represents one or more ranges of the same species on various maps of environmental factors (e.g. climatic variables) to detect implications of using one or other type of range regarding the environmental conditions in the areas.
+- *ranges_espace*, generates a three dimensional comparison of a species' ranges created using distinct algorithms, to visualize implications of selecting one of them if environmental conditions are considered.
+
+All the functions that create species ranges also generate an approach to the species extent of occurrence (using convex hulls) and the area of occupancy according to the IUCN criteria. Shapefiles of the resultant polygons can be saved in the working directory if it is needed.
+
+## Data in this package
+
+The main functions of this package are:
+
+- *country_codes*, a dataset containing codes for identifying countries according to ISO norms.
+- *adm_area_names*, a dataset containing names of all the available administrative areas from the GADM data base. Names describe distinct administrative areas in five levels..
+
+## A small example
+
+### Installing rangemap
+
+```{r, message=FALSE, warning=FALSE}
+# devtools would help us to install rangemap from GitHub
+if(!require(devtools)){
+install.packages("devtools")
+}
+
+# installing rangemap
+devtools::install_github("marlonecobos/rangemap")
+library(rangemap)
+
+# rgibif would help us to get some species occurrence data in our example
+if(!require(rgbif)){
+install.packages("rgbif")
+library(rgbif)
+}
+```
+
+
+### Exploring the species occurrence data
+
+Lest's first get some data from the GBIF database. Of course you can use your own data instead.
+
+```{r, cache=TRUE}
+# getting the data from GBIF
+species <- name_lookup(query = "Capra pyrenaica",
+                       rank="species", return = "data") # information about the species
+
+species$key # to see all the keys we can try
+
+# key 4 was the one with georeferenced occurrences
+occ_count(taxonKey = species$key[4], georeferenced = TRUE) 
+key <- species$key[4] # using species key that return information
+
+occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
+
+# keeping only species name, and coordinates
+occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
+            c("name", "decimalLongitude", "decimalLatitude")]
+
+```
+
+Now let's see how this species records are geographically distributed using the *rangemap_explore* function.
+
+```{r, fig.show='hold', warning=FALSE, cache=TRUE}
+# checking which countries may be involved in the analysis
+rangemap_explore(occurrences = occ_g)
+rangemap_explore(occurrences = occ_g, show_countries = TRUE)
+```
+
+### Species range based on administrative areas
+
+Let's check the *rangemap_bound* function's help to be aware of all the parameters.
+
+```{r, eval=FALSE}
+help(rangemap_fig)
+```
+
+Defining parameters.
+
+```{r}
+level <- 0 # level of detail for administrative areas
+dissolve <- FALSE # make this TRUE if you want polygons with no admininstrative limits
+countries <- c("ESP", "PRT", "FRA") # ISO names of countries involved in the analysis
+```
+
+Now we can create the species range based on administrative areas
+
+```{r, cache=TRUE}
+bound_range <- rangemap_bound(occurrences = occ_g, country_code = countries,
+                              boundary_level = level, dissolve = dissolve)
+```
+
+If you want to save the results of this analysis as shapefiles try using the parameters save_shp and name.
+
+```{r, eval=FALSE}
+save <- TRUE # to save the results
+name <- "test" # name of the results
+
+bound_range <- rangemap_bound(occurrences = occ_g,  country_code = countries,
+                              boundary_level = level, dissolve = dissolve, 
+                              save_shp = save, name = name)
+```
+
+### Seeing your results
+
+The function *rangemap_fig* will allow you to produce a nice figure of your results. 
+
+Check the function's help to be aware of all the parameters.
+
+```{r, eval=FALSE}
+help(rangemap_fig)
+```
+
+Now the figures. One with the species range only.  
+
+```{r, warning=FALSE}
+rangemap_fig(bound_range) 
+```
+
+The other one with the potential extent of occurrence, the species occurrences and other map details. But let's first define the characteristics we want in the figure.
+
+```{r}
+extent <- TRUE # adds the extent of occurrence of the species to the figure
+occ <- TRUE # adds the occurrence records of the species to the figure
+legend <- TRUE # adds a legend to the figure
+leg_pos <- "topleft" # position of the legend in the figure
+north <- TRUE # adds a north arrow to the figure
+n_pos <- "bottomleft" # position of the north arrow
+```
+
+```{r, warning=FALSE}
+rangemap_fig(bound_range, add_extent = extent, add_occurrences = occ, 
+             legend = legend, legend_position = leg_pos, 
+             northarrow = north, northarrow_position = n_pos)
+```
+
