@@ -172,15 +172,16 @@ ranges_espace <- function(ranges, add_occurrences = TRUE, variables, max_backgro
 
     }else {
       warning("None of the objects in \"range\" contain occurrences, \"add_occurrences = TRUE\" ignored.")
+      add_occurrences <- FALSE
     }
   }
 
   ## raster to varaibles data
   idata <- raster::rasterToPoints(variables)
 
-  if (add_occurrences == TRUE & any(lranges > 2)) {
-    ## combining these data
-    vdata <- rbind(idata, pdata)
+  if (add_occurrences == TRUE) {
+      ## combining these data
+      vdata <- rbind(idata, pdata)
   }else {
     vdata <- idata
   }
@@ -194,7 +195,7 @@ ranges_espace <- function(ranges, add_occurrences = TRUE, variables, max_backgro
   pca_scores = pcav$x
   pc3 <- data.frame(vdata[, 1:2], pca_scores[, 1:3])
 
-  if (add_occurrences == TRUE & any(lranges > 2)) {
+  if (add_occurrences == TRUE) {
     pc_occ <- pc3[(length(pc3[, 1]) - length(pdata[, 1]) + 1):length(pc3[, 1]), ]
     pc_points <- sp::SpatialPointsDataFrame(coords = pc_occ[, 1:2], data = pc_occ[, 3:dim(pc3)[2]],
                                             proj4string = WGS84)
@@ -275,7 +276,7 @@ ranges_espace <- function(ranges, add_occurrences = TRUE, variables, max_backgro
                                            opacity = opa1), name = paste("Range", rnames[i]))
     }
   }
-  if (add_occurrences == TRUE & any(lranges > 2)) {
+  if (add_occurrences == TRUE) {
     points <- pc_points@data
     p <- plotly::add_trace(p, x = points$PC1, y = points$PC2, z = points$PC3, mode = "markers", type = "scatter3d",
                            marker = list(size = 5, color = "black", symbol = 104), name = "Occurrences")
