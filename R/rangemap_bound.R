@@ -54,19 +54,27 @@
 #' Iformation on country codes and names of administrative areas at distinct levels can be cosulted
 #' using the data of this package: \code{\link{country_codes}} and \code{\link{adm_area_names}}.
 #'
+#' @export
+#'
+#' @importFrom sp CRS spTransform SpatialPointsDataFrame over
+#' @importFrom sp SpatialPolygons Polygons Polygon proj4string
+#' @importFrom raster getData disaggregate area extent rasterize
+#' @importFrom rgeos gCentroid gUnaryUnion gIntersection
+#' @importFrom rgdal writeOGR
+#'
 #' @examples
 #' if(!require(rgbif)){
-#' install.packages("rgbif")
-#' library(rgbif)
+#'   install.packages("rgbif")
+#'   library(rgbif)
 #' }
 #'
 #' # getting the data from GBIF
 #' species <- name_lookup(query = "Dasypus kappleri",
 #'                        rank="species", return = "data") # information about the species
 #'
-#' occ_count(taxonKey = species$key[14], georeferenced = TRUE) # testing if keys return records
+#' #occ_count(taxonKey = species$key[17], georeferenced = TRUE) # testing if keys return records
 #'
-#' key <- species$key[14] # using species key that return information
+#' key <- species$key[17] # using species key that return information
 #'
 #' occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
 #'
@@ -198,13 +206,13 @@ rangemap_bound <- function(occurrences, adm_areas, country_code, boundary_level 
       bounds[[i]] <- raster::getData('GADM', country = country_code[i], level = boundary_level)
     }
     polygon <- do.call("rbind", bounds)
-    polygon@data$OBJECTID <- 1:length(polygon@data$OBJECTID)
+    polygon@data$GID_0 <- 1:length(polygon@data$GID_0)
 
-    a_names <- ifelse(boundary_level == 0, "NAME_ENGLISH",
+    a_names <- ifelse(boundary_level == 0, "NAME_0",
                       paste("NAME", boundary_level, sep = "_"))
 
-    polygon@data[, !names(polygon@data) %in% c("OBJECTID", a_names)] <- NULL # erase columns
-    names(polygon@data) <- c("OBJECTID", "adm_names")
+    polygon@data[, !names(polygon@data) %in% c("GID_0", a_names)] <- NULL # erase columns
+    names(polygon@data) <- c("GID_0", "adm_names")
 
     if (kept_data == FALSE) {
       # erasing rds files in working directory

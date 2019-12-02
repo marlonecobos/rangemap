@@ -28,7 +28,7 @@
 #' Options are the same than for other position character indicators (see details). Default =
 #' "bottomleft".
 #' @param ylabels_position (numeric) if \code{grid} = TRUE, separation (in lines) of y axis
-#' labels from the axis. Bigger numbers will increase separation. Default = 2.3.
+#' labels from the axis. Bigger numbers will increase separation. Default = 1.3.
 #' @param legend (logical) if TRUE, a legend of the plotted features will be added to the
 #' figure at \code{legend_position}. Default = FALSE.
 #' @param legend_position (numeric or character) site in the figure where the legend will
@@ -75,8 +75,6 @@
 #' options are: "bottomright", "bottomleft", "topleft", and "topright". Numerical descriptions
 #' of positions are also allowed.
 #'
-#' Scale bar is ploted using a modification of the "scalebar" function developed by Tanimura
-#' et al. (2007) \url{http://hdl.handle.net/10.18637/jss.v019.c01}.
 #'
 #' @examples
 #' if(!require(rgbif)){
@@ -88,7 +86,10 @@
 #' species <- name_lookup(query = "Dasypus kappleri",
 #'                        rank="species", return = "data") # information about the species
 #'
-#' occ_count(taxonKey = species$key[14], georeferenced = TRUE) # testing if keys return records
+#' for (i in 1:length(species$key)) {
+#'   cat("key", (1:length(species$key))[i], "=",
+#'       occ_count(taxonKey = species$key[i], georeferenced = TRUE), "\n")
+#' }
 #'
 #' key <- species$key[14] # using species key that return information
 #'
@@ -123,13 +124,11 @@
 rangemap_fig <- function(range, polygons, add_extent = FALSE, add_occurrences = FALSE,
                          basemap_color = "grey93", range_color = "darkgreen", extent_color = "blue",
                          occurrences_color = "yellow", grid = FALSE, grid_sides = "bottomleft",
-                         ylabels_position = 2.3, legend = FALSE, legend_position = "bottomright",
+                         ylabels_position = 1.3, legend = FALSE, legend_position = "bottomright",
                          northarrow = FALSE, northarrow_position = "topright", scalebar = FALSE,
                          scalebar_position = "bottomleft", scalebar_length = 100, zoom = 1,
                          save_fig = FALSE, name = "range_fig", format = "png", resolution = 300,
                          width = 166, height = 166) {
-
-  suppressMessages(library(maptools))
 
   # testing for potential errors
   if (missing(range)) {
@@ -137,37 +136,30 @@ rangemap_fig <- function(range, polygons, add_extent = FALSE, add_occurrences = 
   }
 
   # projections
-  if (class(range) == "list") {
-    AEQD <- range$Species_range@proj4string # initial
-  }
-  if (class(range) %in% c("SpatialPolygons", "SpatialPolygonsDataFrame")) {
-    AEQD <- range@proj4string # initial
-  }
   WGS84 <- sp::CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0") # generic
-  ROBIN <- sp::CRS("+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs") # for pretty maps
+  AEQD <- range$Species_range@proj4string
 
   # bringing maps if polygons false
   if (missing(polygons)) {
-    data(wrld_simpl)
-    polygons <- wrld_simpl
-    rm("wrld_simpl", pos = ".GlobalEnv")
+    polygons <- rnaturalearth::ne_countries(scale = 50)
   }
+  polygons <- sp::spTransform(polygons, AEQD)
 
-  # project for mantaining shapes
-  polygons <- sp::spTransform(polygons, ROBIN) # base map
+
+  # getting species range
   if (class(range) == "list") {
-    range_sp <- sp::spTransform(range$Species_range, ROBIN) # species range
+    range_sp <- range$Species_range # species range
   }
   if (class(range) %in% c("SpatialPolygons", "SpatialPolygonsDataFrame")) {
-    range_sp <- sp::spTransform(range, ROBIN) # species range
+    range_sp <- range # species range
   }
 
   if (add_extent == TRUE) {
-    extent_sp <- sp::spTransform(range$Extent_of_occurrence, ROBIN) # species extent of occ
+    extent_sp <- range$Extent_of_occurrence # species extent of occ
   }
 
   if (add_occurrences == TRUE) {
-    occ_sp <- sp::spTransform(range$Species_unique_records, ROBIN) # species records
+    occ_sp <- range$Species_unique_records # species records
   }
 
   # plot a background map and the range
@@ -231,70 +223,7 @@ rangemap_fig <- function(range, polygons, add_extent = FALSE, add_occurrences = 
 
   ## north arrow
   if (northarrow == TRUE) {
-    if (class(northarrow_position) == "character") {
-      if (northarrow_position == "topright") {
-        xpos <- xlim[1] + ((xlim[2] - xlim[1]) * 0.9315)
-        ypos <- ylim[1] + ((ylim[2] - ylim[1]) * 0.975)
-        xarrow <- c((xlim[1] + ((xlim[2] - xlim[1]) * 0.91)),
-                    (xlim[1] + ((xlim[2] - xlim[1]) * 0.93)),
-                    (xlim[1] + ((xlim[2] - xlim[1]) * 0.95)),
-                    (xlim[1] + ((xlim[2] - xlim[1]) * 0.93)))
-        yarrow <- c((ylim[1] + ((ylim[2] - ylim[1]) * 0.91)),
-                    (ylim[1] + ((ylim[2] - ylim[1]) * 0.955)),
-                    (ylim[1] + ((ylim[2] - ylim[1]) * 0.91)),
-                    (ylim[1] + ((ylim[2] - ylim[1]) * 0.92)))
-      }
-      if (northarrow_position == "topleft") {
-        xpos <- xlim[1] + ((xlim[2] - xlim[1]) * 0.0615)
-        ypos <- ylim[1] + ((ylim[2] - ylim[1]) * 0.975)
-        xarrow <- c((xlim[1] + ((xlim[2] - xlim[1]) * 0.04)),
-                    (xlim[1] + ((xlim[2] - xlim[1]) * 0.06)),
-                    (xlim[1] + ((xlim[2] - xlim[1]) * 0.08)),
-                    (xlim[1] + ((xlim[2] - xlim[1]) * 0.06)))
-        yarrow <- c((ylim[1] + ((ylim[2] - ylim[1]) * 0.91)),
-                    (ylim[1] + ((ylim[2] - ylim[1]) * 0.955)),
-                    (ylim[1] + ((ylim[2] - ylim[1]) * 0.91)),
-                    (ylim[1] + ((ylim[2] - ylim[1]) * 0.92)))
-      }
-      if (northarrow_position == "bottomleft") {
-        xpos <- xlim[1] + ((xlim[2] - xlim[1]) * 0.0615)
-        ypos <- ylim[1] + ((ylim[2] - ylim[1]) * 0.085)
-        xarrow <- c((xlim[1] + ((xlim[2] - xlim[1]) * 0.04)),
-                    (xlim[1] + ((xlim[2] - xlim[1]) * 0.06)),
-                    (xlim[1] + ((xlim[2] - xlim[1]) * 0.08)),
-                    (xlim[1] + ((xlim[2] - xlim[1]) * 0.06)))
-        yarrow <- c((ylim[1] + ((ylim[2] - ylim[1]) * 0.02)),
-                    (ylim[1] + ((ylim[2] - ylim[1]) * 0.065)),
-                    (ylim[1] + ((ylim[2] - ylim[1]) * 0.02)),
-                    (ylim[1] + ((ylim[2] - ylim[1]) * 0.03)))
-      }
-      if (northarrow_position == "bottomright") {
-        xpos <- xlim[1] + ((xlim[2] - xlim[1]) * 0.9315)
-        ypos <- ylim[1] + ((ylim[2] - ylim[1]) * 0.085)
-        xarrow <- c((xlim[1] + ((xlim[2] - xlim[1]) * 0.91)),
-                    (xlim[1] + ((xlim[2] - xlim[1]) * 0.93)),
-                    (xlim[1] + ((xlim[2] - xlim[1]) * 0.95)),
-                    (xlim[1] + ((xlim[2] - xlim[1]) * 0.93)))
-        yarrow <- c((ylim[1] + ((ylim[2] - ylim[1]) * 0.02)),
-                    (ylim[1] + ((ylim[2] - ylim[1]) * 0.065)),
-                    (ylim[1] + ((ylim[2] - ylim[1]) * 0.02)),
-                    (ylim[1] + ((ylim[2] - ylim[1]) * 0.03)))
-      }
-    }else {
-      xpos <- northarrow_position[1] + ((xlim[2] - xlim[1]) * 0.0215)
-      ypos <- northarrow_position[2]
-      xarrow <- c(northarrow_position[1],
-                  (northarrow_position[1] + ((xlim[2] - xlim[1]) * 0.02)),
-                  (northarrow_position[1] + ((xlim[2] - xlim[1]) * 0.04)),
-                  (northarrow_position[1] + ((xlim[2] - xlim[1]) * 0.02)))
-      yarrow <- c((northarrow_position[2] - ((ylim[2] - ylim[1]) * 0.065)),
-                  (northarrow_position[2] - ((ylim[2] - ylim[1]) * 0.02)),
-                  (northarrow_position[2] - ((ylim[2] - ylim[1]) * 0.065)),
-                  (northarrow_position[2] - ((ylim[2] - ylim[1]) * 0.055)))
-    }
-
-    polygon(xarrow, yarrow, border = "black", col = "grey25")
-    text(x = xpos , y = ypos, cex = 0.6, labels = "N")
+    nort_arrow(position = northarrow_position, xlim, ylim, Ncex = 0.6)
   }
 
   ## scale bar
@@ -321,8 +250,8 @@ rangemap_fig <- function(range, polygons, add_extent = FALSE, add_occurrences = 
       yscale <- scalebar_position[2]
     }
 
-    scalebarf(loc = c(xscale, yscale), length = (scalebar_length * 1000),
-             division.cex = 0.65)
+    maps::map.scale(x = xscale, y = yscale, relwidth = 0.1, metric = TRUE,
+                    ratio = F, cex = 0.8)
   }
 
   ## legend
@@ -399,7 +328,7 @@ rangemap_fig <- function(range, polygons, add_extent = FALSE, add_occurrences = 
     }
     if (format == "jpeg") {
       jpeg(filename = paste(name, "jpg", sep = "."), width = width, height = height,
-          units = "mm", res = resolution)
+           units = "mm", res = resolution)
     }
     if (format == "tiff") {
       tiff(filename = paste(name, "tif", sep = "."), width = width, height = height,
@@ -455,70 +384,7 @@ rangemap_fig <- function(range, polygons, add_extent = FALSE, add_occurrences = 
 
     ## north arrow
     if (northarrow == TRUE) {
-      if (class(northarrow_position) == "character") {
-        if (northarrow_position == "topright") {
-          xpos <- xlim[1] + ((xlim[2] - xlim[1]) * 0.9315)
-          ypos <- ylim[1] + ((ylim[2] - ylim[1]) * 1.035)
-          xarrow <- c((xlim[1] + ((xlim[2] - xlim[1]) * 0.91)),
-                      (xlim[1] + ((xlim[2] - xlim[1]) * 0.93)),
-                      (xlim[1] + ((xlim[2] - xlim[1]) * 0.95)),
-                      (xlim[1] + ((xlim[2] - xlim[1]) * 0.93)))
-          yarrow <- c((ylim[1] + ((ylim[2] - ylim[1]) * 0.97)),
-                      (ylim[1] + ((ylim[2] - ylim[1]) * 1.015)),
-                      (ylim[1] + ((ylim[2] - ylim[1]) * 0.97)),
-                      (ylim[1] + ((ylim[2] - ylim[1]) * 0.98)))
-        }
-        if (northarrow_position == "topleft") {
-          xpos <- xlim[1] + ((xlim[2] - xlim[1]) * 0.0715)
-          ypos <- ylim[1] + ((ylim[2] - ylim[1]) * 1.035)
-          xarrow <- c((xlim[1] + ((xlim[2] - xlim[1]) * 0.01)),
-                      (xlim[1] + ((xlim[2] - xlim[1]) * 0.03)),
-                      (xlim[1] + ((xlim[2] - xlim[1]) * 0.05)),
-                      (xlim[1] + ((xlim[2] - xlim[1]) * 0.03)))
-          yarrow <- c((ylim[1] + ((ylim[2] - ylim[1]) * 0.97)),
-                      (ylim[1] + ((ylim[2] - ylim[1]) * 1.015)),
-                      (ylim[1] + ((ylim[2] - ylim[1]) * 0.97)),
-                      (ylim[1] + ((ylim[2] - ylim[1]) * 0.98)))
-        }
-        if (northarrow_position == "bottomleft") {
-          xpos <- xlim[1] + ((xlim[2] - xlim[1]) * 0.0715)
-          ypos <- ylim[1] + ((ylim[2] - ylim[1]) * 0.055)
-          xarrow <- c((xlim[1] + ((xlim[2] - xlim[1]) * 0.05)),
-                      (xlim[1] + ((xlim[2] - xlim[1]) * 0.07)),
-                      (xlim[1] + ((xlim[2] - xlim[1]) * 0.09)),
-                      (xlim[1] + ((xlim[2] - xlim[1]) * 0.07)))
-          yarrow <- c((ylim[1] + ((ylim[2] - ylim[1]) * -0.01)),
-                      (ylim[1] + ((ylim[2] - ylim[1]) * 0.035)),
-                      (ylim[1] + ((ylim[2] - ylim[1]) * -0.01)),
-                      (ylim[1] + ((ylim[2] - ylim[1]) * 0.00)))
-        }
-        if (northarrow_position == "bottomright") {
-          xpos <- xlim[1] + ((xlim[2] - xlim[1]) * 0.9315)
-          ypos <- ylim[1] + ((ylim[2] - ylim[1]) * 0.055)
-          xarrow <- c((xlim[1] + ((xlim[2] - xlim[1]) * 0.91)),
-                      (xlim[1] + ((xlim[2] - xlim[1]) * 0.93)),
-                      (xlim[1] + ((xlim[2] - xlim[1]) * 0.95)),
-                      (xlim[1] + ((xlim[2] - xlim[1]) * 0.93)))
-          yarrow <- c((ylim[1] + ((ylim[2] - ylim[1]) * -0.01)),
-                      (ylim[1] + ((ylim[2] - ylim[1]) * 0.035)),
-                      (ylim[1] + ((ylim[2] - ylim[1]) * -0.01)),
-                      (ylim[1] + ((ylim[2] - ylim[1]) * 0.00)))
-        }
-      }else{
-        xpos <- northarrow_position[1] + ((xlim[2] - xlim[1]) * 0.0215)
-        ypos <- northarrow_position[2]
-        xarrow <- c(northarrow_position[1],
-                    (northarrow_position[1] + ((xlim[2] - xlim[1]) * 0.02)),
-                    (northarrow_position[1] + ((xlim[2] - xlim[1]) * 0.04)),
-                    (northarrow_position[1] + ((xlim[2] - xlim[1]) * 0.02)))
-        yarrow <- c((northarrow_position[2] - ((ylim[2] - ylim[1]) * 0.065)),
-                    (northarrow_position[2] - ((ylim[2] - ylim[1]) * 0.02)),
-                    (northarrow_position[2] - ((ylim[2] - ylim[1]) * 0.065)),
-                    (northarrow_position[2] - ((ylim[2] - ylim[1]) * 0.055)))
-      }
-
-      polygon(xarrow, yarrow, border = "black", col = "grey25")
-      text(x = xpos , y = ypos, cex = 0.6, labels = "N")
+      nort_arrow(position = northarrow_position, xlim, ylim, Ncex = 0.6)
     }
 
     ## scale bar
@@ -545,8 +411,8 @@ rangemap_fig <- function(range, polygons, add_extent = FALSE, add_occurrences = 
         yscale <- scalebar_position[2]
       }
 
-      scalebarf(loc = c(xscale, yscale), length = (scalebar_length * 1000),
-                division.cex = 0.65)
+      maps::map.scale(x = xscale, y = yscale, relwidth = 0.1, metric = TRUE,
+                      ratio = F, cex = 0.8)
     }
 
     ## legend
@@ -614,29 +480,80 @@ rangemap_fig <- function(range, polygons, add_extent = FALSE, add_occurrences = 
   }
 }
 
-#' Helper function to plot a scale bar.
-#' @param loc (numeric) vector (x, y) of coordinates where the scale bar will be plotted.
-#' @param length (numeric) length of the scale bar. Try to use numbers divisive to 2.
-#' @param unit (character) units in which the scale will be represented. Default "km"
-#' @param division.cex (numeric) cex of the scale components.
-#' @param ... other graphical arguments.
-#'
-#' @details this function is a modification of the "scalebar" function developed by T
-#' animura et al. (2007) (see \url{http://hdl.handle.net/10.18637/jss.v019.c01}).
 
-scalebarf <- function(loc, length, unit = "km", division.cex = 0.8,...) {
-  if(missing(loc)) stop("loc is missing")
-  if(missing(length)) stop("length is missing")
-  x <- c(0, length / c(4, 2, 4 / 3, 1), length * 1.1) + loc[1]
-  y <- c(0, length / (10 * 3:1)) + loc[2]
-  cols <- rep(c("black", "white"),2)
-  for (i in 1:4) rect(x[i], y[1], x[i + 1], y[2], col = cols[i])
-  for (i in 1:5) segments(x[i], y[2], x[i], y[3])
-  n_op <- options()
-  options(scipen = 999)
-  labels <- (x[c(1, 3)] - loc[1]) /1000
-  labels <- append(labels, paste((x[5] - loc[1]) / 1000, unit))
-  text(x[c(1, 3, 5)], y[4], labels = labels, adj = .5, cex = division.cex)
-  Sys.sleep(0.2)
-  options(n_op)
+#' North arrow for map plots
+
+#' @description north_arrow plots a North arrow in user defined places in a map.
+#'
+#' @param position (character or numeric) position of the North arrow. If character, options
+#' are: "topright", "topleft", "bottomleft", or "bottomright". Default = "topright".
+#' @param Ncex (numeric) cex for the North label (N).
+#' @param exproting (logical) whether or not the map will be exported as a figure.
+
+nort_arrow <- function(position = "topright", xlim, ylim, Ncex = 0.6) {
+
+  if (class(position) == "character") {
+    if (position == "topright") {
+      xpos <- xlim[1] + ((xlim[2] - xlim[1]) * 0.9315)
+      ypos <- ylim[1] + ((ylim[2] - ylim[1]) * 1.035)
+      xarrow <- c((xlim[1] + ((xlim[2] - xlim[1]) * 0.91)),
+                  (xlim[1] + ((xlim[2] - xlim[1]) * 0.93)),
+                  (xlim[1] + ((xlim[2] - xlim[1]) * 0.95)),
+                  (xlim[1] + ((xlim[2] - xlim[1]) * 0.93)))
+      yarrow <- c((ylim[1] + ((ylim[2] - ylim[1]) * 0.97)),
+                  (ylim[1] + ((ylim[2] - ylim[1]) * 1.015)),
+                  (ylim[1] + ((ylim[2] - ylim[1]) * 0.97)),
+                  (ylim[1] + ((ylim[2] - ylim[1]) * 0.98)))
+    }
+    if (position == "topleft") {
+      xpos <- xlim[1] + ((xlim[2] - xlim[1]) * 0.0715)
+      ypos <- ylim[1] + ((ylim[2] - ylim[1]) * 1.035)
+      xarrow <- c((xlim[1] + ((xlim[2] - xlim[1]) * 0.01)),
+                  (xlim[1] + ((xlim[2] - xlim[1]) * 0.03)),
+                  (xlim[1] + ((xlim[2] - xlim[1]) * 0.05)),
+                  (xlim[1] + ((xlim[2] - xlim[1]) * 0.03)))
+      yarrow <- c((ylim[1] + ((ylim[2] - ylim[1]) * 0.97)),
+                  (ylim[1] + ((ylim[2] - ylim[1]) * 1.015)),
+                  (ylim[1] + ((ylim[2] - ylim[1]) * 0.97)),
+                  (ylim[1] + ((ylim[2] - ylim[1]) * 0.98)))
+    }
+    if (position == "bottomleft") {
+      xpos <- xlim[1] + ((xlim[2] - xlim[1]) * 0.0715)
+      ypos <- ylim[1] + ((ylim[2] - ylim[1]) * 0.055)
+      xarrow <- c((xlim[1] + ((xlim[2] - xlim[1]) * 0.05)),
+                  (xlim[1] + ((xlim[2] - xlim[1]) * 0.07)),
+                  (xlim[1] + ((xlim[2] - xlim[1]) * 0.09)),
+                  (xlim[1] + ((xlim[2] - xlim[1]) * 0.07)))
+      yarrow <- c((ylim[1] + ((ylim[2] - ylim[1]) * -0.01)),
+                  (ylim[1] + ((ylim[2] - ylim[1]) * 0.035)),
+                  (ylim[1] + ((ylim[2] - ylim[1]) * -0.01)),
+                  (ylim[1] + ((ylim[2] - ylim[1]) * 0.00)))
+    }
+    if (position == "bottomright") {
+      xpos <- xlim[1] + ((xlim[2] - xlim[1]) * 0.9315)
+      ypos <- ylim[1] + ((ylim[2] - ylim[1]) * 0.055)
+      xarrow <- c((xlim[1] + ((xlim[2] - xlim[1]) * 0.91)),
+                  (xlim[1] + ((xlim[2] - xlim[1]) * 0.93)),
+                  (xlim[1] + ((xlim[2] - xlim[1]) * 0.95)),
+                  (xlim[1] + ((xlim[2] - xlim[1]) * 0.93)))
+      yarrow <- c((ylim[1] + ((ylim[2] - ylim[1]) * -0.01)),
+                  (ylim[1] + ((ylim[2] - ylim[1]) * 0.035)),
+                  (ylim[1] + ((ylim[2] - ylim[1]) * -0.01)),
+                  (ylim[1] + ((ylim[2] - ylim[1]) * 0.00)))
+    }
+  }else{
+    xpos <- position[1] + ((xlim[2] - xlim[1]) * 0.0215)
+    ypos <- position[2]
+    xarrow <- c(position[1],
+                (position[1] + ((xlim[2] - xlim[1]) * 0.02)),
+                (position[1] + ((xlim[2] - xlim[1]) * 0.04)),
+                (position[1] + ((xlim[2] - xlim[1]) * 0.02)))
+    yarrow <- c((position[2] - ((ylim[2] - ylim[1]) * 0.065)),
+                (position[2] - ((ylim[2] - ylim[1]) * 0.02)),
+                (position[2] - ((ylim[2] - ylim[1]) * 0.065)),
+                (position[2] - ((ylim[2] - ylim[1]) * 0.055)))
+  }
+
+  polygon(xarrow, yarrow, border = "black", col = "grey25")
+  #text(x = xpos , y = ypos, cex = 0.6, labels = "N")
 }
