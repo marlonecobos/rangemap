@@ -140,7 +140,7 @@ options(viewer = NULL) # Set viewer to web browser
 name <- "ranges_space" # name for figure
 
 # using web browser to save image
-p \%>\% htmlwidgets::onRender(
+env_comp \%>\% htmlwidgets::onRender(
   paste("function(el, x)
           {var gd = document.getElementById(el.id);
           Plotly.downloadImage(gd, {format: 'svg', width: ", 1000, ", height: ",
