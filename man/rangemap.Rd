@@ -3,11 +3,10 @@
 \docType{package}
 \name{rangemap}
 \alias{rangemap}
-\alias{rangemap-package}
-\title{rangemap: A package for construction of species distributional range maps.}
+\title{rangemap: An R package for construction of simple species distributional ranges.}
 \description{
 rangemap presents various tools to create species range maps based on
-occurrence data, statistics, and distinct shapefiles. Other tools of
+occurrence data, statistics, and Spatialpolygons. Other tools of
 this package can be used to analyze environmental characteristics of
 the species ranges and create high quality figures for publication.
 }
