@@ -1,12 +1,12 @@
 Package: rangemap
 Type: Package
-Title: Species distributional ranges
-Version: 0.1.0
+Title: A package for construction of simple species distributional ranges
+Version: 0.1.2
 Authors@R: c(
     person("Marlon E.", "Cobos", email = "manubio13@gmail.com", role = c("aut", "cre")),
     person("Vijay", "Barve", email = "vijay.barve@gmail.com", role = "aut"),
     person("Narayani", "Barve", email = "narayani.ku@gmail.com", role = "aut"),
-    person("Alberto", "Jim?nez-Valverde", email = "alberto.jimenez.valverde@gmail.com", role = "aut"))
+    person("Alberto", "Jiménez-Valverde", email = "alberto.jimenez.valverde@gmail.com", role = "aut"))
 Maintainer: Marlon E. Cobos <manubio13@gmail.com>
 Date: 2018-08-03
 Description: This package presents various tools to create species
@@ -18,6 +18,8 @@ Imports:
     concaveman (>= 1.0),
     maps (>= 3.3),
     maptools (>= 0.9),
+    rnaturalearth (>= 0.1),
+    rnaturalearthdata (>= 0.1),
     plotly (>= 4.7),
     raster (>= 2.6),
     rgdal (>= 1.2),
@@ -27,13 +29,11 @@ Imports:
     sp (>= 1.2)
 Suggests:
     rgbif (>= 0.9),
-    knitr, 
-    rmarkdown
 Depends:
-    R (>= 3.4.0)
+    R (>= 3.5.0)
 License: GPL-2
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.0.1
+RoxygenNote: 7.0.0
 LinkingTo: Rcpp
 VignetteBuilder: knitr
