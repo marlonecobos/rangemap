@@ -4,8 +4,7 @@
 \alias{rangemap_explore}
 \title{Exploring occurrences before creating range maps}
 \usage{
-rangemap_explore(occurrences, show_countries = FALSE,
-  graphic_device = FALSE)
+rangemap_explore(occurrences, show_countries = FALSE, graphic_device = FALSE)
 }
 \arguments{
 \item{occurrences}{a data.frame containing geographic coordinates of species occurrences,
@@ -22,7 +21,11 @@ A simple figure of the species occurrences in a geographical context.
 }
 \description{
 rangemap_explore generates simple figures to visualize species occurrence
-data in the geographic space before using other functions of this package.
+data in the geographic space.
+}
+\details{
+Base map of countries of the world is a SpatialPolygonDataFrame downloaded from
+the Natural Earth database using the \code{\link[rnaturalearth]{ne_countries}} function (scale = 50).
 }
 \examples{
 if(!require(rgbif)){
@@ -34,9 +37,12 @@ if(!require(rgbif)){
 species <- name_lookup(query = "Dasypus kappleri",
                        rank="species", return = "data") # information about the species
 
-occ_count(taxonKey = species$key[14], georeferenced = TRUE) # testing if keys return records
+for (i in 1:length(species$key)) {
+  cat("key", (1:length(species$key))[i], "=",
+      occ_count(taxonKey = species$key[i], georeferenced = TRUE), "\\n")
+}
 
-key <- species$key[14] # using species key that return information
+key <- species$key[10] # using species key that return information
 
 occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
 

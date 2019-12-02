@@ -5,13 +5,13 @@
 \title{Species distributional ranges based on ecological niche models}
 \usage{
 rangemap_enm(occurrences, model, threshold_value, threshold_omission,
-  simplify = FALSE, simplify_level = 0, polygons, save_shp = FALSE,
-  name = "range_enm")
+    simplify = FALSE, simplify_level = 0, polygons, final_projection,
+    save_shp = FALSE, name = "range_enm")
 }
 \arguments{
 \item{occurrences}{a data.frame containing geographic coordinates of species occurrences,
 columns must be: Species, Longitude, and Latitude. Geographic coordinates must be in decimal
-degrees. occurrences may not exist but \code{threshold_value} must be defined.}
+degrees. \code{occurrences} may not exist but \code{threshold_value} must be defined.}
 
 \item{model}{a RasterLayer object that will be binarized using the \code{threshold_value}
 defined by the user or a value calculated based on an omission level (from 0 - 100) defined in
@@ -19,7 +19,7 @@ defined by the user or a value calculated based on an omission level (from 0 - 1
 latitude). If not projected, the Geographic projection will be assigned for the analysis.}
 
 \item{threshold_value}{(numeric) value used for reclasifying the model. This value will
-be the lowest considered as suitable for the species nad must be inside the range of values
+be the lowest considered as suitable for the species and must be inside the range of values
 present in \code{model}. If defined, \code{threshold_omission} will be ignored. If
 \code{occurrences} is not defined, this parameter is mandatory.}
 
@@ -39,6 +39,10 @@ more similar to the original geometry. Default = 0. If simplify is needed, try n
 Projection must be Geographic (longitude, latitude). If not defined, a default, simple world
 map will be used.}
 
+\item{final_projection}{(character) string of projection arguments for resulting Spatial objects.
+Arguments must be as in the PROJ.4 documentation. See funcion \code{\link[sp]{CRS}} for details.
+Default = "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0" = WGS84.}
+
 \item{save_shp}{(logical) if TRUE, shapefiles of the species range, occurrences, extent of
 occurrence and area of occupancy will be written in the working directory. Default = FALSE.}
 
@@ -48,11 +52,13 @@ occurrence = "_extent_occ", area of occupancy = "_area_occ", and occurrences = "
 Default = "range_enm".}
 }
 \value{
-A named list containing: (1) a data.frame with information about the species range, and
-SpatialPolygon objects of (2) unique occurrences, (3) species range, (4) extent of occurrence,
-and (5) area of occurpancy. All Spatial objects will be in Azimuthal equal area projection. If
-\code{occurrences} are not provided, the result will be a list of two elements: (1) a data.frame
-with information about the species range, and (2) a SpatialPolygon object of the species range.
+If \code{occurrences} and \code{threshold_omission} are defined, a  named list containing:
+(1) a data.frame with information about the species range, and SpatialPolygon objects of
+(2) unique occurrences, (3) species range, (4) extent of occurrence, and (5) area of occurpancy.
+
+If instead of the two parameters before mentioned, \code{threshold_value} is provided, the result
+will be a list of two elements: (1) a data.frame with information about the species range, and
+(2) a SpatialPolygon object of the species range.
 }
 \description{
 rangemap_enm generates a distributional range for a given species
@@ -64,23 +70,14 @@ to the IUCN criteria are also generated. Shapefiles can be saved in the working
 directory if it is needed.
 }
 \details{
-If \code{threshold_value} is provided and \code{occurrences} are not defined, the result
-will be only the species range from the model binarization (presence and absence).
+All resultant Spatial objects in the list of results will be projected to the \code{final_projection}.
+Areas are calculated in square kilometers using the Azimuthal equal area projection.
 }
 \examples{
-if(!require(devtools)){
-install.packages("devtools")
-}
-
-if(!require(kuenm)){
-devtools::install_github("marlonecobos/kuenm")
-library(kuenm)
-}
-
 # parameters
-sp_mod <- raster::raster(list.files(system.file("extdata", package = "kuenm"),
+sp_mod <- raster::raster(list.files(system.file("extdata", package = "rangemap"),
                                     pattern = "sp_model.tif", full.names = TRUE))
-sp_train <- read.csv(list.files(system.file("extdata", package = "kuenm"),
+sp_train <- read.csv(list.files(system.file("extdata", package = "rangemap"),
                                 pattern = "sp_train.csv", full.names = TRUE))
 occ_sp <- data.frame("A_americanum", sp_train)
 thres <- 5
@@ -98,5 +95,5 @@ north <- TRUE
 
 # creating the species range figure
 rangemap_fig(enm_range, add_extent = extent, add_occurrences = occ,
-             legend = legend, northarrow = north)
+             legend = legend, northarrow = north, northarrow_position = "topleft")
 }

@@ -5,9 +5,9 @@
 \title{Species distributional ranges based on distinct hull polygons}
 \usage{
 rangemap_hull(occurrences, hull_type = "convex", buffer_distance = 50000,
-  concave_distance_lim = 5000, split = FALSE,
-  cluster_method = "hierarchical", split_distance, n_k_means, polygons,
-  save_shp = FALSE, name = "range_hull")
+    concave_distance_lim = 5000, split = FALSE, cluster_method = "hierarchical",
+    split_distance, n_k_means, polygons, final_projection, save_shp = FALSE,
+    name = "range_hull")
 }
 \arguments{
 \item{occurrences}{a data.frame containing geographic coordinates of species occurrences,
@@ -43,6 +43,10 @@ occurrences will be grouped when using the "k-means" \code{cluster_method}.}
 species range and other polygons to these limits. Projection must be Geographic (longitude,
 latitude). If not defined, a default, simple world map will be used.}
 
+\item{final_projection}{(character) string of projection arguments for resulting Spatial objects.
+Arguments must be as in the PROJ.4 documentation. See funcion \code{\link[sp]{CRS}} for details.
+Default = "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0" = WGS84.}
+
 \item{save_shp}{(logical) if TRUE, shapefiles of the species range, occurrences, extent of
 occurrence and area of occupancy will be written in the working directory. Default = FALSE.}
 
@@ -54,8 +58,7 @@ extent of occurrence = "_extent_occ", area of occupancy = "_area_occ", and occur
 \value{
 A named list containing: (1) a data.frame with information about the species range,
 and SpatialPolygon objects of (2) unique occurrences, (3) species range, (4) extent of
-occurrence, and (5) area of occurpancy. All Spatial objects will be in Azimuthal equal area
-projection.
+occurrence, and (5) area of occurpancy.
 }
 \description{
 rangemap_hull generates a distributional range for a given species
@@ -65,6 +68,9 @@ of occupancy according to the IUCN criteria are also generated. Shapefiles can b
 saved in the working directory if it is needed.
 }
 \details{
+All resultant Spatial objects in the list of results will be projected to the \code{final_projection}.
+Areas are calculated in square kilometers using the Azimuthal equal area projection.
+
 The \code{cluster_method} must be chosen based on the spatial configuration of the
 species occurrences. Both methods make distinct assumptions and one of them may perform better
 than the other depending on the spatial pattern of the data.
@@ -84,17 +90,17 @@ For more information on these clustering methods see Aggarwal and Reddy (2014)
 }
 \examples{
 if(!require(rgbif)){
-install.packages("rgbif")
-library(rgbif)
+  install.packages("rgbif")
+  library(rgbif)
 }
 
 # getting the data from GBIF
 species <- name_lookup(query = "Dasypus kappleri",
-rank="species", return = "data") # information about the species
+                       rank="species", return = "data") # information about the species
 
-occ_count(taxonKey = species$key[14], georeferenced = TRUE) # testing if keys return records
+#occ_count(taxonKey = species$key[17], georeferenced = TRUE) # testing if keys return records
 
-key <- species$key[14] # using species key that return information
+key <- species$key[17] # using species key that return information
 
 occ <- occ_search(taxonKey = key, return = "data", limit = 2000) # using the taxon key
 

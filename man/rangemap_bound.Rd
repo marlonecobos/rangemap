@@ -5,8 +5,8 @@
 \title{Species distributional ranges based on administrative areas}
 \usage{
 rangemap_bound(occurrences, adm_areas, country_code, boundary_level = 0,
-  polygons, kept_data = FALSE, dissolve = FALSE, save_shp = FALSE,
-  name = "range_boundaries")
+    polygons, kept_data = FALSE, dissolve = FALSE, final_projection,
+    save_shp = FALSE, name = "range_boundaries")
 }
 \arguments{
 \item{occurrences}{(optional) a data.frame containing geographic coordinates of species
@@ -46,6 +46,10 @@ be disolved for creating simpler shapes, default = FALSE. Owing to the high reso
 data the dissolving process may be quite time consuming, specially if the species has a broad
 distribution.}
 
+\item{final_projection}{(character) string of projection arguments for resulting Spatial objects.
+Arguments must be as in the PROJ.4 documentation. See funcion \code{\link[sp]{CRS}} for details.
+Default = "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0" = WGS84.}
+
 \item{save_shp}{(logical) if TRUE, shapefiles of the species range, occurrences, extent of occurrence
 and area of occupancy will be written in the working directory. Default = FALSE.}
 
@@ -76,17 +80,17 @@ using the data of this package: \code{\link{country_codes}} and \code{\link{adm_
 }
 \examples{
 if(!require(rgbif)){
-install.packages("rgbif")
-library(rgbif)
+  install.packages("rgbif")
+  library(rgbif)
 }
 
 # getting the data from GBIF
 species <- name_lookup(query = "Dasypus kappleri",
                        rank="species", return = "data") # information about the species
 
-occ_count(taxonKey = species$key[14], georeferenced = TRUE) # testing if keys return records
+#occ_count(taxonKey = species$key[17], georeferenced = TRUE) # testing if keys return records
 
-key <- species$key[14] # using species key that return information
+key <- species$key[17] # using species key that return information
 
 occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
 

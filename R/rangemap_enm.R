@@ -10,13 +10,13 @@
 #'
 #' @param occurrences a data.frame containing geographic coordinates of species occurrences,
 #' columns must be: Species, Longitude, and Latitude. Geographic coordinates must be in decimal
-#' degrees. occurrences may not exist but \code{threshold_value} must be defined.
+#' degrees. \code{occurrences} may not exist but \code{threshold_value} must be defined.
 #' @param model a RasterLayer object that will be binarized using the \code{threshold_value}
 #' defined by the user or a value calculated based on an omission level (from 0 - 100) defined in
 #' \code{threshold_omission}. If model is projected, this projection must be Geographic (longitude,
 #' latitude). If not projected, the Geographic projection will be assigned for the analysis.
 #' @param threshold_value (numeric) value used for reclasifying the model. This value will
-#' be the lowest considered as suitable for the species nad must be inside the range of values
+#' be the lowest considered as suitable for the species and must be inside the range of values
 #' present in \code{model}. If defined, \code{threshold_omission} will be ignored. If
 #' \code{occurrences} is not defined, this parameter is mandatory.
 #' @param threshold_omission (numeric) percentage of occurrence records to be excluded from
@@ -31,6 +31,9 @@
 #' @param polygons (optional) a SpatialPolygon object to adjust created polygons to these limits.
 #' Projection must be Geographic (longitude, latitude). If not defined, a default, simple world
 #' map will be used.
+#' @param final_projection (character) string of projection arguments for resulting Spatial objects.
+#' Arguments must be as in the PROJ.4 documentation. See funcion \code{\link[sp]{CRS}} for details.
+#' Default = "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0" = WGS84.
 #' @param save_shp (logical) if TRUE, shapefiles of the species range, occurrences, extent of
 #' occurrence and area of occupancy will be written in the working directory. Default = FALSE.
 #' @param name (character) valid if \code{save_shp} = TRUE. The name of the shapefile to be exported.
@@ -38,29 +41,39 @@
 #' occurrence = "_extent_occ", area of occupancy = "_area_occ", and occurrences = "_unique_records".
 #' Default = "range_enm".
 #'
-#' @return A named list containing: (1) a data.frame with information about the species range, and
-#' SpatialPolygon objects of (2) unique occurrences, (3) species range, (4) extent of occurrence,
-#' and (5) area of occurpancy. All Spatial objects will be in Azimuthal equal area projection. If
-#' \code{occurrences} are not provided, the result will be a list of two elements: (1) a data.frame
-#' with information about the species range, and (2) a SpatialPolygon object of the species range.
+#' @return
+#' If \code{occurrences} and \code{threshold_omission} are defined, a  named list containing:
+#' (1) a data.frame with information about the species range, and SpatialPolygon objects of
+#' (2) unique occurrences, (3) species range, (4) extent of occurrence, and (5) area of occurpancy.
 #'
-#' @details If \code{threshold_value} is provided and \code{occurrences} are not defined, the result
-#' will be only the species range from the model binarization (presence and absence).
+#' If instead of the two parameters before mentioned, \code{threshold_value} is provided, the result
+#' will be a list of two elements: (1) a data.frame with information about the species range, and
+#' (2) a SpatialPolygon object of the species range.
+#'
+#' @details
+#' All resultant Spatial objects in the list of results will be projected to the \code{final_projection}.
+#' Areas are calculated in square kilometers using the Azimuthal equal area projection.
+#'
+#' @usage
+#' rangemap_enm(occurrences, model, threshold_value, threshold_omission,
+#'     simplify = FALSE, simplify_level = 0, polygons, final_projection,
+#'     save_shp = FALSE, name = "range_enm")
+#'
+#' @export
+#'
+#' @importFrom raster values extract crs rasterToPolygons area raster extent rasterize
+#' @importFrom rgeos gSimplify gCentroid gBuffer gUnaryUnion gIntersection
+#' @importFrom sp CRS SpatialPointsDataFrame SpatialPolygonsDataFrame
+#' @importFrom sp SpatialPolygons Polygons Polygon proj4string over spTransform
+#' @importFrom maps map
+#' @importFrom maptools map2SpatialPolygons
+#' @importFrom rgdal writeOGR
 #'
 #' @examples
-#' if(!require(devtools)){
-#' install.packages("devtools")
-#' }
-#'
-#' if(!require(kuenm)){
-#' devtools::install_github("marlonecobos/kuenm")
-#' library(kuenm)
-#' }
-#'
 #' # parameters
-#' sp_mod <- raster::raster(list.files(system.file("extdata", package = "kuenm"),
+#' sp_mod <- raster::raster(list.files(system.file("extdata", package = "rangemap"),
 #'                                     pattern = "sp_model.tif", full.names = TRUE))
-#' sp_train <- read.csv(list.files(system.file("extdata", package = "kuenm"),
+#' sp_train <- read.csv(list.files(system.file("extdata", package = "rangemap"),
 #'                                 pattern = "sp_train.csv", full.names = TRUE))
 #' occ_sp <- data.frame("A_americanum", sp_train)
 #' thres <- 5
@@ -78,11 +91,11 @@
 #'
 #' # creating the species range figure
 #' rangemap_fig(enm_range, add_extent = extent, add_occurrences = occ,
-#'              legend = legend, northarrow = north)
+#'              legend = legend, northarrow = north, northarrow_position = "topleft")
 
 rangemap_enm <- function(occurrences, model, threshold_value, threshold_omission,
                          simplify = FALSE, simplify_level = 0, polygons,
-                         save_shp = FALSE, name = "range_enm") {
+                         final_projection, save_shp = FALSE, name = "range_enm") {
 
   # check for errors
   if (missing("model")) {
@@ -100,7 +113,7 @@ rangemap_enm <- function(occurrences, model, threshold_value, threshold_omission
         occ <- occurrences[, 2:3]
 
         # threshold value calculation
-        o_suit <- raster::extract(model, occ)
+        o_suit <- na.omit(raster::extract(model, occ))
         o_suit_sort <- sort(o_suit)
         thres <- o_suit_sort[ceiling(length(occ[, 1]) * threshold_omission / 100) + 1]
 
@@ -184,6 +197,15 @@ rangemap_enm <- function(occurrences, model, threshold_value, threshold_omission
                                               data = data.frame("Species", area),
                                               match.ID = FALSE)
 
+    # reprojection
+    if (missing(final_projection)) {
+      final_projection <- WGS84
+    } else {
+      final_projection <- sp::CRS(final_projection) # character to projection
+    }
+
+    clip_area <- sp::spTransform(clip_area, final_projection)
+
     # exporting
     if (save_shp == TRUE) {
       cat("\nWriting shapefile in the working directory...\n")
@@ -235,6 +257,18 @@ rangemap_enm <- function(occurrences, model, threshold_value, threshold_omission
     area_occupancy <- sp::SpatialPolygonsDataFrame(grid_sp, # area of occupancy
                                                    data = data.frame(species, aockm2),
                                                    match.ID = FALSE)
+
+    # reprojection
+    if (missing(final_projection)) {
+      final_projection <- WGS84
+    } else {
+      final_projection <- sp::CRS(final_projection) # character to projection
+    }
+
+    clip_area <- sp::spTransform(clip_area, final_projection)
+    extent_occurrence <- sp::spTransform(extent_occurrence, final_projection)
+    area_occupancy <- sp::spTransform(area_occupancy, final_projection)
+    occ_pr <- sp::spTransform(occ_pr, final_projection)
 
     # exporting
     if (save_shp == TRUE) {

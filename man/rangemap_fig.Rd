@@ -5,14 +5,13 @@
 \title{Figures of species range maps}
 \usage{
 rangemap_fig(range, polygons, add_extent = FALSE, add_occurrences = FALSE,
-  basemap_color = "grey93", range_color = "darkgreen",
-  extent_color = "blue", occurrences_color = "yellow", grid = FALSE,
-  grid_sides = "bottomleft", ylabels_position = 2.3, legend = FALSE,
-  legend_position = "bottomright", northarrow = FALSE,
-  northarrow_position = "topright", scalebar = FALSE,
-  scalebar_position = "bottomleft", scalebar_length = 100, zoom = 1,
-  save_fig = FALSE, name = "range_fig", format = "png",
-  resolution = 300, width = 166, height = 166)
+    basemap_color = "grey93", range_color = "darkgreen", extent_color = "blue",
+    occurrences_color = "yellow", grid = FALSE, grid_sides = "bottomleft",
+    ylabels_position = 1.3, legend = FALSE, legend_position = "bottomright",
+    northarrow = FALSE, northarrow_position = "topright", scalebar = FALSE,
+    scalebar_position = "bottomleft", scalebar_length = 100, zoom = 1,
+    save_fig = FALSE, name = "range_fig", format = "png", resolution = 300,
+    width = 166, height = 166)
 }
 \arguments{
 \item{range}{an object produced with any of the following functions:
@@ -50,7 +49,7 @@ Options are the same than for other position character indicators (see details).
 "bottomleft".}
 
 \item{ylabels_position}{(numeric) if \code{grid} = TRUE, separation (in lines) of y axis
-labels from the axis. Bigger numbers will increase separation. Default = 2.3.}
+labels from the axis. Bigger numbers will increase separation. Default = 1.3.}
 
 \item{legend}{(logical) if TRUE, a legend of the plotted features will be added to the
 figure at \code{legend_position}. Default = FALSE.}
@@ -116,9 +115,6 @@ Position of distinct elements depend on the spatial configuration of the species
 Therefore, their position may need to be changed if the elements are needed. Position
 options are: "bottomright", "bottomleft", "topleft", and "topright". Numerical descriptions
 of positions are also allowed.
-
-Scale bar is ploted using a modification of the "scalebar" function developed by Tanimura
-et al. (2007) \url{http://hdl.handle.net/10.18637/jss.v019.c01}.
 }
 \examples{
 if(!require(rgbif)){
@@ -130,7 +126,10 @@ if(!require(rgbif)){
 species <- name_lookup(query = "Dasypus kappleri",
                        rank="species", return = "data") # information about the species
 
-occ_count(taxonKey = species$key[14], georeferenced = TRUE) # testing if keys return records
+for (i in 1:length(species$key)) {
+  cat("key", (1:length(species$key))[i], "=",
+      occ_count(taxonKey = species$key[i], georeferenced = TRUE), "\\n")
+}
 
 key <- species$key[14] # using species key that return information
 

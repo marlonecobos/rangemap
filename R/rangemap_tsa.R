@@ -20,6 +20,9 @@
 #' @param simplify_level (numeric) tolerance at the moment of simplifying polygons created
 #' with the trend surface model. Lower values will produce polygons more similar to the original
 #' geometry. Default = 0. If simplify is needed, try numbers between 0 and 1 first.
+#' @param final_projection (character) string of projection arguments for resulting Spatial objects.
+#' Arguments must be as in the PROJ.4 documentation. See funcion \code{\link[sp]{CRS}} for details.
+#' Default = "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0" = WGS84.
 #' @param save_shp (logical) if TRUE, shapefiles of the species range, occurrences, extent of
 #' occurrence and area of occupancy will be written in the working directory. Default = FALSE.
 #' @param save_tsmodel (logical) if TRUE, the species tsa model will be included as part of the
@@ -42,14 +45,29 @@
 #' depends on the quality of data and the certainty of having or not a complete sampling
 #' of the \code{regiong_of_interest}.
 #'
+#' @usage
+#' rangemap_tsa(occurrences, region_of_interest, resolution = 5, threshold = 0,
+#'     simplify_level = 0, save_shp = FALSE, save_tsmodel = FALSE,
+#'     name = "range_tsa")
+#'
+#' @export
+#'
+#' @importFrom sp CRS SpatialPointsDataFrame SpatialPolygonsDataFrame coordinates
+#' @importFrom sp SpatialPolygons Polygons Polygon proj4string over spTransform
+#' @importFrom raster disaggregate area extent rasterize res values mask
+#' @importFrom raster writeRaster extract rasterToPolygons
+#' @importFrom rgeos gCentroid gUnaryUnion gIntersection
+#' @importFrom rgdal writeOGR
+#' @importFrom spatial surf.ls predict.trls
+#'
 #' @examples
 #' if(!require(rgbif)){
-#' install.packages("rgbif")
-#' library(rgbif)
+#'   install.packages("rgbif")
+#'   library(rgbif)
 #' }
 #' if(!require(maps)){
-#' install.packages("maps")
-#' library(maps)
+#'   install.packages("maps")
+#'   library(maps)
 #' }
 #' if(!require(maptools)){
 #'  install.packages("maptools")
@@ -57,12 +75,12 @@
 #' }
 #'
 #' # getting the data from GBIF
-#' species <- name_lookup(query = "Peltophryne fustiger",
+#' species <- name_lookup(query = "Peltophryne taladai",
 #'                        rank="species", return = "data") # information about the species
 #'
-#' occ_count(taxonKey = species$key[5], georeferenced = TRUE) # testing if keys return records
+#' #occ_count(taxonKey = species$key[6], georeferenced = TRUE) # testing if keys return records
 #'
-#' key <- species$key[5] # using species key that return information
+#' key <- species$key[6] # using species key that return information
 #'
 #' occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
 #'
@@ -77,7 +95,7 @@
 #' reg <- map2SpatialPolygons(w_map, IDs = w_po, proj4string = WGS84) # map to polygon
 #'
 #' # other data
-#' res <- 1
+#' res <- 5
 #' thr <- 0
 #' save <- TRUE
 #' name <- "test"
@@ -94,11 +112,11 @@
 #'
 #' # creating the species range figure
 #' rangemap_fig(tsa, add_extent = extent, add_occurrences = occ,
-#'              legend = legend, northarrow = north)
+#'              legend = legend, northarrow = north, legend_position = "bottomleft")
 
 rangemap_tsa <- function(occurrences, region_of_interest, resolution = 5, threshold = 0,
-                         simplify_level = 0, save_shp = FALSE, save_tsmodel = FALSE,
-                         name = "range_tsa") {
+                         simplify_level = 0, final_projection, save_shp = FALSE,
+                         save_tsmodel = FALSE, name = "range_tsa") {
   # testing potential issues
   if (missing(occurrences)) {
     stop("Argument occurrences is necessary to perform the analysis")
@@ -261,6 +279,18 @@ rangemap_tsa <- function(occurrences, region_of_interest, resolution = 5, thresh
   area_occupancy <- sp::SpatialPolygonsDataFrame(grid_sp, data = data.frame(species, # area of occupancy
                                                                             aockm2),
                                                  match.ID = FALSE)
+
+  # reprojection
+  if (missing(final_projection)) {
+    final_projection <- WGS84
+  } else {
+    final_projection <- sp::CRS(final_projection) # character to projection
+  }
+
+  clip_area <- sp::spTransform(clip_area, final_projection)
+  extent_occurrence <- sp::spTransform(extent_occurrence, final_projection)
+  area_occupancy <- sp::spTransform(area_occupancy, final_projection)
+  occ_pr <- sp::spTransform(occ_pr, final_projection)
 
   # exporting
   if (save_shp == TRUE) {

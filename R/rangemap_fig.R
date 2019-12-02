@@ -75,6 +75,23 @@
 #' options are: "bottomright", "bottomleft", "topleft", and "topright". Numerical descriptions
 #' of positions are also allowed.
 #'
+#' @usage
+#' rangemap_fig(range, polygons, add_extent = FALSE, add_occurrences = FALSE,
+#'     basemap_color = "grey93", range_color = "darkgreen", extent_color = "blue",
+#'     occurrences_color = "yellow", grid = FALSE, grid_sides = "bottomleft",
+#'     ylabels_position = 1.3, legend = FALSE, legend_position = "bottomright",
+#'     northarrow = FALSE, northarrow_position = "topright", scalebar = FALSE,
+#'     scalebar_position = "bottomleft", scalebar_length = 100, zoom = 1,
+#'     save_fig = FALSE, name = "range_fig", format = "png", resolution = 300,
+#'     width = 166, height = 166)
+#'
+#' @export
+#'
+#' @importFrom sp CRS spTransform plot
+#' @importFrom rnaturalearth ne_countries
+#' @importFrom scales alpha
+#' @importFrom maps map.scale
+#' @importFrom graphics points
 #'
 #' @examples
 #' if(!require(rgbif)){
@@ -136,14 +153,14 @@ rangemap_fig <- function(range, polygons, add_extent = FALSE, add_occurrences = 
   }
 
   # projections
-  WGS84 <- sp::CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0") # generic
-  AEQD <- range$Species_range@proj4string
+  #WGS84 <- sp::CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0") # generic
+  f_proj <- range$Species_range@proj4string
 
   # bringing maps if polygons false
   if (missing(polygons)) {
     polygons <- rnaturalearth::ne_countries(scale = 50)
   }
-  polygons <- sp::spTransform(polygons, AEQD)
+  polygons <- sp::spTransform(polygons, f_proj)
 
 
   # getting species range
@@ -223,7 +240,7 @@ rangemap_fig <- function(range, polygons, add_extent = FALSE, add_occurrences = 
 
   ## north arrow
   if (northarrow == TRUE) {
-    nort_arrow(position = northarrow_position, xlim, ylim, Ncex = 0.6)
+    north_arrow(position = northarrow_position, xlim, ylim, Ncex = 0.6)
   }
 
   ## scale bar
@@ -384,7 +401,7 @@ rangemap_fig <- function(range, polygons, add_extent = FALSE, add_occurrences = 
 
     ## north arrow
     if (northarrow == TRUE) {
-      nort_arrow(position = northarrow_position, xlim, ylim, Ncex = 0.6)
+      north_arrow(position = northarrow_position, xlim, ylim, Ncex = 0.6)
     }
 
     ## scale bar
@@ -487,10 +504,15 @@ rangemap_fig <- function(range, polygons, add_extent = FALSE, add_occurrences = 
 #'
 #' @param position (character or numeric) position of the North arrow. If character, options
 #' are: "topright", "topleft", "bottomleft", or "bottomright". Default = "topright".
+#' @param xlim (numeric) vector of two numbers indicating the x limits of the plotting area.
+#' @param ylim (numeric) vector of two numbers indicating the y limits of the plotting area.
 #' @param Ncex (numeric) cex for the North label (N).
 #' @param exproting (logical) whether or not the map will be exported as a figure.
+#'
+#' @export
+#' @importFrom graphics polygon
 
-nort_arrow <- function(position = "topright", xlim, ylim, Ncex = 0.6) {
+north_arrow <- function(position = "topright", xlim, ylim, Ncex = 0.6) {
 
   if (class(position) == "character") {
     if (position == "topright") {

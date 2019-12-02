@@ -70,19 +70,31 @@
 #' Scale bar is ploted using a modification of the "scalebar" function developed by
 #' Tanimura et al. (2007) \url{http://hdl.handle.net/10.18637/jss.v019.c01}.
 #'
+#' @usage
+#' ranges_emaps(ranges, add_occurrences = TRUE, variables, range_colors = NULL,
+#'     variables_color = NULL, ranges_legend = TRUE, legend_position = "bottomright",
+#'     legend_size = 0.7, scalebar = FALSE, scalebar_position = "bottomleft",
+#'     scalebar_length = 100, zoom = 1.3, save_fig = FALSE, name = "ranges_emaps",
+#'     format = "png", resolution = 300, width = 166)
+#'
+#' @export
+#'
+#' @importFrom sp CRS plot
+#' @importFrom raster projectRaster plot
+#'
 #' @examples
 #' if(!require(rgbif)){
-#' install.packages("rgbif")
-#' library(rgbif)
+#'   install.packages("rgbif")
+#'   library(rgbif)
 #' }
 #'
 #' # getting the data from GBIF
 #' species <- name_lookup(query = "Dasypus kappleri",
 #'                        rank="species", return = "data") # information about the species
 #'
-#' occ_count(taxonKey = species$key[14], georeferenced = TRUE) # testing if keys return records
+#' #occ_count(taxonKey = species$key[17], georeferenced = TRUE) # testing if keys return records
 #'
-#' key <- species$key[14] # using species key that return information
+#' key <- species$key[17] # using species key that return information
 #'
 #' occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
 #'

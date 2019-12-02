@@ -4,10 +4,9 @@
 \alias{ranges_espace}
 \title{Comparison of species ranges in environmental space}
 \usage{
-ranges_espace(ranges, add_occurrences = TRUE, variables,
-  max_background = 25000, ranges_representation = "clouds",
-  background_color = "darkolivegreen", range_colors = NULL, alpha = 0.03,
-  eye_camera = c(x = 1.95, y = 1.25, z = 1.35))
+ranges_espace(ranges, add_occurrences = TRUE, variables, max_background = 25000,
+    ranges_representation = "clouds", background_color = "darkolivegreen",
+    range_colors = NULL, alpha = 0.03, eye_camera = c(x = 1.95, y = 1.25, z = 1.35))
 }
 \arguments{
 \item{ranges}{object or list of objects produced with any of the following functions:
@@ -61,17 +60,17 @@ one of them if environmental conditions are considered.
 }
 \examples{
 if(!require(rgbif)){
-install.packages("rgbif")
-library(rgbif)
+  install.packages("rgbif")
+  library(rgbif)
 }
 
 # getting the data from GBIF
 species <- name_lookup(query = "Dasypus kappleri",
                        rank="species", return = "data") # information about the species
 
-occ_count(taxonKey = species$key[14], georeferenced = TRUE) # testing if keys return records
+occ_count(taxonKey = species$key[17], georeferenced = TRUE) # testing if keys return records
 
-key <- species$key[14] # using species key that return information
+key <- species$key[17] # using species key that return information
 
 occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
 
@@ -145,7 +144,7 @@ p \%>\% htmlwidgets::onRender(
   paste("function(el, x)
           {var gd = document.getElementById(el.id);
           Plotly.downloadImage(gd, {format: 'svg', width: ", 1000, ", height: ",
-        800, ", filename: ", paste("\\'", name, "\\'", sep = ""), "});
+        800, ", filename: ", paste("\'", name, "\'", sep = ""), "});
           }", sep = "")
 )
 

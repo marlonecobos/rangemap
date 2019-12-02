@@ -35,7 +35,7 @@ Following you can find a brief description of the produced R package, as well as
 
 ### Package description
 
-The **rangemap** R package presents various tools to create species range maps based on occurrence data, statistics, and and SpatialPolygons objects. Other tools of this package can be used to analyze environmental characteristics of the species ranges and to create high quality figures of these maps. All the functions that create species ranges also generate an approach to the species extent of occurrence (using convex hulls) and the area of occupancy according to the IUCN criteria. Shapefiles of the resultant polygons can be saved in the working directory if it is needed.
+The **rangemap** R package presents various tools to create species range maps based on occurrence data, statistics, and SpatialPolygon objects. Other tools of this package can be used to analyze environmental characteristics of the species ranges and to create high quality figures of these maps. All the functions that create species ranges also generate an approach to the species extent of occurrence (using convex hulls) and the area of occupancy according to the IUCN criteria. Shapefiles of the resultant polygons can be saved in the working directory if it is needed.
 
 <br>
 
@@ -71,12 +71,6 @@ if (length(req_packages) > 0) {
   install.packages(req_packages, dependencies = TRUE)
 }
 sapply(pcakages, require, character.only = TRUE)
-
-# package from github
-if(!require(kuenm)){
-devtools::install_github("marlonecobos/kuenm")
-}
-library(kuenm)
 ```
 
 The working directory will also be defined in this part.
@@ -350,7 +344,7 @@ Now the figure of the species range.
 
 ```{r, include=TRUE, cache=TRUE}
 # creating the species range figure
-rangemap_fig(hull_range) # try hull_range1 and hull_range2
+rangemap_fig(hull_range) # try hull_range1 and hull_range2 as well
 
 #dev.off() # for returning to default par settings
 ```
@@ -398,7 +392,7 @@ Checking the figure.
 
 ```{r, include=TRUE, cache=TRUE}
 # creating the species range figure
-rangemap_fig(hull_range5) # try hull_range4 and hull_range5
+rangemap_fig(hull_range5) # try hull_range4 and hull_range5 as well
 
 #dev.off() # for returning to default par settings
 ```
@@ -407,7 +401,7 @@ rangemap_fig(hull_range5) # try hull_range4 and hull_range5
 
 #### Species ranges from ecological niche models
 
-The *rangemap_enm* function generates a distributional range for a given species using a continuous raster layer produced with an ecological niche modeling algorithm. This function split the model in suitable and unsuitable areas using a user specified level of omission or a given threshold value.
+The *rangemap_enm* function generates a distributional range for a given species using a continuous raster layer produced with an ecological niche modeling algorithm. This function binarizes the model into suitable and unsuitable areas using a user specified level of omission (a given threshold value).
 
 The function's help can be consulted using the following line of code:
   
@@ -419,9 +413,9 @@ An example of the use of this function is written below.
 
 ```{r, include=TRUE, cache=TRUE, warning=FALSE, message=FALSE}
 # parameters
-sp_mod <- raster::raster(list.files(system.file("extdata", package = "kuenm"),
+sp_mod <- raster::raster(list.files(system.file("extdata", package = "rangemap"),
                                     pattern = "sp_model.tif", full.names = TRUE))
-sp_train <- read.csv(list.files(system.file("extdata", package = "kuenm"),
+sp_train <- read.csv(list.files(system.file("extdata", package = "rangemap"),
                                 pattern = "sp_train.csv", full.names = TRUE))
 occ_sp <- data.frame("A_americanum", sp_train)
 thres <- 5
@@ -499,7 +493,7 @@ rangemap_fig(tsa_r, polygons = reg, zoom = 3)
 
 #### Nice figures of species ranges
 
-The *rangemap_fig* function can be used to plot not only the generated species ranges but also the extent of occurrence and the species records in the same map. The species range will be plot on a simplified world map, but users can use the SpatialPolygon objects of their choice. 
+The *rangemap_fig* function can be used to plot not only the generated species ranges but also the extent of occurrence and the species records in the same map. The species range will be plot on a simplified world map, but users can use a SpatialPolygon object of their choice. 
 
 The function's help can be consulted using the following line of code:
   
@@ -515,7 +509,7 @@ Examples of the use of this function are written below.
 # arguments for the species range figure
 extent <- TRUE
 
-# creating the species range figure
+# creating the species range figure (hull_range5 was gnerated in a previous example)
 rangemap_fig(hull_range5, add_extent = extent)
 
 #dev.off() # for returning to default par settings
@@ -529,7 +523,7 @@ rangemap_fig(hull_range5, add_extent = extent)
 # arguments for the species range figure
 occ <- TRUE
 
-# creating the species range figure
+# creating the species range figure (hull_range5 was gnerated in a previous example)
 rangemap_fig(hull_range5, add_occurrences = occ)
 
 #dev.off() # for returning to default par settings
@@ -544,7 +538,7 @@ rangemap_fig(hull_range5, add_occurrences = occ)
 extent <- TRUE
 occ <- TRUE
 
-# creating the species range figure
+# creating the species range figure (hull_range5 was gnerated in a previous example)
 rangemap_fig(hull_range5, add_extent = extent, add_occurrences = occ)
 
 #dev.off() # for returning to default par settings
@@ -564,7 +558,7 @@ north <- TRUE # north arrow
 zoom1 <- 1.4 # normally 1
 
 
-# creating the species range figure
+# creating the species range figure (hull_range5 was gnerated in a previous example)
 rangemap_fig(hull_range5, add_extent = extent, add_occurrences = occ,
              legend = legend, scalebar = scale, scalebar_length = 500, 
              zoom = zoom1, northarrow = north)
@@ -585,7 +579,7 @@ scale <- TRUE # scale bar
 north <- TRUE # north arrow
 save <-  TRUE # FALSE by default
 
-# creating the species range figure
+# creating the species range figure (hull_range5 was gnerated in a previous example)
 range_map <- rangemap_fig(hull_range5, add_extent = extent, add_occurrences = occ,
                           legend = legend, scalebar = scale, scalebar_length = 500, 
                           northarrow = north, zoom = zoom1, save_fig = save)
@@ -656,7 +650,7 @@ mask <- as(e, 'SpatialPolygons')
 ## variables to be used in the analysis
 variables <- crop(vars, mask)
 
-# ranges on evironmental factor maps
+# ranges on evironmental factor maps (figure can be saved using other parameters, see help)
 ranges_emaps(ranges = ranges, variables = variables)
 
 #dev.off() # for returning to default par settings

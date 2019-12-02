@@ -36,6 +36,9 @@
 #' be disolved for creating simpler shapes, default = FALSE. Owing to the high resolution in the GADM
 #' data the dissolving process may be quite time consuming, specially if the species has a broad
 #' distribution.
+#' @param final_projection (character) string of projection arguments for resulting Spatial objects.
+#' Arguments must be as in the PROJ.4 documentation. See funcion \code{\link[sp]{CRS}} for details.
+#' Default = "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0" = WGS84.
 #' @param save_shp (logical) if TRUE, shapefiles of the species range, occurrences, extent of occurrence
 #' and area of occupancy will be written in the working directory. Default = FALSE.
 #' @param name (character) valid if \code{save_shp} = TRUE. The name of the shapefile to be exported.
@@ -54,10 +57,15 @@
 #' Iformation on country codes and names of administrative areas at distinct levels can be cosulted
 #' using the data of this package: \code{\link{country_codes}} and \code{\link{adm_area_names}}.
 #'
+#' @usage
+#' rangemap_bound(occurrences, adm_areas, country_code, boundary_level = 0,
+#'     polygons, kept_data = FALSE, dissolve = FALSE, final_projection,
+#'     save_shp = FALSE, name = "range_boundaries")
+#'
 #' @export
 #'
-#' @importFrom sp CRS spTransform SpatialPointsDataFrame over
-#' @importFrom sp SpatialPolygons Polygons Polygon proj4string
+#' @importFrom sp CRS SpatialPointsDataFrame SpatialPolygonsDataFrame
+#' @importFrom sp SpatialPolygons Polygons Polygon proj4string over spTransform
 #' @importFrom raster getData disaggregate area extent rasterize
 #' @importFrom rgeos gCentroid gUnaryUnion gIntersection
 #' @importFrom rgdal writeOGR
@@ -107,7 +115,7 @@
 #'              legend = legend, northarrow = north)
 
 rangemap_bound <- function(occurrences, adm_areas, country_code, boundary_level = 0,
-                           polygons, kept_data = FALSE, dissolve = FALSE,
+                           polygons, kept_data = FALSE, dissolve = FALSE, final_projection,
                            save_shp = FALSE, name = "range_boundaries") {
   # testing potential issues
   if (!missing(polygons)) {
@@ -303,6 +311,15 @@ rangemap_bound <- function(occurrences, adm_areas, country_code, boundary_level 
                                                data = data.frame("Species", rangekm2),
                                                match.ID = FALSE)
 
+    # reprojection
+    if (missing(final_projection)) {
+      final_projection <- WGS84
+    } else {
+      final_projection <- sp::CRS(final_projection) # character to projection
+    }
+
+    boundaries <- sp::spTransform(boundaries, final_projection)
+
     # exporting
     if (save_shp == TRUE) {
       cat("\nWriting shapefile in the working directory...\n")
@@ -354,6 +371,18 @@ rangemap_bound <- function(occurrences, adm_areas, country_code, boundary_level 
     area_occupancy <- sp::SpatialPolygonsDataFrame(grid_sp, # area of occupancy
                                                    data = data.frame(species, aockm2),
                                                    match.ID = FALSE)
+
+    # reprojection
+    if (missing(final_projection)) {
+      final_projection <- WGS84
+    } else {
+      final_projection <- sp::CRS(final_projection) # character to projection
+    }
+
+    boundaries <- sp::spTransform(boundaries, final_projection)
+    extent_occurrence <- sp::spTransform(extent_occurrence, final_projection)
+    area_occupancy <- sp::spTransform(area_occupancy, final_projection)
+    occ_pr <- sp::spTransform(occ_pr, final_projection)
 
     # exporting
     if (save_shp == TRUE) {

@@ -4,8 +4,8 @@
 \alias{rangemap_buff}
 \title{Species distributional ranges based on buffered occurrences}
 \usage{
-rangemap_buff(occurrences, buffer_distance = 1e+05, polygons,
-  save_shp = FALSE, name = "range_buffer")
+rangemap_buff(occurrences, buffer_distance = 1e+05, polygons, final_projection,
+    save_shp = FALSE, name = "range_buffer")
 }
 \arguments{
 \item{occurrences}{a data.frame containing geographic coordinates of species occurrences,
@@ -19,6 +19,10 @@ around occurrences, default = 100000.}
 range and other polygons to these limits. Projection must be Geographic (longitude, latitude).
 If not defined, a default, simple world map will be used.}
 
+\item{final_projection}{(character) string of projection arguments for resulting Spatial objects.
+Arguments must be as in the PROJ.4 documentation. See funcion \code{\link[sp]{CRS}} for details.
+Default = "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0" = WGS84.}
+
 \item{save_shp}{(logical) if TRUE, shapefiles of the species range, occurrences, extent of
 occurrence and area of occupancy will be written in the working directory. Default = FALSE.}
 
@@ -30,8 +34,7 @@ extent of occurrence = "_extent_occ", area of occupancy = "_area_occ", and occur
 \value{
 A named list containing: (1) a data.frame with information about the species range,
 and SpatialPolygon objects of (2) unique occurrences, (3) species range, (4) extent of
-occurrence, and (5) area of occurpancy. All Spatial objects will be in Azimuthal Equal Area
-projection.
+occurrence, and (5) area of occurpancy.
 }
 \description{
 rangemap_buff generates a distributional range for a given species by
@@ -39,19 +42,23 @@ buffering provided occurrences using a defined distance. An approach to the spec
 of occurrence (using convex hulls) and the area of occupancy according to the IUCN criteria
 are also generated. Shapefiles can be saved in the working directory if it is needed.
 }
+\details{
+All resultant Spatial objects in the list of results will be projected to the \code{final_projection}.
+Areas are calculated in square kilometers using the Azimuthal equal area projection.
+}
 \examples{
 if(!require(rgbif)){
-install.packages("rgbif")
-library(rgbif)
+  install.packages("rgbif")
+  library(rgbif)
 }
 
 # getting the data from GBIF
 species <- name_lookup(query = "Peltophryne empusa",
                        rank="species", return = "data") # information about the species
 
-occ_count(taxonKey = species$key[1], georeferenced = TRUE) # testing if keys return records
+#occ_count(taxonKey = species$key[2], georeferenced = TRUE) # testing if keys return records
 
-key <- species$key[1] # using species key that return information
+key <- species$key[2] # using species key that return information
 
 occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
 
@@ -75,5 +82,5 @@ north <- TRUE
 
 # creating the species range figure
 rangemap_fig(buff_range, add_extent = extent, add_occurrences = occ,
-             legend = legend, northarrow = north)
+             legend = legend, northarrow = north, legend_position = "bottomleft")
 }

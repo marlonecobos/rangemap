@@ -13,6 +13,9 @@
 #' @param polygons (optional) a SpatialPolygon object to clip buffer areas and adjust the species
 #' range and other polygons to these limits. Projection must be Geographic (longitude, latitude).
 #' If not defined, a default, simple world map will be used.
+#' @param final_projection (character) string of projection arguments for resulting Spatial objects.
+#' Arguments must be as in the PROJ.4 documentation. See funcion \code{\link[sp]{CRS}} for details.
+#' Default = "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0" = WGS84.
 #' @param save_shp (logical) if TRUE, shapefiles of the species range, occurrences, extent of
 #' occurrence and area of occupancy will be written in the working directory. Default = FALSE.
 #' @param name (character) valid if \code{save_shp} = TRUE. The name of the shapefile to be
@@ -20,24 +23,42 @@
 #' extent of occurrence = "_extent_occ", area of occupancy = "_area_occ", and occurrences =
 #' "_unique_records". Default = "range_buffer".
 #'
-#' @return A named list containing: (1) a data.frame with information about the species range,
+#' @return
+#' A named list containing: (1) a data.frame with information about the species range,
 #' and SpatialPolygon objects of (2) unique occurrences, (3) species range, (4) extent of
-#' occurrence, and (5) area of occurpancy. All Spatial objects will be in Azimuthal Equal Area
-#' projection.
+#' occurrence, and (5) area of occurpancy.
+#'
+#' @details
+#' All resultant Spatial objects in the list of results will be projected to the \code{final_projection}.
+#' Areas are calculated in square kilometers using the Azimuthal equal area projection.
+#'
+#' @usage
+#' rangemap_buff(occurrences, buffer_distance = 1e+05, polygons, final_projection,
+#'     save_shp = FALSE, name = "range_buffer")
+#'
+#' @export
+#'
+#' @importFrom sp CRS SpatialPointsDataFrame SpatialPolygonsDataFrame
+#' @importFrom sp SpatialPolygons Polygons Polygon proj4string over spTransform
+#' @importFrom raster disaggregate area extent rasterize
+#' @importFrom rgeos gCentroid gUnaryUnion gIntersection gBuffer
+#' @importFrom maps map
+#' @importFrom maptools map2SpatialPolygons
+#' @importFrom rgdal writeOGR
 #'
 #' @examples
 #' if(!require(rgbif)){
-#' install.packages("rgbif")
-#' library(rgbif)
+#'   install.packages("rgbif")
+#'   library(rgbif)
 #' }
 #'
 #' # getting the data from GBIF
 #' species <- name_lookup(query = "Peltophryne empusa",
 #'                        rank="species", return = "data") # information about the species
 #'
-#' occ_count(taxonKey = species$key[1], georeferenced = TRUE) # testing if keys return records
+#' #occ_count(taxonKey = species$key[2], georeferenced = TRUE) # testing if keys return records
 #'
-#' key <- species$key[1] # using species key that return information
+#' key <- species$key[2] # using species key that return information
 #'
 #' occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
 #'
@@ -61,10 +82,10 @@
 #'
 #' # creating the species range figure
 #' rangemap_fig(buff_range, add_extent = extent, add_occurrences = occ,
-#'              legend = legend, northarrow = north)
+#'              legend = legend, northarrow = north, legend_position = "bottomleft")
 
-rangemap_buff <- function(occurrences, buffer_distance = 100000, polygons, save_shp = FALSE,
-                          name = "range_buffer") {
+rangemap_buff <- function(occurrences, buffer_distance = 100000, polygons, final_projection,
+                          save_shp = FALSE, name = "range_buffer") {
   # testing potential issues
   if (missing(occurrences)) {
     stop("Argument occurrences is necessary to perform the analysis")
@@ -81,7 +102,7 @@ rangemap_buff <- function(occurrences, buffer_distance = 100000, polygons, save_
   # make a spatial object from coordinates
   WGS84 <- sp::CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
   occ_sp <- sp::SpatialPointsDataFrame(coords = occ[, 2:3], data = occ,
-                                   proj4string = WGS84)
+                                       proj4string = WGS84)
 
   # world map or user map fro creating species range
   if (missing(polygons)) {
@@ -153,6 +174,18 @@ rangemap_buff <- function(occurrences, buffer_distance = 100000, polygons, save_
   area_occupancy <- sp::SpatialPolygonsDataFrame(grid_sp,  # area of occupancy
                                                  data = data.frame(species, aockm2),
                                                  match.ID = FALSE)
+
+  # reprojection
+  if (missing(final_projection)) {
+    final_projection <- WGS84
+  } else {
+    final_projection <- sp::CRS(final_projection) # character to projection
+  }
+
+  clip_area <- sp::spTransform(clip_area, final_projection)
+  extent_occurrence <- sp::spTransform(extent_occurrence, final_projection)
+  area_occupancy <- sp::spTransform(area_occupancy, final_projection)
+  occ_pr <- sp::spTransform(occ_pr, final_projection)
 
   # exporting
   if (save_shp == TRUE) {

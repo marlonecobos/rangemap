@@ -30,6 +30,9 @@
 #' @param polygons (optional) a SpatialPolygon object to clip the obtained areas and adjust the
 #' species range and other polygons to these limits. Projection must be Geographic (longitude,
 #' latitude). If not defined, a default, simple world map will be used.
+#' @param final_projection (character) string of projection arguments for resulting Spatial objects.
+#' Arguments must be as in the PROJ.4 documentation. See funcion \code{\link[sp]{CRS}} for details.
+#' Default = "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0" = WGS84.
 #' @param save_shp (logical) if TRUE, shapefiles of the species range, occurrences, extent of
 #' occurrence and area of occupancy will be written in the working directory. Default = FALSE.
 #' @param name (character) valid if \code{save_shp} = TRUE. The name of the shapefile to be
@@ -37,12 +40,16 @@
 #' extent of occurrence = "_extent_occ", area of occupancy = "_area_occ", and occurrences =
 #' "_unique_records". Default = "range_hull".
 #'
-#' @return A named list containing: (1) a data.frame with information about the species range,
+#' @return
+#' A named list containing: (1) a data.frame with information about the species range,
 #' and SpatialPolygon objects of (2) unique occurrences, (3) species range, (4) extent of
-#' occurrence, and (5) area of occurpancy. All Spatial objects will be in Azimuthal equal area
-#' projection.
+#' occurrence, and (5) area of occurpancy.
 #'
-#' @details The \code{cluster_method} must be chosen based on the spatial configuration of the
+#' @details
+#' All resultant Spatial objects in the list of results will be projected to the \code{final_projection}.
+#' Areas are calculated in square kilometers using the Azimuthal equal area projection.
+#'
+#' The \code{cluster_method} must be chosen based on the spatial configuration of the
 #' species occurrences. Both methods make distinct assumptions and one of them may perform better
 #' than the other depending on the spatial pattern of the data.
 #'
@@ -59,19 +66,37 @@
 #' For more information on these clustering methods see Aggarwal and Reddy (2014)
 #' \url{https://goo.gl/RQ2ebd}.
 #'
+#' @usage
+#' rangemap_hull(occurrences, hull_type = "convex", buffer_distance = 50000,
+#'     concave_distance_lim = 5000, split = FALSE, cluster_method = "hierarchical",
+#'     split_distance, n_k_means, polygons, final_projection, save_shp = FALSE,
+#'     name = "range_hull")
+#'
+#' @export
+#'
+#' @importFrom sp CRS SpatialPointsDataFrame SpatialPolygonsDataFrame
+#' @importFrom sp SpatialPolygons Polygons Polygon proj4string over spTransform
+#' @importFrom raster disaggregate area extent rasterize
+#' @importFrom rgeos gCentroid gUnaryUnion gIntersection gBuffer
+#' @importFrom maps map
+#' @importFrom maptools map2SpatialPolygons
+#' @importFrom rgdal writeOGR
+#' @importFrom sf st_multipoint st_sf st_sfc as_Spatial st_zm
+#' @importFrom concaveman concaveman
+#'
 #' @examples
 #' if(!require(rgbif)){
-#' install.packages("rgbif")
-#' library(rgbif)
+#'   install.packages("rgbif")
+#'   library(rgbif)
 #' }
 #'
 #' # getting the data from GBIF
 #' species <- name_lookup(query = "Dasypus kappleri",
-#' rank="species", return = "data") # information about the species
+#'                        rank="species", return = "data") # information about the species
 #'
-#' occ_count(taxonKey = species$key[14], georeferenced = TRUE) # testing if keys return records
+#' #occ_count(taxonKey = species$key[17], georeferenced = TRUE) # testing if keys return records
 #'
-#' key <- species$key[14] # using species key that return information
+#' key <- species$key[17] # using species key that return information
 #'
 #' occ <- occ_search(taxonKey = key, return = "data", limit = 2000) # using the taxon key
 #'
@@ -104,7 +129,7 @@
 rangemap_hull <- function(occurrences, hull_type = "convex", buffer_distance = 50000,
                           concave_distance_lim = 5000, split = FALSE,
                           cluster_method = "hierarchical", split_distance, n_k_means,
-                          polygons, save_shp = FALSE, name = "range_hull") {
+                          polygons, final_projection, save_shp = FALSE, name = "range_hull") {
   # testing potential issues
   if (missing(occurrences)) {
     stop("Argument occurrences is necessary to perform the analysis")
@@ -197,7 +222,7 @@ rangemap_hull <- function(occurrences, hull_type = "convex", buffer_distance = 5
 
       for (i in 1:length(occ_prs)) {
         if (length(occ_prs) > 1) {
-          coord <- as.data.frame(sp::coordinates(occ_prs@coords[[i]])) # spatial point dataframe to data frame keeping only coordinates
+          coord <- as.data.frame(occ_prs@coords[[i]]) # spatial point dataframe to data frame keeping only coordinates
         }else {
           coord <- as.data.frame(sp::coordinates(occ_prs[[i]])) # spatial point dataframe to data frame keeping only coordinates
         }
@@ -220,7 +245,7 @@ rangemap_hull <- function(occurrences, hull_type = "convex", buffer_distance = 5
 
       for (i in 1:length(occ_prs)) {
         if (length(occ_prs) > 1) {
-          coord <- as.data.frame(sp::coordinates(occ_prs@coords[[i]])) # spatial point dataframe to data frame keeping only coordinates
+          coord <- as.data.frame(occ_prs@coords[[i]]) # spatial point dataframe to data frame keeping only coordinates
         }else {
           coord <- as.data.frame(sp::coordinates(occ_prs[[i]])) # spatial point dataframe to data frame keeping only coordinates
         }
@@ -299,6 +324,18 @@ rangemap_hull <- function(occurrences, hull_type = "convex", buffer_distance = 5
                                                  data = data.frame(species, aockm2),
                                                  match.ID = FALSE)
 
+  # reprojection
+  if (missing(final_projection)) {
+    final_projection <- WGS84
+  } else {
+    final_projection <- sp::CRS(final_projection) # character to projection
+  }
+
+  clip_area <- sp::spTransform(clip_area, final_projection)
+  extent_occurrence <- sp::spTransform(extent_occurrence, final_projection)
+  area_occupancy <- sp::spTransform(area_occupancy, final_projection)
+  occ_pr <- sp::spTransform(occ_pr, final_projection)
+
   # exporting
   if (save_shp == TRUE) {
     cat("Writing shapefiles in the working directory.")
@@ -317,5 +354,3 @@ rangemap_hull <- function(occurrences, hull_type = "convex", buffer_distance = 5
                       "Area_of_occupancy")
   return(results)
 }
-
-

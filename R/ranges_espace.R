@@ -39,19 +39,31 @@
 #' any of the functions: \code{\link{rangemap_buff}}, \code{\link{rangemap_bound}},
 #' \code{\link{rangemap_hull}}, \code{\link{rangemap_enm}}, and \code{\link{rangemap_tsa}}.
 #'
+#' @usage
+#' ranges_espace(ranges, add_occurrences = TRUE, variables, max_background = 25000,
+#'     ranges_representation = "clouds", background_color = "darkolivegreen",
+#'     range_colors = NULL, alpha = 0.03, eye_camera = c(x = 1.95, y = 1.25, z = 1.35))
+#'
+#' @export
+#'
+#' @importFrom sp CRS SpatialPointsDataFrame spTransform
+#' @importFrom raster rasterToPoints extract
+#' @importFrom plotly plot_ly add_trace layout
+#' @importFrom rgl ellipse3d
+#'
 #' @examples
 #' if(!require(rgbif)){
-#' install.packages("rgbif")
-#' library(rgbif)
+#'   install.packages("rgbif")
+#'   library(rgbif)
 #' }
 #'
 #' # getting the data from GBIF
 #' species <- name_lookup(query = "Dasypus kappleri",
 #'                        rank="species", return = "data") # information about the species
 #'
-#' occ_count(taxonKey = species$key[14], georeferenced = TRUE) # testing if keys return records
+#' occ_count(taxonKey = species$key[17], georeferenced = TRUE) # testing if keys return records
 #'
-#' key <- species$key[14] # using species key that return information
+#' key <- species$key[17] # using species key that return information
 #'
 #' occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
 #'
@@ -293,6 +305,7 @@ ranges_espace <- function(ranges, add_occurrences = TRUE, variables, max_backgro
 
 #' Helper function to test if lists are nested.
 #' @param l list to be tested.
+#' @export
 isnested <- function(l) {
   stopifnot(is.list(l))
   for (i in l) {
