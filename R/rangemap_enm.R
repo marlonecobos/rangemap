@@ -32,7 +32,7 @@
 #' Projection must be Geographic (longitude, latitude). If not defined, a default, simple world
 #' map will be used.
 #' @param final_projection (character) string of projection arguments for resulting Spatial objects.
-#' Arguments must be as in the PROJ.4 documentation. See funcion \code{\link[sp]{CRS}} for details.
+#' Arguments must be as in the PROJ.4 documentation. See \code{\link[sp]{CRS-class}} for details.
 #' Default = "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0" = WGS84.
 #' @param save_shp (logical) if TRUE, shapefiles of the species range, occurrences, extent of
 #' occurrence and area of occupancy will be written in the working directory. Default = FALSE.
