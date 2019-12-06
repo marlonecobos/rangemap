@@ -83,9 +83,9 @@ if(!require(maptools)){
 species <- name_lookup(query = "Peltophryne taladai",
                        rank="species", return = "data") # information about the species
 
-#occ_count(taxonKey = species$key[6], georeferenced = TRUE) # testing if keys return records
+#occ_count(taxonKey = species$key[7], georeferenced = TRUE) # testing if keys return records
 
-key <- species$key[6] # using species key that return information
+key <- species$key[7] # using species key that return information
 
 occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
 
