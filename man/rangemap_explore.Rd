@@ -37,12 +37,9 @@ if(!require(rgbif)){
 species <- name_lookup(query = "Dasypus kappleri",
                        rank="species", return = "data") # information about the species
 
-for (i in 1:length(species$key)) {
-  cat("key", (1:length(species$key))[i], "=",
-      occ_count(taxonKey = species$key[i], georeferenced = TRUE), "\\n")
-}
+#occ_count(taxonKey = species$key[17], georeferenced = TRUE) # testing if keys return records
 
-key <- species$key[10] # using species key that return information
+key <- species$key[17] # using species key that return information
 
 occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
 
