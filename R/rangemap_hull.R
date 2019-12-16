@@ -70,7 +70,7 @@
 #' rangemap_hull(occurrences, hull_type = "convex", buffer_distance = 50000,
 #'     concave_distance_lim = 5000, split = FALSE, cluster_method = "hierarchical",
 #'     split_distance, n_k_means, polygons, final_projection, save_shp = FALSE,
-#'     name = "range_hull")
+#'     name = "range_hull", overwrite = FALSE)
 #'
 #' @export
 #'
@@ -108,7 +108,7 @@
 #'
 #' hull_range <- rangemap_hull(occurrences = occ_g, hull_type = hull, buffer_distance = dist,
 #'                             split = split, cluster_method = c_method, split_distance = split_d,
-#'                             save_shp = save, name = name)
+#'                             save_shp = save, name = name, overwrite = TRUE)
 #'
 #' # see the species range in a figure
 #' extent <- TRUE
@@ -123,7 +123,8 @@
 rangemap_hull <- function(occurrences, hull_type = "convex", buffer_distance = 50000,
                           concave_distance_lim = 5000, split = FALSE,
                           cluster_method = "hierarchical", split_distance, n_k_means,
-                          polygons, final_projection, save_shp = FALSE, name = "range_hull") {
+                          polygons, final_projection, save_shp = FALSE,
+                          name = "range_hull", overwrite = FALSE) {
   # testing potential issues
   if (missing(occurrences)) {
     stop("Argument occurrences is necessary to perform the analysis")
@@ -333,10 +334,10 @@ rangemap_hull <- function(occurrences, hull_type = "convex", buffer_distance = 5
   # exporting
   if (save_shp == TRUE) {
     cat("Writing shapefiles in the working directory.")
-    rgdal::writeOGR(clip_area, ".", name, driver = "ESRI Shapefile")
-    rgdal::writeOGR(extent_occurrence, ".", paste(name, "extent_occ", sep = "_"), driver = "ESRI Shapefile")
-    rgdal::writeOGR(area_occupancy, ".", paste(name, "area_occ", sep = "_"), driver = "ESRI Shapefile")
-    rgdal::writeOGR(occ_pr, ".", paste(name, "unique_records", sep = "_"), driver = "ESRI Shapefile")
+    rgdal::writeOGR(clip_area, ".", name, driver = "ESRI Shapefile", overwrite_layer = overwrite)
+    rgdal::writeOGR(extent_occurrence, ".", paste(name, "extent_occ", sep = "_"), driver = "ESRI Shapefile", overwrite_layer = overwrite)
+    rgdal::writeOGR(area_occupancy, ".", paste(name, "area_occ", sep = "_"), driver = "ESRI Shapefile", overwrite_layer = overwrite)
+    rgdal::writeOGR(occ_pr, ".", paste(name, "unique_records", sep = "_"), driver = "ESRI Shapefile", overwrite_layer = overwrite)
   }
 
   # return results (list or a different object?)

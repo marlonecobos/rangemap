@@ -60,7 +60,7 @@
 #' @usage
 #' rangemap_bound(occurrences, adm_areas, country_code, boundary_level = 0,
 #'     polygons, kept_data = FALSE, dissolve = FALSE, final_projection,
-#'     save_shp = FALSE, name = "range_boundaries")
+#'     save_shp = FALSE, name = "range_boundaries", overwrite = FALSE)
 #'
 #' @export
 #'
@@ -96,7 +96,7 @@
 #'
 #' bound_range <- rangemap_bound(occurrences = occ_g, adm_areas = adm, country_code = countries,
 #'                               boundary_level = level, dissolve = dissolve, save_shp = save,
-#'                               name = name)
+#'                               name = name, overwrite = TRUE)
 #'
 #' # see the species range in a figure
 #' extent <- TRUE
@@ -110,7 +110,7 @@
 
 rangemap_bound <- function(occurrences, adm_areas, country_code, boundary_level = 0,
                            polygons, kept_data = FALSE, dissolve = FALSE, final_projection,
-                           save_shp = FALSE, name = "range_boundaries") {
+                           save_shp = FALSE, name = "range_boundaries", overwrite = FALSE) {
   # testing potential issues
   if (!missing(polygons)) {
     if (class(polygons) != "SpatialPolygonsDataFrame"){
@@ -381,10 +381,10 @@ rangemap_bound <- function(occurrences, adm_areas, country_code, boundary_level 
     # exporting
     if (save_shp == TRUE) {
       cat("\nWriting shapefiles in the working directory...\n")
-      rgdal::writeOGR(boundaries, ".", name, driver = "ESRI Shapefile")
-      rgdal::writeOGR(extent_occurrence, ".", paste(name, "extent_occ", sep = "_"), driver = "ESRI Shapefile")
-      rgdal::writeOGR(area_occupancy, ".", paste(name, "area_occ", sep = "_"), driver = "ESRI Shapefile")
-      rgdal::writeOGR(occ_pr, ".", paste(name, "unique_records", sep = "_"), driver = "ESRI Shapefile")
+      rgdal::writeOGR(boundaries, ".", name, driver = "ESRI Shapefile", overwrite_layer = overwrite)
+      rgdal::writeOGR(extent_occurrence, ".", paste(name, "extent_occ", sep = "_"), driver = "ESRI Shapefile", overwrite_layer = overwrite)
+      rgdal::writeOGR(area_occupancy, ".", paste(name, "area_occ", sep = "_"), driver = "ESRI Shapefile", overwrite_layer = overwrite)
+      rgdal::writeOGR(occ_pr, ".", paste(name, "unique_records", sep = "_"), driver = "ESRI Shapefile", overwrite_layer = overwrite)
     }
 
     # return results (list or a different object?)

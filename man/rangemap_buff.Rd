@@ -5,7 +5,7 @@
 \title{Species distributional ranges based on buffered occurrences}
 \usage{
 rangemap_buff(occurrences, buffer_distance = 1e+05, polygons, final_projection,
-    save_shp = FALSE, name = "range_buffer")
+    save_shp = FALSE, name = "range_buffer", overwrite = FALSE)
 }
 \arguments{
 \item{occurrences}{a data.frame containing geographic coordinates of species occurrences,
@@ -66,7 +66,7 @@ save <- TRUE
 name <- "test"
 
 buff_range <- rangemap_buff(occurrences = occ_g, buffer_distance = dist,
-                            save_shp = save, name = name)
+                            save_shp = save, name = name, overwrite = TRUE)
 
 # see the species range in a figure
 extent <- TRUE

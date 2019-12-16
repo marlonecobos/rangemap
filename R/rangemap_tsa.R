@@ -48,7 +48,7 @@
 #' @usage
 #' rangemap_tsa(occurrences, region_of_interest, resolution = 5, threshold = 0,
 #'     simplify_level = 0, save_shp = FALSE, save_tsmodel = FALSE,
-#'     name = "range_tsa")
+#'     name = "range_tsa", overwrite = FALSE)
 #'
 #' @export
 #'
@@ -97,7 +97,7 @@
 #'
 #' tsa <- rangemap_tsa(occurrences = occ_g, region_of_interest = reg,
 #'                     threshold = thr, resolution = res, save_shp = save,
-#'                     name = name)
+#'                     name = name, overwrite = TRUE)
 #'
 #' # see the species range in a figure
 #' extent <- TRUE
@@ -111,7 +111,7 @@
 
 rangemap_tsa <- function(occurrences, region_of_interest, resolution = 5, threshold = 0,
                          simplify_level = 0, final_projection, save_shp = FALSE,
-                         save_tsmodel = FALSE, name = "range_tsa") {
+                         save_tsmodel = FALSE, name = "range_tsa", overwrite = FALSE) {
   # testing potential issues
   if (missing(occurrences)) {
     stop("Argument occurrences is necessary to perform the analysis")
@@ -290,15 +290,15 @@ rangemap_tsa <- function(occurrences, region_of_interest, resolution = 5, thresh
   # exporting
   if (save_shp == TRUE) {
     cat("Writing shapefiles in the working directory.")
-    rgdal::writeOGR(clip_area, ".", name, driver = "ESRI Shapefile")
-    rgdal::writeOGR(extent_occurrence, ".", paste(name, "extent_occ", sep = "_"), driver = "ESRI Shapefile")
-    rgdal::writeOGR(area_occupancy, ".", paste(name, "area_occ", sep = "_"), driver = "ESRI Shapefile")
-    rgdal::writeOGR(occ_pr, ".", paste(name, "unique_records", sep = "_"), driver = "ESRI Shapefile")
+    rgdal::writeOGR(clip_area, ".", name, driver = "ESRI Shapefile", overwrite_layer = overwrite)
+    rgdal::writeOGR(extent_occurrence, ".", paste(name, "extent_occ", sep = "_"), driver = "ESRI Shapefile", overwrite_layer = overwrite)
+    rgdal::writeOGR(area_occupancy, ".", paste(name, "area_occ", sep = "_"), driver = "ESRI Shapefile", overwrite_layer = overwrite)
+    rgdal::writeOGR(occ_pr, ".", paste(name, "unique_records", sep = "_"), driver = "ESRI Shapefile", overwrite_layer = overwrite)
   }
 
-  if (save_tsmodel == TRUE & save_shp == TRUE) {
+  if (save_tsmodel == TRUE) {
     cat("Writing trend surface model in the working directory.")
-    raster::writeRaster(tsa_model, paste(name, "_tsa.tif", sep = ""), format = "GTiff")
+    raster::writeRaster(tsa_model, paste(name, "_tsa.tif", sep = ""), format = "GTiff", overwrite = overwrite)
   }
 
   # return results (list or a different object?)

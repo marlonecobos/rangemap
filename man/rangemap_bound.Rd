@@ -6,7 +6,7 @@
 \usage{
 rangemap_bound(occurrences, adm_areas, country_code, boundary_level = 0,
     polygons, kept_data = FALSE, dissolve = FALSE, final_projection,
-    save_shp = FALSE, name = "range_boundaries")
+    save_shp = FALSE, name = "range_boundaries", overwrite = FALSE)
 }
 \arguments{
 \item{occurrences}{(optional) a data.frame containing geographic coordinates of species
@@ -104,7 +104,7 @@ countries <- c("PER", "BRA", "COL", "VEN", "ECU", "GUF", "GUY", "SUR", "BOL")
 
 bound_range <- rangemap_bound(occurrences = occ_g, adm_areas = adm, country_code = countries,
                               boundary_level = level, dissolve = dissolve, save_shp = save,
-                              name = name)
+                              name = name, overwrite = TRUE)
 
 # see the species range in a figure
 extent <- TRUE

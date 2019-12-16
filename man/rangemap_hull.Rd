@@ -7,7 +7,7 @@
 rangemap_hull(occurrences, hull_type = "convex", buffer_distance = 50000,
     concave_distance_lim = 5000, split = FALSE, cluster_method = "hierarchical",
     split_distance, n_k_means, polygons, final_projection, save_shp = FALSE,
-    name = "range_hull")
+    name = "range_hull", overwrite = FALSE)
 }
 \arguments{
 \item{occurrences}{a data.frame containing geographic coordinates of species occurrences,
@@ -112,7 +112,7 @@ name <- "test"
 
 hull_range <- rangemap_hull(occurrences = occ_g, hull_type = hull, buffer_distance = dist,
                             split = split, cluster_method = c_method, split_distance = split_d,
-                            save_shp = save, name = name)
+                            save_shp = save, name = name, overwrite = TRUE)
 
 # see the species range in a figure
 extent <- TRUE

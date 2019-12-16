@@ -6,7 +6,7 @@
 \usage{
 rangemap_enm(occurrences, model, threshold_value, threshold_omission,
     simplify = FALSE, simplify_level = 0, polygons, final_projection,
-    save_shp = FALSE, name = "range_enm")
+    save_shp = FALSE, name = "range_enm", overwrite = FALSE)
 }
 \arguments{
 \item{occurrences}{a data.frame containing geographic coordinates of species occurrences,
@@ -85,7 +85,7 @@ save <- TRUE
 name <- "test"
 
 enm_range <- rangemap_enm(occurrences = occ_sp, model = sp_mod,  threshold_omission = thres,
-                          save_shp = save, name = name)
+                          save_shp = save, name = name, overwrite = TRUE)
 
 # see the species range in a figure
 extent <- TRUE
