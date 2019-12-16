@@ -61,32 +61,27 @@
 #' @importFrom spatial surf.ls predict.trls
 #'
 #' @examples
-#' if(!require(rgbif)){
-#'   install.packages("rgbif")
-#'   library(rgbif)
+#' suppressWarnings({if(!require(spocc)){
+#'   install.packages("spocc")
+#'   library(spocc)
 #' }
-#' if(!require(maps)){
+#'  if(!require(maps)){
 #'   install.packages("maps")
 #'   library(maps)
 #' }
 #' if(!require(maptools)){
 #'  install.packages("maptools")
 #'  library(maptools)
-#' }
+#' }})
+#'
 #'
 #' # getting the data from GBIF
-#' species <- name_lookup(query = "Peltophryne taladai",
-#'                        rank="species", return = "data") # information about the species
-#'
-#' #occ_count(taxonKey = species$key[7], georeferenced = TRUE) # testing if keys return records
-#'
-#' key <- species$key[7] # using species key that return information
-#'
-#' occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
+#' occs <- occ(query = "Peltophryne taladai", from = "gbif",
+#'             limit = 1000)$gbif$data[[1]]
 #'
 #' # keeping only georeferenced records
-#' occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
-#'              c("name", "decimalLongitude", "decimalLatitude")]
+#' occ_g <- occs[!is.na(occs$latitude) & !is.na(occs$longitude),
+#'               c("name", "longitude", "latitude")]
 #'
 #' # region of interest
 #' WGS84 <- CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")

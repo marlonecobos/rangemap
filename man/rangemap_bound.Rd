@@ -79,24 +79,18 @@ Iformation on country codes and names of administrative areas at distinct levels
 using the data of this package: \code{\link{country_codes}} and \code{\link{adm_area_names}}.
 }
 \examples{
-if(!require(rgbif)){
-  install.packages("rgbif")
-  library(rgbif)
-}
+suppressWarnings({if(!require(spocc)){
+  install.packages("spocc")
+  library(spocc)
+}})
 
 # getting the data from GBIF
-species <- name_lookup(query = "Dasypus kappleri",
-                       rank="species", return = "data") # information about the species
-
-#occ_count(taxonKey = species$key[17], georeferenced = TRUE) # testing if keys return records
-
-key <- species$key[17] # using species key that return information
-
-occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
+occs <- occ(query = "Dasypus kappleri", from = "gbif",
+            limit = 1000)$gbif$data[[1]]
 
 # keeping only georeferenced records
-occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
-            c("name", "decimalLongitude", "decimalLatitude")]
+occ_g <- occs[!is.na(occs$latitude) & !is.na(occs$longitude),
+              c("name", "longitude", "latitude")]
 
 # checking which countries may be involved in the analysis
 rangemap_explore(occurrences = occ_g)

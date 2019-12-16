@@ -83,24 +83,18 @@
 #' @importFrom raster projectRaster plot
 #'
 #' @examples
-#' if(!require(rgbif)){
-#'   install.packages("rgbif")
-#'   library(rgbif)
-#' }
+#' suppressWarnings({if(!require(spocc)){
+#'   install.packages("spocc")
+#'   library(spocc)
+#' }})
 #'
 #' # getting the data from GBIF
-#' species <- name_lookup(query = "Dasypus kappleri",
-#'                        rank="species", return = "data") # information about the species
-#'
-#' #occ_count(taxonKey = species$key[17], georeferenced = TRUE) # testing if keys return records
-#'
-#' key <- species$key[17] # using species key that return information
-#'
-#' occ <- occ_search(taxonKey = key, return = "data") # using the taxon key
+#' occs <- occ(query = "Dasypus kappleri", from = "gbif",
+#'             limit = 1000)$gbif$data[[1]]
 #'
 #' # keeping only georeferenced records
-#' occ_g <- occ[!is.na(occ$decimalLatitude) & !is.na(occ$decimalLongitude),
-#'              c("name", "decimalLongitude", "decimalLatitude")]
+#' occ_g <- occs[!is.na(occs$latitude) & !is.na(occs$longitude),
+#'               c("name", "longitude", "latitude")]
 #'
 #'
 #' # range based on buffers
@@ -129,7 +123,7 @@
 #' names(ranges) <- c("buff", "concave", "convex")
 #'
 #' ## other data for environmental comparisson
-#' if(!require(raster)){
+#' suppressWarnings({if(!require(raster)){
 #'   install.packages("raster")
 #'   library(raster)
 #' }
@@ -140,7 +134,7 @@
 #' if(!require(maptools)){
 #'   install.packages("maptools")
 #'   library(maptools)
-#' }
+#' }})
 #'
 #' ## geting bioclimatic variables (some of them)
 #' vars <- getData("worldclim", var = "bio", res = 5)[[c("bio1", "bio7", "bio12", "bio15")]]
