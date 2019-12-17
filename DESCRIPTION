@@ -24,6 +24,7 @@ Imports:
     raster (>= 2.6),
     rgdal (>= 1.2),
     rgeos (>= 0.3),
+    rgl (>= 0.100),
     sf (>= 0.6),
     spatial (>= 7.3),
     sp (>= 1.2)
