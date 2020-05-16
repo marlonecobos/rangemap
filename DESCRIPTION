@@ -1,19 +1,27 @@
 Package: rangemap
 Type: Package
-Title: A package for construction of simple species distributional ranges
-Version: 0.1.3
+Title: Simple Tools for Defining Species Ranges
+Version: 0.1.4
 Authors@R: c(
     person("Marlon E.", "Cobos", email = "manubio13@gmail.com", role = c("aut", "cre")),
     person("Vijay", "Barve", email = "vijay.barve@gmail.com", role = "aut"),
     person("Narayani", "Barve", email = "narayani.ku@gmail.com", role = "aut"),
     person("Alberto", "Jiménez-Valverde", email = "alberto.jimenez.valverde@gmail.com", role = "aut"))
+Author: Marlon E. Cobos [aut, cre],
+    Hannah L. Owens [aut],
+    A. Townsend Peterson [aut]
 Maintainer: Marlon E. Cobos <manubio13@gmail.com>
-Date: 2018-08-03
-Description: This package presents various tools to create species
-    range maps based on occurrence data, statistics, and distinct 
-    shapefiles. Other tools of this package can be used to analyze
-    environmental characteristics of the species ranges and to 
-    create high quality figures for publication.
+Date: 2020-05-15
+Description: A collection of tools to create species range maps based on 
+    occurrence data, statistics, and spatial objects. Other tools in this 
+    collection can be used to analyze the environmental characteristics of 
+    the species ranges. Plotting options to represent results in various 
+    manners are also available. Results obtained using these tools can be 
+    used to explore the distribution of species and define areas of occupancy 
+    and extent of occurrence of species. Description of methods and approaches 
+    implemented here can be found in:
+URL: https://github.com/marlonecobos/rangemap
+BugReports: https://github.com/marlonecobos/rangemap/issues
 Imports:
     concaveman (>= 1.0),
     maps (>= 3.3),
@@ -32,9 +40,11 @@ Suggests:
     spocc (>= 1.0),
 Depends:
     R (>= 3.5.0)
-License: GPL-2
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
+Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.0.0
 LinkingTo: Rcpp
 VignetteBuilder: knitr
+
