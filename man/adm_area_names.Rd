@@ -6,12 +6,12 @@
 \title{List of names of administrative areas form the GADM data base}
 \format{A data frame with 339127 rows and 17 columns.
 \describe{
-  \item{ISO3}{character, country code.}
-  \item{NAME_level}{character, name of administrative areas at levels from 0 to 5.}
-  \item{TYPE_level}{character, type of administrative areas in native lenguage at
-  levels from 1 to 5.}
-  \item{ENGTYPE_level}{character, type of administrative areas in English at
-  levels from 1 to 5.}
+\item{ISO3}{character, country code.}
+\item{NAME_level}{character, name of administrative areas at levels from 0 to 5.}
+\item{TYPE_level}{character, type of administrative areas in native lenguage at
+levels from 1 to 5.}
+\item{ENGTYPE_level}{character, type of administrative areas in English at
+levels from 1 to 5.}
 }}
 \source{
 \url{https://gadm.org/}
