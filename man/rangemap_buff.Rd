@@ -4,8 +4,9 @@
 \alias{rangemap_buff}
 \title{Species distributional ranges based on buffered occurrences}
 \usage{
-rangemap_buff(occurrences, buffer_distance = 1e+05, polygons, final_projection,
-    save_shp = FALSE, name = "range_buffer", overwrite = FALSE)
+rangemap_buff(occurrences, buffer_distance = 100000, polygons = NULL,
+              final_projection = NULL, save_shp = FALSE, name,
+              overwrite = FALSE)
 }
 \arguments{
 \item{occurrences}{a data.frame containing geographic coordinates of species occurrences,
@@ -16,12 +17,12 @@ degrees.}
 around occurrences, default = 100000.}
 
 \item{polygons}{(optional) a SpatialPolygon object to clip buffer areas and adjust the species
-range and other polygons to these limits. Projection must be Geographic (longitude, latitude).
-If not defined, a default, simple world map will be used.}
+range and other polygons to these limits. Projection must be Geographic (EPSG:4326).
+If NULL (the default), a simplified world map will be used.}
 
 \item{final_projection}{(character) string of projection arguments for resulting Spatial objects.
 Arguments must be as in the PROJ.4 documentation. See \code{\link[sp]{CRS-class}} for details.
-Default = "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0" = WGS84.}
+Default = "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0" = EPSG:4326.}
 
 \item{save_shp}{(logical) if TRUE, shapefiles of the species range, occurrences, extent of
 occurrence and area of occupancy will be written in the working directory. Default = FALSE.}
@@ -29,7 +30,7 @@ occurrence and area of occupancy will be written in the working directory. Defau
 \item{name}{(character) valid if \code{save_shp} = TRUE. The name of the shapefile to be
 exported. A suffix will be added to \code{name} depending on the object as follows: species
 extent of occurrence = "_extent_occ", area of occupancy = "_area_occ", and occurrences =
-"_unique_records". Default = "range_buffer".}
+"_unique_records".}
 }
 \value{
 A named list containing: (1) a data.frame with information about the species range,
@@ -44,37 +45,24 @@ are also generated. Shapefiles can be saved in the working directory if it is ne
 }
 \details{
 All resultant Spatial objects in the list of results will be projected to the \code{final_projection}.
-Areas are calculated in square kilometers using the Azimuthal equal area projection.
+
+Areas are calculated in square kilometers using the Eckert IV equal area projection (EPSG:54012).
 }
 \examples{
-suppressWarnings({if(!require(spocc)){
-  install.packages("spocc")
-  library(spocc)
-}})
-
-# getting the data from GBIF
-occs <- occ(query = "Peltophryne empusa", from = "gbif",
-            limit = 1000)$gbif$data[[1]]
-
-# keeping only georeferenced records
-occ_g <- occs[!is.na(occs$latitude) & !is.na(occs$longitude),
-              c("name", "longitude", "latitude")]
+# getting the data
+data("occ_p", package = "rangemap")
 
 # buffer distance
 dist <- 100000
-save <- TRUE
-name <- "test"
 
-buff_range <- rangemap_buff(occurrences = occ_g, buffer_distance = dist,
-                            save_shp = save, name = name, overwrite = TRUE)
+buff_range <- rangemap_buff(occurrences = occ_p, buffer_distance = dist)
 
 # see the species range in a figure
 extent <- TRUE
 occ <- TRUE
 legend <- TRUE
-north <- TRUE
 
 # creating the species range figure
 rangemap_fig(buff_range, add_extent = extent, add_occurrences = occ,
-             legend = legend, northarrow = north, legend_position = "bottomleft")
+             legend = legend, legend_position = "bottomleft")
 }
