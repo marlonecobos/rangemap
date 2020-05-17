@@ -1,6 +1,7 @@
-#' Get a simplified SpatialPolygons of the world
+#' Get a simplified SpatialPolygonsDataFrame of the world
 #' @param which (charatcer) name of type of SpatialPolygons to be obtained. Options
 #' are: "simple" and "simplest"; default = "simplest".
+#' @return A simplified SpatialPolygonsDataFrame of the world
 #' @export
 #' @importFrom sp CRS SpatialPolygonsDataFrame spTransform
 #' @importFrom maps map
@@ -13,6 +14,7 @@ simple_wmap <- function(which = "simplest") {
   if (which == "simplest") {
     data("wrld_simpl", package = "maptools")
     polygons <- sp::spTransform(wrld_simpl, WGS84)
+    rm("wrld_simpl", pos = ".GlobalEnv")
   } else {
     w_map <- maps::map(database = "world", fill = TRUE, plot = FALSE)
 
@@ -29,12 +31,13 @@ simple_wmap <- function(which = "simplest") {
 #' @param country_code (character) code of country or countries of interest.
 #' @param boundary_level (numeric) level of admisnistrative division to be considered.
 #' @param keep_data (logical) whether or not to keep downloaded files. Default = FALSE.
+#' @return A SpatialPolygonsDataFrame from the GADM database at the level selected.
 #' @export
 #' @importFrom raster getData
 #' @importFrom maps map
 #' @importFrom maptools map2SpatialPolygons
 #' @examples
-#' map <- simple_wmap()
+#' map_gadm <- GADM_spoly(country_code = "EC", boundary_level = 1)
 
 GADM_spoly <- function(country_code, boundary_level, keep_data = FALSE) {
   bounds <- list()
@@ -59,12 +62,16 @@ GADM_spoly <- function(country_code, boundary_level, keep_data = FALSE) {
 
 
 #' Extent of occurrence of a species based on convex hull polygons
-#' @param occurrences a data.frame containing geographic coordinates of species occurrences,
-#' columns must be: Species, Longitude, and Latitude. Geographic coordinates must be in decimal
-#' degrees.
+#' @param occurrences a data.frame containing geographic coordinates of species
+#' occurrences, columns must be: Species, Longitude, and Latitude. Geographic
+#' coordinates must be in decimal degrees.
 #' @param polygons SpatialPolygon object to clip convex hulls to these limits.
 #' Projection of this object defines projection of the extent of occurrence. This
-#' projection must be one that allows safe calculation of areas (e.g., Eckert IV; EPSG:54012)
+#' projection must be one that allows safe calculation of areas (e.g., Eckert IV;
+#' EPSG:54012)
+#' @return
+#' A list comtaining a SpatialPolygonsDataFrame of the extent of occurrence, and
+#' a vector with the areas in km2 of the spatial polygons resulted.
 #' @export
 #' @importFrom sp CRS SpatialPolygons Polygons Polygon proj4string over spTransform
 #' @importFrom sp SpatialPolygonsDataFrame
@@ -111,6 +118,9 @@ eoo <- function(occurrences, polygons) {
 #' @param occ_pr SpatialPointsDataFrame of ocurrence records. Projection must be
 #' one that allows safe calculation of areas (e.g., Eckert IV; EPSG:54012)
 #' @param species (character) scientific name of the species.
+#' @return
+#' A list comtaining a SpatialPolygonsDataFrame of the area of occupancy, and
+#' a vector with the areas in km2 of the spatial polygons resulted.
 #' @export
 #' @importFrom sp SpatialPolygonsDataFrame
 #' @importFrom raster area extent rasterize
@@ -143,4 +153,97 @@ aoo <- function(occ_pr, species) {
                                                  data = data.frame(species, aockm2),
                                                  match.ID = FALSE)
   return(list(spolydf = area_occupancy, area = aocckm2))
+}
+
+
+#' Finds clusters for SpatialPointsDataFrame based on distinct methods
+#' @param occ_pr SpatialPointsDataFrame of ocurrence records. Projection must be
+#' one that allows safe calculation of distances (e.g., Azimuthal equidistant)
+#' @param cluster_method (character) name of the method to be used for clustering
+#' the occurrences. Options are "hierarchical" and "k-means"; default = "hierarchical".
+#' See details for more information on the two available methods.
+#' @param split_distance (numeric) distance in meters that will limit connectivity
+#' among hull polygons created with chunks of points separated by long distances.
+#' This parameter is used when \code{cluster_method} = "hierarchical".
+#' @param n_k_means (numeric) number of clusters in which the species occurrences
+#' will be grouped when using the "k-means" \code{cluster_method}.
+#' @return A SpatialPointsDataFrame with an extra column in data defining clusters.
+#' @details
+#' \code{cluster_method} must be chosen based on the spatial configuration of the
+#' species occurrences. Both methods make distinct assumptions and one of them may
+#' perform better than the other depending on the spatial pattern of the data.
+#'
+#' The k-means method, for example, perfomrs better when the following assumptions
+#' are fulfilled: Clusters are spatially grouped—or “spherical” and Clusters are
+#' of a similar size. Owing to the nature of the hierarchical clustering algorithm
+#' it may take more time than the k-means method. Both methods make assumptions
+#' and they may work well on some data sets, and fail on others.
+#'
+#' Another important factor to consider is that the k-means method allways starts
+#' with a random choice of cluster centers, thus it may end in different results
+#' on different runs. That may be problematic when trying to replicate your methods.
+#' With hierarchical clustering, most likely the same clusters can be obtained if
+#' the process is repeated.
+#'
+#' For more information on these clustering methods see Aggarwal and Reddy (2014)
+#' \url{https://goo.gl/RQ2ebd}.
+#'
+#' @export
+#' @importFrom sp coordinates
+#' @importFrom stats hclust cutree kmeans
+#' @examples
+#' # data
+#' data("occ_p", package = "rangemap")
+#'
+#' # preparing spatial points
+#' occ <- as.data.frame(unique(occ_p))
+#' WGS84 <- sp::CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
+#' occ_sp <- sp::SpatialPointsDataFrame(coords = occ[, 2:3], data = occ,
+#'                                      proj4string = WGS84)
+#'
+#' # reprojecting fro measuring distances
+#' centroid <- rgeos::gCentroid(occ_sp, byid = FALSE)
+#' AEQD <- sp::CRS(paste("+proj=aeqd +lat_0=", centroid@coords[2], " +lon_0=",
+#'                       centroid@coords[1],
+#'                       " +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
+#'                       sep = ""))
+#' occ_pr <- sp::spTransform(occ_sp, AEQD)
+#'
+#' # clustering
+#' occ_clus <- clusters(occ_pr, cluster_method = "k-means", n_k_means = 2)
+
+clusters <- function(occ_pr, cluster_method = "hierarchical", split_distance,
+                     n_k_means) {
+  if (cluster_method == "hierarchical" & missing(split_distance)) {
+    stop("Argument 'split_distance' must be defined when hierarchical cluster method is used.")
+  }
+  if (cluster_method == "k-means" & missing(n_k_means)) {
+    stop("Argument 'n_k_means' must be defined when k-means cluster method is used.")
+  }
+  if (cluster_method == "hierarchical" | cluster_method == "k-means") {
+    if (cluster_method == "hierarchical") {
+      ## defining a hierarchical cluster method for the occurrences
+      message("Clustering method: hierarchical")
+      coor <- sp::coordinates(occ_pr)
+      df <- data.frame(rownames = 1:nrow(coor), x = coor[, 1], y = coor[, 2])
+      cluster_method <- hclust(dist(df), method = "complete")
+
+      ## defining wich points are clustered based on the user-defined distance
+      cluster_vector <- cutree(cluster_method, h = split_distance)
+    }else {
+      message("Clustering method: k-means")
+      set.seed(1) # to get always the same answer with using the same data
+      ## identifying clusters from occurrences
+      cluster_method <- kmeans(as.matrix(sp::coordinates(occ_pr)), n_k_means)
+
+      # vector for cluster separation
+      cluster_vector <- cluster_method$cluster
+    }
+  } else {
+    stop("'cluster_method' is not valid, options are: \nhierarchical or k-means")
+  }
+  ## Join results to occurrences
+  occ_pr@data <- data.frame(occ_pr@data, clusters = cluster_vector)
+
+  return(occ_pr)
 }

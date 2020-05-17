@@ -2,7 +2,7 @@
 % Please edit documentation in R/helpers.R
 \name{simple_wmap}
 \alias{simple_wmap}
-\title{Get a simplified SpatialPolygons of the world}
+\title{Get a simplified SpatialPolygonsDataFrame of the world}
 \usage{
 simple_wmap(which = "simplest")
 }
@@ -10,8 +10,11 @@ simple_wmap(which = "simplest")
 \item{which}{(charatcer) name of type of SpatialPolygons to be obtained. Options
 are: "simple" and "simplest"; default = "simplest".}
 }
+\value{
+A simplified SpatialPolygonsDataFrame of the world
+}
 \description{
-Get a simplified SpatialPolygons of the world
+Get a simplified SpatialPolygonsDataFrame of the world
 }
 \examples{
 map <- simple_wmap()

@@ -13,9 +13,12 @@ GADM_spoly(country_code, boundary_level, keep_data = FALSE)
 
 \item{keep_data}{(logical) whether or not to keep downloaded files. Default = FALSE.}
 }
+\value{
+A SpatialPolygonsDataFrame from the GADM database at the level selected.
+}
 \description{
 Get SpatialPolygons of countries at distinct administrative levels
 }
 \examples{
-map <- simple_wmap()
+map_gadm <- GADM_spoly(country_code = "EC", boundary_level = 1)
 }

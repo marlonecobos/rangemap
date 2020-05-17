@@ -27,9 +27,9 @@
 #' when \code{cluster_method} = "hierarchical" and \code{split} = TRUE.
 #' @param n_k_means (numeric) if \code{split} = TRUE, number of clusters in which the species
 #' occurrences will be grouped when using the "k-means" \code{cluster_method}.
-#' @param polygons (optional) a SpatialPolygon object to clip the obtained areas and adjust the
-#' species range and other polygons to these limits. Projection must be Geographic (longitude,
-#' latitude). If not defined, a default, simple world map will be used.
+#' @param polygons (optional) a SpatialPolygon object to clip buffer areas and adjust the species
+#' range and other polygons to these limits. Projection must be Geographic (EPSG:4326).
+#' If NULL (the default), a simplified world map will be used.
 #' @param final_projection (character) string of projection arguments for resulting Spatial objects.
 #' Arguments must be as in the PROJ.4 documentation. See \code{\link[sp]{CRS-class}} for details.
 #' Default = "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0" = WGS84.
@@ -38,7 +38,7 @@
 #' @param name (character) valid if \code{save_shp} = TRUE. The name of the shapefile to be
 #' exported. A suffix will be added to \code{name} depending on the object as follows: species
 #' extent of occurrence = "_extent_occ", area of occupancy = "_area_occ", and occurrences =
-#' "_unique_records". Default = "range_hull".
+#' "_unique_records".
 #'
 #' @return
 #' A named list containing: (1) a data.frame with information about the species range,
@@ -76,6 +76,7 @@
 #'
 #' @importFrom sp CRS SpatialPointsDataFrame SpatialPolygonsDataFrame
 #' @importFrom sp SpatialPolygons Polygons Polygon proj4string over spTransform
+#' @importFrom sp rbind.SpatialPolygons
 #' @importFrom raster disaggregate area extent rasterize
 #' @importFrom rgeos gCentroid gUnaryUnion gIntersection gBuffer
 #' @importFrom maps map
@@ -123,8 +124,8 @@
 rangemap_hull <- function(occurrences, hull_type = "convex", buffer_distance = 50000,
                           concave_distance_lim = 5000, split = FALSE,
                           cluster_method = "hierarchical", split_distance, n_k_means,
-                          polygons, final_projection, save_shp = FALSE,
-                          name = "range_hull", overwrite = FALSE) {
+                          polygons = NULL, final_projection = NULL, save_shp = FALSE,
+                          name, overwrite = FALSE) {
   # testing potential issues
   if (missing(occurrences)) {
     stop("Argument occurrences is necessary to perform the analysis")
@@ -132,6 +133,14 @@ rangemap_hull <- function(occurrences, hull_type = "convex", buffer_distance = 5
 
   if (dim(occurrences)[2] != 3) {
     stop("occurrences data.frame must have the following columns: \nSpecies, Longitude, and Latitude")
+  }
+  if (split == TRUE) {
+    if (cluster_method == "hierarchical" & missing(split_distance)) {
+      stop("Argument 'split_distance' must be defined when hierarchical cluster method is used.")
+    }
+    if (cluster_method == "k-means" & missing(n_k_means)) {
+      stop("Argument 'n_k_means' must be defined when k-means cluster method is used.")
+    }
   }
 
   # erase duplicate records
@@ -144,58 +153,23 @@ rangemap_hull <- function(occurrences, hull_type = "convex", buffer_distance = 5
                                        proj4string = WGS84)
 
   # world map or user map fro creating species range
-  if (missing(polygons)) {
-    w_map <- maps::map(database = "world", fill = TRUE, plot = FALSE) # map of the world
-
-    w_po <- sapply(strsplit(w_map$names, ":"), function(x) x[1]) # preparing data to create polygon
-    polygons <- maptools::map2SpatialPolygons(w_map, IDs = w_po, proj4string = WGS84) # map to polygon
+  if (is.null(polygons)) {
+    polygons <- simple_wmap()
   }
 
   # keeping only records in land
-  occ_sp <- occ_sp[!is.na(sp::over(occ_sp, polygons)), ]
+  occ_sp <- occ_sp[polygons, ]
 
-  # project the points using their centriods as reference
-  centroid <- rgeos::gCentroid(occ_sp, byid = FALSE)
-
-  AEQD <- sp::CRS(paste("+proj=aeqd +lat_0=", centroid@coords[2], " +lon_0=", centroid@coords[1],
-                        " +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs", sep = ""))
-
-  occ_pr <- sp::spTransform(occ_sp, AEQD)
+  # project the points
+  ECK4 <- sp::CRS("+proj=eck4 +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
+  occ_pr <- sp::spTransform(occ_sp, ECK4)
 
   # project polygons
-  polygons <- sp::spTransform(polygons, AEQD)
+  polygons <- sp::spTransform(polygons, ECK4)
 
   # clustering
   if (split == TRUE) {
-    if (cluster_method == "hierarchical" | cluster_method == "k-means") {
-      #split groups of points based on the split distance
-
-      if (cluster_method == "hierarchical") {
-        ## defining a hierarchical cluster method for the occurrences
-        cat("\nClustering method: hierarchical\n")
-
-        cluster_method <- hclust(dist(data.frame(rownames = 1:length(occ_pr@data[,1]), x = sp::coordinates(occ_pr)[,1],
-                                                 y = sp::coordinates(occ_pr)[,2])), method = "complete")
-
-        ## defining wich points are clustered based on the user-defined distance
-        cluster_vector <- cutree(cluster_method, h = split_distance)
-      }else {
-        cat("\nClustering method: k-means\n")
-
-        set.seed(1) # to get always the same answer with using the same data
-        ## identifying clusters from occurrences
-        cluster_method <- kmeans(as.matrix(sp::coordinates(occ_pr)), n_k_means)
-
-        # vector for cluster separation
-        cluster_vector <- cluster_method$cluster
-      }
-
-    }else {
-      stop("No valid clustering method has been defined, options are: \n \"hierarchical\" or \"k-means\"")
-    }
-
-    ## Join results to occurrences
-    occ_pr@data <- data.frame(occ_pr@data, clusters = cluster_vector)
+    occ_pr <- clusters(occ_pr, cluster_method, split_distance, n_k_means)
   }else {
     occ_pr@data <- data.frame(occ_pr@data, clusters = 1)
   }
@@ -211,7 +185,7 @@ rangemap_hull <- function(occurrences, hull_type = "convex", buffer_distance = 5
   # and per each group of points if they were clustered
   if (hull_type == "convex" | hull_type == "concave") {
     if (hull_type == "convex") {
-      cat("\nHull type: convex\n")
+      message("Hull type: convex")
 
       hulls <- list()
 
@@ -234,7 +208,7 @@ rangemap_hull <- function(occurrences, hull_type = "convex", buffer_distance = 5
       }
     }
     if (hull_type == "concave") {
-      cat("\nHull type: concave\n")
+      message("Hull type: concave")
 
       hulls <- list()
 
@@ -257,8 +231,7 @@ rangemap_hull <- function(occurrences, hull_type = "convex", buffer_distance = 5
       }
     }
   }else {
-    stop(paste("hull_type is not a valid option, potential options are:",
-               "\n\"convex\" or \"concave\""))
+    stop(paste("'hull_type' is not valid, potential options are:\nconvex or concave"))
   }
 
   # create a buffer based on a user-defined distance
@@ -284,43 +257,24 @@ rangemap_hull <- function(occurrences, hull_type = "convex", buffer_distance = 5
   areakm2 <- raster::area(hulls_buff_un) / 1000000
   areackm2 <- sum(areakm2) # total area of the species range
 
-  ## extent of occurrence
-  coord <- as.data.frame(occ[, 2:3]) # spatial point dataframe to data frame keeping only coordinates
-  covexhull <- chull(coord) # convex hull from points
-  coord_pol <- coord[c(covexhull, covexhull[1]),] # defining coordinates
-  covexhull_polygon <- sp::SpatialPolygons(list(sp::Polygons(list(sp::Polygon(coord_pol)), ID = 1))) # into SpatialPolygons
-  sp::proj4string(covexhull_polygon) <- WGS84 # project
-  covexhull_polygon_pr <- sp::spTransform(covexhull_polygon, AEQD) # reproject
-  c_hull_extent <- rgeos::gIntersection(covexhull_polygon_pr, polygons,
-                                        byid = TRUE, drop_lower_td = TRUE) # area of interest
-
-  eockm2 <- raster::area(c_hull_extent) / 1000000
-  eocckm2 <- sum(eockm2) # total area of the species range
-
-  ## area of occupancy
-  grid <- raster::raster(ext = raster::extent(occ_pr) + 10000, res = c(2000, 2000), crs = AEQD)
-  raster_sp <- raster::rasterize(occ_pr[, 2:3], grid)[[1]] # raster from points
-  grid_sp <- as(raster_sp, "SpatialPolygonsDataFrame") # raster to polygon
-
-  aockm2 <- raster::area(grid_sp) / 1000000
-  aocckm2 <- sum(aockm2) # area calculation
-
   # adding characteristics to spatial polygons
   species <- as.character(occurrences[1, 1])
   clip_area <- sp::SpatialPolygonsDataFrame(hulls_buff_un, # species range
                                             data = data.frame(species, areakm2),
                                             match.ID = FALSE)
 
-  extent_occurrence <- sp::SpatialPolygonsDataFrame(c_hull_extent, # extent of occurrence
-                                                    data = data.frame(species, eockm2),
-                                                    match.ID = FALSE)
+  ## extent of occurrence
+  eooc <- eoo(occ_sp@data, polygons)
+  eocckm2 <- eooc$area
+  extent_occurrence <- eooc$spolydf
 
-  area_occupancy <- sp::SpatialPolygonsDataFrame(grid_sp, # area of occupancy
-                                                 data = data.frame(species, aockm2),
-                                                 match.ID = FALSE)
+  ## area of occupancy
+  aooc <- aoo(occ_pr, species)
+  aocckm2 <- aooc$area
+  area_occupancy <- aooc$spolydf
 
   # reprojection
-  if (missing(final_projection)) {
+  if (is.null(final_projection)) {
     final_projection <- WGS84
   } else {
     final_projection <- sp::CRS(final_projection) # character to projection
@@ -333,19 +287,24 @@ rangemap_hull <- function(occurrences, hull_type = "convex", buffer_distance = 5
 
   # exporting
   if (save_shp == TRUE) {
-    cat("Writing shapefiles in the working directory.")
-    rgdal::writeOGR(clip_area, ".", name, driver = "ESRI Shapefile", overwrite_layer = overwrite)
-    rgdal::writeOGR(extent_occurrence, ".", paste(name, "extent_occ", sep = "_"), driver = "ESRI Shapefile", overwrite_layer = overwrite)
-    rgdal::writeOGR(area_occupancy, ".", paste(name, "area_occ", sep = "_"), driver = "ESRI Shapefile", overwrite_layer = overwrite)
-    rgdal::writeOGR(occ_pr, ".", paste(name, "unique_records", sep = "_"), driver = "ESRI Shapefile", overwrite_layer = overwrite)
+    message("Writing shapefiles in the working directory.")
+    rgdal::writeOGR(clip_area, ".", name, driver = "ESRI Shapefile",
+                    overwrite_layer = overwrite)
+    rgdal::writeOGR(extent_occurrence, ".", paste(name, "extent_occ", sep = "_"),
+                    driver = "ESRI Shapefile", overwrite_layer = overwrite)
+    rgdal::writeOGR(area_occupancy, ".", paste(name, "area_occ", sep = "_"),
+                    driver = "ESRI Shapefile", overwrite_layer = overwrite)
+    rgdal::writeOGR(occ_pr, ".", paste(name, "unique_records", sep = "_"),
+                    driver = "ESRI Shapefile", overwrite_layer = overwrite)
   }
 
   # return results (list or a different object?)
-  sp_dat <- data.frame(occ[1, 1], dim(occ_pr)[1], areackm2, eocckm2, aocckm2) # extent of occ = total area?
-  colnames(sp_dat) <- c("Species", "Unique_records", "Range_area", "Extent_of_occurrence", "Area_of_occupancy")
+  sp_dat <- data.frame(Species = species, Unique_records = dim(occ_pr)[1],
+                       Range_area = areackm2, Extent_of_occurrence = eocckm2,
+                       Area_of_occupancy = aocckm2)
 
-  results <- list(sp_dat, occ_pr, clip_area, extent_occurrence, area_occupancy)
-  names(results) <- c("Summary", "Species_unique_records", "Species_range", "Extent_of_occurrence",
-                      "Area_of_occupancy")
+  results <- list(Summary = sp_dat, Species_unique_records = occ_pr,
+                  Species_range = clip_area, Extent_of_occurrence = extent_occurrence,
+                  Area_of_occupancy = area_occupancy)
   return(results)
 }

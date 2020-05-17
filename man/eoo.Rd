@@ -7,13 +7,18 @@
 eoo(occurrences, polygons)
 }
 \arguments{
-\item{occurrences}{a data.frame containing geographic coordinates of species occurrences,
-columns must be: Species, Longitude, and Latitude. Geographic coordinates must be in decimal
-degrees.}
+\item{occurrences}{a data.frame containing geographic coordinates of species
+occurrences, columns must be: Species, Longitude, and Latitude. Geographic
+coordinates must be in decimal degrees.}
 
 \item{polygons}{SpatialPolygon object to clip convex hulls to these limits.
 Projection of this object defines projection of the extent of occurrence. This
-projection must be one that allows safe calculation of areas (e.g., Eckert IV; EPSG:54012)}
+projection must be one that allows safe calculation of areas (e.g., Eckert IV;
+EPSG:54012)}
+}
+\value{
+A list comtaining a SpatialPolygonsDataFrame of the extent of occurrence, and
+a vector with the areas in km2 of the spatial polygons resulted.
 }
 \description{
 Extent of occurrence of a species based on convex hull polygons

@@ -12,6 +12,10 @@ one that allows safe calculation of areas (e.g., Eckert IV; EPSG:54012)}
 
 \item{species}{(character) scientific name of the species.}
 }
+\value{
+A list comtaining a SpatialPolygonsDataFrame of the area of occupancy, and
+a vector with the areas in km2 of the spatial polygons resulted.
+}
 \description{
 Area of occupancy of a species as defined by the IUCN
 }

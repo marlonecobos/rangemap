@@ -39,9 +39,9 @@ when \code{cluster_method} = "hierarchical" and \code{split} = TRUE.}
 \item{n_k_means}{(numeric) if \code{split} = TRUE, number of clusters in which the species
 occurrences will be grouped when using the "k-means" \code{cluster_method}.}
 
-\item{polygons}{(optional) a SpatialPolygon object to clip the obtained areas and adjust the
-species range and other polygons to these limits. Projection must be Geographic (longitude,
-latitude). If not defined, a default, simple world map will be used.}
+\item{polygons}{(optional) a SpatialPolygon object to clip buffer areas and adjust the species
+range and other polygons to these limits. Projection must be Geographic (EPSG:4326).
+If NULL (the default), a simplified world map will be used.}
 
 \item{final_projection}{(character) string of projection arguments for resulting Spatial objects.
 Arguments must be as in the PROJ.4 documentation. See \code{\link[sp]{CRS-class}} for details.
@@ -53,7 +53,7 @@ occurrence and area of occupancy will be written in the working directory. Defau
 \item{name}{(character) valid if \code{save_shp} = TRUE. The name of the shapefile to be
 exported. A suffix will be added to \code{name} depending on the object as follows: species
 extent of occurrence = "_extent_occ", area of occupancy = "_area_occ", and occurrences =
-"_unique_records". Default = "range_hull".}
+"_unique_records".}
 }
 \value{
 A named list containing: (1) a data.frame with information about the species range,
