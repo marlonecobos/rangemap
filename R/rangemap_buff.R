@@ -100,7 +100,7 @@ rangemap_buff <- function(occurrences, buffer_distance = 100000, polygons = NULL
   # keeping only records in land
   occ_sp <- occ_sp[polygons, ]
 
-  # project the points using their centriods as reference
+  # project the points
   ECK4 <- sp::CRS("+proj=eck4 +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
   occ_pr <- sp::spTransform(occ_sp, ECK4)
 
@@ -129,7 +129,7 @@ rangemap_buff <- function(occurrences, buffer_distance = 100000, polygons = NULL
                                             match.ID = FALSE)
 
   ## extent of occurrence
-  eooc <- eoo(occ, polygons)
+  eooc <- eoo(occ_sp@data, polygons)
   eocckm2 <- eooc$area
   extent_occurrence <- eooc$spolydf
 
@@ -152,7 +152,7 @@ rangemap_buff <- function(occurrences, buffer_distance = 100000, polygons = NULL
 
   # exporting
   if (save_shp == TRUE) {
-    cat("Writing shapefiles in the working directory.")
+    message("Writing shapefiles in the working directory.")
     rgdal::writeOGR(clip_area, ".", name, driver = "ESRI Shapefile",
                     overwrite_layer = overwrite)
     rgdal::writeOGR(extent_occurrence, ".", paste(name, "extent_occ", sep = "_"),
