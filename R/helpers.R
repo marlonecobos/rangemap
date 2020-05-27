@@ -1,7 +1,19 @@
+#' Helper function to test if lists are nested
+#' @param l list to be tested.
+#' @export
+isnested <- function(l) {
+  stopifnot(is.list(l))
+  for (i in l) {
+    if (is.list(i)) {return(TRUE)}
+  }
+  return(FALSE)
+}
+
+
 #' Get a simplified SpatialPolygonsDataFrame of the world
 #' @param which (charatcer) name of type of SpatialPolygons to be obtained. Options
 #' are: "simple" and "simplest"; default = "simplest".
-#' @return A simplified SpatialPolygonsDataFrame of the world
+#' @return A simplified SpatialPolygonsDataFrame of the world in WGS84 projection.
 #' @export
 #' @importFrom sp CRS SpatialPolygonsDataFrame spTransform
 #' @importFrom maps map
@@ -10,7 +22,7 @@
 #' map <- simple_wmap()
 
 simple_wmap <- function(which = "simplest") {
-  WGS84 <- sp::CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
+  WGS84 <- sp::CRS("+init=epsg:4326")
   if (which == "simplest") {
     data("wrld_simpl", package = "maptools")
     polygons <- sp::spTransform(wrld_simpl, WGS84)
@@ -27,10 +39,47 @@ simple_wmap <- function(which = "simplest") {
 }
 
 
+#' Prepare Lambert Azimuthal Equal-Area Projection
+#' @param occ matrix or SpatialPoint object conaining coordinates to serve as
+#' a reference for the center of the projection. If not defined projection is
+#' centered in 0, 0 for longitude and latitude. If a matrix is used columns must
+#' "longitude" and "latitude", in that order.
+#' @return An object of class CRS.
+#' @export
+#' @importFrom sp CRS
+#' @examples
+#' LAEA_projection()
+#'
+#' data("occ_p", package = "rangemap")
+#' occ <- unique(occ_p)[, 2:3]
+#' LAEA_projection(occ)
+
+LAEA_projection <- function(occ = NULL) {
+  if (!is.null(occ)) {
+    if (!class(occ)[1] %in% c("matrix", "SpatialPointsDataFrame", "SpatialPoints")) {
+      stop("Class 'occ' must be either one of the following:\n'matrix', 'SpatialPointsDataFrame', or 'SpatialPoints'")
+    } else {
+      if (class(occ)[1] == "matrix") {
+        cent <- apply(occ, 2, mean)
+      } else {
+        cent <- apply(occ@coords, 2, mean)
+      }
+    }
+    LAEA <- sp::CRS(paste0("+proj=laea +lat_0=", cent[2], " +lon_0=", cent[1],
+                           " +x_0=0 +y_0=0 +ellps=GRS80",
+                           " +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"))
+  } else {
+    LAEA <- sp::CRS(paste("+proj=laea +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +ellps=GRS80",
+                          "+towgs84=0,0,0,0,0,0,0 +units=m +no_defs"))
+  }
+  return(LAEA)
+}
+
+
 #' Get SpatialPolygons of countries at distinct administrative levels
 #' @param country_code (character) code of country or countries of interest.
 #' @param boundary_level (numeric) level of admisnistrative division to be considered.
-#' @param keep_data (logical) whether or not to keep downloaded files. Default = FALSE.
+#' @param keep_data (logical) whether or not to keep downloaded files. Default = \code{FALSE}.
 #' @return A SpatialPolygonsDataFrame from the GADM database at the level selected.
 #' @export
 #' @importFrom raster getData
@@ -64,11 +113,11 @@ GADM_spoly <- function(country_code, boundary_level, keep_data = FALSE) {
 #' Extent of occurrence of a species based on convex hull polygons
 #' @param occurrences a data.frame containing geographic coordinates of species
 #' occurrences, columns must be: Species, Longitude, and Latitude. Geographic
-#' coordinates must be in decimal degrees.
+#' coordinates must be in decimal degrees (WGS84).
 #' @param polygons SpatialPolygon object to clip convex hulls to these limits.
 #' Projection of this object defines projection of the extent of occurrence. This
-#' projection must be one that allows safe calculation of areas (e.g., Eckert IV;
-#' EPSG:54012)
+#' projection must be one that allows safe calculation of areas (e.g., Lambert
+#' Azimuthal Equal Area).
 #' @return
 #' A list comtaining a SpatialPolygonsDataFrame of the extent of occurrence, and
 #' a vector with the areas in km2 of the spatial polygons resulted.
@@ -85,14 +134,14 @@ GADM_spoly <- function(country_code, boundary_level, keep_data = FALSE) {
 #'
 #' # polygons
 #' data("wrld_simpl", package = "maptools")
-#' ECK4 <- sp::CRS("+proj=eck4 +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
+#' LAEA <- LAEA_projection(occ_sp)
 #' poly_pr <- sp::spTransform(wrld_simpl, ECK4)
 #'
 #' # EOO
 #' eoo_pe <- eoo(occurrences = occ, polygons = poly_pr)
 
 eoo <- function(occurrences, polygons) {
-  WGS84 <- sp::CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
+  WGS84 <- sp::CRS("+init=epsg:4326")
   species <- as.character(occurrences[1, 1])
   coord <- as.data.frame(occurrences[, 2:3]) # spatial point dataframe to data frame keeping only coordinates
   covexhull <- chull(coord) # convex hull from points
@@ -116,7 +165,7 @@ eoo <- function(occurrences, polygons) {
 
 #' Area of occupancy of a species as defined by the IUCN
 #' @param occ_pr SpatialPointsDataFrame of ocurrence records. Projection must be
-#' one that allows safe calculation of areas (e.g., Eckert IV; EPSG:54012)
+#' one that allows safe calculation of areas (e.g., Lambert Azimuthal Equal Area).
 #' @param species (character) scientific name of the species.
 #' @return
 #' A list comtaining a SpatialPolygonsDataFrame of the area of occupancy, and
@@ -128,12 +177,12 @@ eoo <- function(occurrences, polygons) {
 #' # data
 #' data("occ_p", package = "rangemap")
 #' occ <- unique(occ_p)
-#' WGS84 <- sp::CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
+#' WGS84 <- sp::CRS("+init=epsg:4326")
 #' occ_sp <- sp::SpatialPointsDataFrame(coords = occ[, 2:3], data = occ,
 #'                                      proj4string = WGS84)
 #'
-#' ECK4 <- sp::CRS("+proj=eck4 +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
-#' occ_pr <- sp::spTransform(occ_sp, ECK4)
+#' LAEA <- LAEA_projection(occ_sp)
+#' occ_pr <- sp::spTransform(occ_sp, LAEA)
 #'
 #' sp <- as.character(occ[1, 1])
 #'
@@ -197,17 +246,13 @@ aoo <- function(occ_pr, species) {
 #'
 #' # preparing spatial points
 #' occ <- as.data.frame(unique(occ_p))
-#' WGS84 <- sp::CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
+#' WGS84 <- sp::CRS("+init=epsg:4326")
 #' occ_sp <- sp::SpatialPointsDataFrame(coords = occ[, 2:3], data = occ,
 #'                                      proj4string = WGS84)
 #'
 #' # reprojecting fro measuring distances
-#' centroid <- rgeos::gCentroid(occ_sp, byid = FALSE)
-#' AEQD <- sp::CRS(paste("+proj=aeqd +lat_0=", centroid@coords[2], " +lon_0=",
-#'                       centroid@coords[1],
-#'                       " +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
-#'                       sep = ""))
-#' occ_pr <- sp::spTransform(occ_sp, AEQD)
+#' LAEA <- LAEA_projection(occ_sp)
+#' occ_pr <- sp::spTransform(occ_sp, LAEA)
 #'
 #' # clustering
 #' occ_clus <- clusters(occ_pr, cluster_method = "k-means", n_k_means = 2)

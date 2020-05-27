@@ -11,7 +11,7 @@ simple_wmap(which = "simplest")
 are: "simple" and "simplest"; default = "simplest".}
 }
 \value{
-A simplified SpatialPolygonsDataFrame of the world
+A simplified SpatialPolygonsDataFrame of the world in WGS84 projection.
 }
 \description{
 Get a simplified SpatialPolygonsDataFrame of the world

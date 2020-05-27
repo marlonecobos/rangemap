@@ -19,7 +19,7 @@
 #' effected by converting the original buffer to geocentric Cartesian (XYZ)
 #' coordinates. A matrix multiplication helps to  rotate those coordinates
 #' along the Prime Meridian to the target latitude, converting the coordinates
-#' back to Geographic (lat-lon). Then the buffer is spun around the Earth's
+#' back to Geographic (lon-lat). Then the buffer is spun around the Earth's
 #' axis by adding the target longitude to each second coordinate.
 #'
 #' The algorithm was developed by a moderator of the Geographic Information

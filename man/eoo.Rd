@@ -9,12 +9,12 @@ eoo(occurrences, polygons)
 \arguments{
 \item{occurrences}{a data.frame containing geographic coordinates of species
 occurrences, columns must be: Species, Longitude, and Latitude. Geographic
-coordinates must be in decimal degrees.}
+coordinates must be in decimal degrees (WGS84).}
 
 \item{polygons}{SpatialPolygon object to clip convex hulls to these limits.
 Projection of this object defines projection of the extent of occurrence. This
-projection must be one that allows safe calculation of areas (e.g., Eckert IV;
-EPSG:54012)}
+projection must be one that allows safe calculation of areas (e.g., Lambert
+Azimuthal Equal Area).}
 }
 \value{
 A list comtaining a SpatialPolygonsDataFrame of the extent of occurrence, and
@@ -30,7 +30,7 @@ occ <- unique(occ_p)
 
 # polygons
 data("wrld_simpl", package = "maptools")
-ECK4 <- sp::CRS("+proj=eck4 +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
+LAEA <- LAEA_projection(occ_sp)
 poly_pr <- sp::spTransform(wrld_simpl, ECK4)
 
 # EOO

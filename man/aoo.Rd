@@ -8,7 +8,7 @@ aoo(occ_pr, species)
 }
 \arguments{
 \item{occ_pr}{SpatialPointsDataFrame of ocurrence records. Projection must be
-one that allows safe calculation of areas (e.g., Eckert IV; EPSG:54012)}
+one that allows safe calculation of areas (e.g., Lambert Azimuthal Equal Area).}
 
 \item{species}{(character) scientific name of the species.}
 }
@@ -23,12 +23,12 @@ Area of occupancy of a species as defined by the IUCN
 # data
 data("occ_p", package = "rangemap")
 occ <- unique(occ_p)
-WGS84 <- sp::CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
+WGS84 <- sp::CRS("+init=epsg:4326")
 occ_sp <- sp::SpatialPointsDataFrame(coords = occ[, 2:3], data = occ,
                                      proj4string = WGS84)
 
-ECK4 <- sp::CRS("+proj=eck4 +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
-occ_pr <- sp::spTransform(occ_sp, ECK4)
+LAEA <- LAEA_projection(occ_sp)
+occ_pr <- sp::spTransform(occ_sp, LAEA)
 
 sp <- as.character(occ[1, 1])
 
