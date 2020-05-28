@@ -2,61 +2,64 @@
 % Please edit documentation in R/rangemap_hull.R
 \name{rangemap_hull}
 \alias{rangemap_hull}
-\title{Species distributional ranges based on distinct hull polygons}
+\title{Species distributional ranges based on convex or concave hull polygons}
 \usage{
-rangemap_hull(occurrences, hull_type = "convex", buffer_distance = 50000,
-    concave_distance_lim = 5000, split = FALSE, cluster_method = "hierarchical",
-    split_distance, n_k_means, polygons, final_projection, save_shp = FALSE,
-    name = "range_hull", overwrite = FALSE)
+rangemap_hull(occurrences, hull_type = "convex", concave_distance_lim = 5000,
+              buffer_distance = 50000, split = FALSE, cluster_method = "hierarchical",
+              split_distance, n_k_means, polygons = NULL, final_projection = NULL,
+              save_shp = FALSE, name, overwrite = FALSE)
 }
 \arguments{
 \item{occurrences}{a data.frame containing geographic coordinates of species occurrences,
 columns must be: Species, Longitude, and Latitude. Geographic coordinates must be in decimal
-degrees.}
+degrees  (WGS84).}
 
 \item{hull_type}{(character) type of hull polygons to be created. Available options are:
-"convex" or "concave" hulls. Default = "convex".}
-
-\item{buffer_distance}{(numeric) distance, in meters, to be used for creating the buffer
-areas around occurrences, default = 50000.}
+"convex" and "concave". Default = "convex".}
 
 \item{concave_distance_lim}{(numeric) distance, in meters, to be passed to the length_threshold
 parameter of the \code{\link[concaveman]{concaveman}} funcion. Default = 5000. Ignored if
 \code{hull_type} is not "concave".}
 
-\item{split}{(logical) if TRUE, a distance (for hierarchical clustering) or a number (for
+\item{buffer_distance}{(numeric) distance, in meters, to be used for creating a buffer
+around resulting hull polygons; default = 50000.}
+
+\item{split}{(logical) if \code{TRUE}, a distance (for hierarchical clustering) or a number (for
 K-means clustering) is used to separate distinct chunks of occurrences. Recommended when
-the species of interest has a disjunct distribution. Default = FALSE.}
+the species of interest has a disjunct distribution. Default = \code{FALSE}.}
 
 \item{cluster_method}{(character) name of the method to be used for clustering the occurrences.
 Options are "hierarchical" and "k-means"; default = "hierarchical". Note that this parameter is
-ignored when \code{split} = FALSE. See details for more information on the two available methods.}
+ignored when \code{split} = \code{FALSE}. See details for more information on the two available methods.}
 
 \item{split_distance}{(numeric) distance in meters that will limit connectivity among hull
 polygons created with chunks of points separated by long distances. This parameter is used
-when \code{cluster_method} = "hierarchical" and \code{split} = TRUE.}
+when \code{cluster_method} = "hierarchical" and \code{split} = \code{TRUE}.}
 
-\item{n_k_means}{(numeric) if \code{split} = TRUE, number of clusters in which the species
+\item{n_k_means}{(numeric) if \code{split} = \code{TRUE}, number of clusters in which the species
 occurrences will be grouped when using the "k-means" \code{cluster_method}.}
 
 \item{polygons}{(optional) a SpatialPolygon object to clip buffer areas and adjust the species
-range and other polygons to these limits. Projection must be Geographic (EPSG:4326).
+range and other polygons to these limits. Projection must be WGS84 (EPSG:4326).
 If NULL (the default), a simplified world map will be used.}
 
 \item{final_projection}{(character) string of projection arguments for resulting Spatial objects.
 Arguments must be as in the PROJ.4 documentation. See \code{\link[sp]{CRS-class}} for details.
 Default = "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0" = WGS84.}
 
-\item{save_shp}{(logical) if TRUE, shapefiles of the species range, occurrences, extent of
-occurrence and area of occupancy will be written in the working directory. Default = FALSE.}
+\item{save_shp}{(logical) if \code{TRUE}, shapefiles of the species range, occurrences, extent of
+occurrence and area of occupancy will be written in the working directory. Default = \code{FALSE}.}
 
-\item{name}{(character) valid if \code{save_shp} = TRUE. The name of the shapefile to be
+\item{name}{(character) valid if \code{save_shp} = \code{TRUE}. The name of the shapefile to be
 exported. A suffix will be added to \code{name} depending on the object as follows: species
 extent of occurrence = "_extent_occ", area of occupancy = "_area_occ", and occurrences =
 "_unique_records".}
+
+\item{overwrite}{(logical) wether or not to overwrite previous results with
+the same name. Default = \code{FALSE}.}
 }
 \value{
-A named list containing: (1) a data.frame with information about the species range,
+A sp_range object (S4) containing: (1) a data.frame with information about the species range,
 and SpatialPolygon objects of (2) unique occurrences, (3) species range, (4) extent of
 occurrence, and (5) area of occurpancy.
 }
@@ -68,8 +71,9 @@ of occupancy according to the IUCN criteria are also generated. Shapefiles can b
 saved in the working directory if it is needed.
 }
 \details{
-All resultant Spatial objects in the list of results will be projected to the \code{final_projection}.
-Areas are calculated in square kilometers using the Azimuthal equal area projection.
+All resultant Spatial objects in the results will be projected to the \code{final_projection}.
+Areas are calculated in square kilometers using the Lambert Azimuthal Equal
+Area projection, centered in the centroid of occurence points given as imputs.
 
 The \code{cluster_method} must be chosen based on the spatial configuration of the
 species occurrences. Both methods make distinct assumptions and one of them may perform better
@@ -85,42 +89,19 @@ choice of cluster centers, thus it may end in different results on different run
 problematic when trying to replicate your methods. With hierarchical clustering, most likely
 the same clusters can be obtained if the process is repeated.
 
-For more information on these clustering methods see Aggarwal and Reddy (2014)
-\url{https://goo.gl/RQ2ebd}.
+For more information on these clustering methods see Aggarwal and Reddy (2014),
+\href{https://goo.gl/RQ2ebd}{here}.
 }
 \examples{
-suppressWarnings({if(!require(spocc)){
-  install.packages("spocc")
-  library(spocc)
-}})
+# getting the data
+data("occ_d", package = "rangemap")
 
-# getting the data from GBIF
-occs <- occ(query = "Dasypus kappleri", from = "gbif",
-            limit = 1000)$gbif$data[[1]]
-
-# keeping only georeferenced records
-occ_g <- occs[!is.na(occs$latitude) & !is.na(occs$longitude),
-              c("name", "longitude", "latitude")]
-
+# other info for running
 dist <- 100000
 hull <- "convex" # try also "concave"
-split <- TRUE
-c_method <- "hierarchical"
-split_d <- 1500000
-save <- TRUE
-name <- "test"
 
-hull_range <- rangemap_hull(occurrences = occ_g, hull_type = hull, buffer_distance = dist,
-                            split = split, cluster_method = c_method, split_distance = split_d,
-                            save_shp = save, name = name, overwrite = TRUE)
+hull_range <- rangemap_hull(occurrences = occ_d, hull_type = hull,
+                            buffer_distance = dist)
 
-# see the species range in a figure
-extent <- TRUE
-occ <- TRUE
-legend <- TRUE
-north <- TRUE
-
-# creating the species range figure
-rangemap_fig(hull_range, add_extent = extent, add_occurrences = occ,
-             legend = legend, northarrow = north)
+summary(hull_range)
 }

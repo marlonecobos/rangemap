@@ -53,17 +53,13 @@ data("occ_p", package = "rangemap")
 
 # preparing spatial points
 occ <- as.data.frame(unique(occ_p))
-WGS84 <- sp::CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
+WGS84 <- sp::CRS("+init=epsg:4326")
 occ_sp <- sp::SpatialPointsDataFrame(coords = occ[, 2:3], data = occ,
                                      proj4string = WGS84)
 
-# reprojecting fro measuring distances
-centroid <- rgeos::gCentroid(occ_sp, byid = FALSE)
-AEQD <- sp::CRS(paste("+proj=aeqd +lat_0=", centroid@coords[2], " +lon_0=",
-                      centroid@coords[1],
-                      " +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
-                      sep = ""))
-occ_pr <- sp::spTransform(occ_sp, AEQD)
+# reprojecting for measuring distances
+LAEA <- LAEA_projection(occ_sp)
+occ_pr <- sp::spTransform(occ_sp, LAEA)
 
 # clustering
 occ_clus <- clusters(occ_pr, cluster_method = "k-means", n_k_means = 2)
