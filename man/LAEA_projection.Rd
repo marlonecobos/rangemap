@@ -2,26 +2,36 @@
 % Please edit documentation in R/helpers.R
 \name{LAEA_projection}
 \alias{LAEA_projection}
-\title{Prepare Lambert Azimuthal Equal-Area Projection}
+\alias{AED_projection}
+\title{Prepare Equal-Area or Equidistante Projection}
 \usage{
-LAEA_projection(occ = NULL)
+LAEA_projection(occurrences = NULL, spatial_onject = NULL)
+
+AED_projection(occurrences = NULL, spatial_onject = NULL)
 }
 \arguments{
-\item{occ}{matrix or SpatialPoint object conaining coordinates to serve as
-a reference for the center of the projection. If not defined projection is
-centered in 0, 0 for longitude and latitude. If a matrix is used columns must
+\item{occurrences}{matrix or data.frame conaining coordinates to serve as
+a reference for the center of the projection. Columns must be:
 "longitude" and "latitude", in that order.}
+
+\item{spatial_onject}{Spatial* objects, Poinst or Polygons, to be used to
+calculate a reference for the center of the projection. Projection must be
+WGS84 (EPSG:4326).}
 }
 \value{
 An object of class CRS.
 }
 \description{
-Prepare Lambert Azimuthal Equal-Area Projection
+Prepare Equal-Area or Equidistante Projection
+}
+\details{
+If arguments are not defined projection is centered in 0, 0 for
+longitude and latitude.
 }
 \examples{
 LAEA_projection()
 
 data("occ_p", package = "rangemap")
 occ <- unique(occ_p)[, 2:3]
-LAEA_projection(occ)
+AED_projection(occ)
 }

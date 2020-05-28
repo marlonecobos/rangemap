@@ -22,16 +22,16 @@
 #' exported. A suffix will be added to \code{name} depending on the object as follows: species
 #' extent of occurrence = "_extent_occ", area of occupancy = "_area_occ", and occurrences =
 #' "_unique_records".
+#' @param overwrite (logical) wether or not to overwrite previous results with
+#' the same name. Default = \code{FALSE}.
 #'
 #' @return
-#' A named list containing: (1) a data.frame with information about the species range,
+#' A sp_range object (S4) containing: (1) a data.frame with information about the species range,
 #' and SpatialPolygon objects of (2) unique occurrences, (3) species range, (4) extent of
 #' occurrence, and (5) area of occurpancy.
 #'
 #' @details
-#' All resultant Spatial objects in the list of results will be projected to the
-#' \code{final_projection}.
-#'
+#' All resultant Spatial objects in the results will be projected to the \code{final_projection}.
 #' Areas are calculated in square kilometers using the Lambert Azimuthal Equal
 #' Area projection, centered in the centroid of occurence points given as imputs.
 #'
@@ -43,7 +43,7 @@
 #' @export
 #'
 #' @importFrom sp CRS SpatialPointsDataFrame SpatialPolygonsDataFrame
-#' @importFrom sp over spTransform
+#' @importFrom sp spTransform
 #' @importFrom raster disaggregate area
 #' @importFrom rgeos gUnaryUnion gIntersection
 #' @importFrom rgdal writeOGR
@@ -89,7 +89,7 @@ rangemap_buffer <- function(occurrences, buffer_distance = 100000, polygons = NU
 
   # world map or user map fro creating species range
   if (is.null(polygons)) {
-    polygons <- simple_wmap()
+    polygons <- simple_wmap(which = "simple")
   }
 
   # keeping only records in land
@@ -99,11 +99,13 @@ rangemap_buffer <- function(occurrences, buffer_distance = 100000, polygons = NU
   buff_area <- geobuffer_points(data = occ_sp@coords, radius = buffer_distance)
 
   # clip a world map based on the created buffer
+  polygons <- suppressWarnings(rgeos::gBuffer(polygons, byid = TRUE, width = 0)) # to avoid topology problems
   polygons <- rgeos::gUnaryUnion(polygons)
-  clip_area <- rgeos::gIntersection(buff_area, polygons, byid = TRUE, drop_lower_td = TRUE)
+  clip_area <- rgeos::gIntersection(buff_area, polygons, byid = TRUE,
+                                    drop_lower_td = TRUE)
 
   # project polygons and points
-  LAEA <- LAEA_projection(occ_sp)
+  LAEA <- LAEA_projection(spatial_onject = occ_sp)
   clip_area <- sp::spTransform(clip_area, LAEA)
   occ_pr <- sp::spTransform(occ_sp, LAEA)
 

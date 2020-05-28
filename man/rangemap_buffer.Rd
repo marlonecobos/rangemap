@@ -31,9 +31,12 @@ occurrence and area of occupancy will be written in the working directory. Defau
 exported. A suffix will be added to \code{name} depending on the object as follows: species
 extent of occurrence = "_extent_occ", area of occupancy = "_area_occ", and occurrences =
 "_unique_records".}
+
+\item{overwrite}{(logical) wether or not to overwrite previous results with
+the same name. Default = \code{FALSE}.}
 }
 \value{
-A named list containing: (1) a data.frame with information about the species range,
+A sp_range object (S4) containing: (1) a data.frame with information about the species range,
 and SpatialPolygon objects of (2) unique occurrences, (3) species range, (4) extent of
 occurrence, and (5) area of occurpancy.
 }
@@ -44,9 +47,7 @@ of occurrence (using convex hulls) and the area of occupancy according to the IU
 are also generated. Shapefiles can be saved in the working directory if it is needed.
 }
 \details{
-All resultant Spatial objects in the list of results will be projected to the
-\code{final_projection}.
-
+All resultant Spatial objects in the results will be projected to the \code{final_projection}.
 Areas are calculated in square kilometers using the Lambert Azimuthal Equal
 Area projection, centered in the centroid of occurence points given as imputs.
 }
