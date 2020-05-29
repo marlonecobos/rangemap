@@ -17,11 +17,11 @@
 occ_d
 }
 \description{
-A dataset containing geographic corrdinates of a South American
+A dataset containing geographic coordinates of a South American
 armadillo.
 }
 \examples{
-data(occ_d)
+data("occ_d", package = "rangemap")
 head(occ_d)
 }
 \keyword{datasets}

@@ -1,6 +1,6 @@
 #' Occurrence records for the species Peltophryne empusa
 #'
-#' @description A dataset containing geographic corrdinates of a Caribean toad.
+#' @description A dataset containing geographic coordinates of a Caribean toad.
 #'
 #' @format A data frame with 182 rows and 3 columns.
 #' \describe{
@@ -11,13 +11,14 @@
 #' @source \url{https://www.gbif.org/}
 #'
 #' @examples
-#' data(occ_p)
+#' data("occ_p", package = "rangemap")
 #' head(occ_p)
 "occ_p"
 
+
 #' Occurrence records for the species Dasypus kappleri
 #'
-#' @description A dataset containing geographic corrdinates of a South American
+#' @description A dataset containing geographic coordinates of a South American
 #' armadillo.
 #'
 #' @format A data frame with 306 rows and 3 columns.
@@ -29,6 +30,25 @@
 #' @source \url{https://www.gbif.org/}
 #'
 #' @examples
-#' data(occ_d)
+#' data("occ_d", package = "rangemap")
 #' head(occ_d)
 "occ_d"
+
+
+#' Occurrence records for the species Amblyomma americanum
+#'
+#' @description A dataset containing geographic coordinates of a North American
+#' tick.
+#'
+#' @format A data frame with 89 rows and 3 columns.
+#' \describe{
+#'   \item{Species}{character, species scientific name.}
+#'   \item{Longitude}{numeric, longitude values.}
+#'   \item{Latitude}{numeric, latitude values.}
+#' }
+#' @source \url{https://www.gbif.org/}
+#'
+#' @examples
+#' data("occ_train", package = "rangemap")
+#' head(occ_train)
+"occ_train"
