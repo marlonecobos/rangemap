@@ -1,205 +1,199 @@
-#' Species distributional ranges based on ecological niche models
+#' Species distributional ranges based on ENMs/SDMs outputs
 #'
 #' @description rangemap_enm generates a distributional range for a given species
-#' using a continuous raster layer produced with an ecological niche modeling algorithm.
-#' This function split the model in suitable and unsuitable areas using a user
-#' specified level of omission or a given threshold value. An approach to the species
-#' extent of occurrence (using convex hulls) and the area of occupancy according
-#' to the IUCN criteria are also generated. Shapefiles can be saved in the working
-#' directory if it is needed.
+#' using a continuous raster layer produced using ecological niche modeling or
+#' species distribution modeling tools. This function binarizes the model in
+#' suitable and unsuitable areas using a user specified level of omission or a
+#' given threshold value. An approach to the species extent of occurrence (using
+#' convex hulls) and the area of occupancy according to the IUCN criteria are
+#' also generated. Shapefiles can be saved in the working directory if it is needed.
 #'
-#' @param occurrences a data.frame containing geographic coordinates of species occurrences,
-#' columns must be: Species, Longitude, and Latitude. Geographic coordinates must be in decimal
-#' degrees. \code{occurrences} may not exist but \code{threshold_value} must be defined.
-#' @param model a RasterLayer object that will be binarized using the \code{threshold_value}
-#' defined by the user or a value calculated based on an omission level (from 0 - 100) defined in
-#' \code{threshold_omission}. If model is projected, this projection must be Geographic (longitude,
-#' latitude). If not projected, the Geographic projection will be assigned for the analysis.
-#' @param threshold_value (numeric) value used for reclasifying the model. This value will
-#' be the lowest considered as suitable for the species and must be inside the range of values
-#' present in \code{model}. If defined, \code{threshold_omission} will be ignored. If
-#' \code{occurrences} is not defined, this parameter is mandatory.
-#' @param threshold_omission (numeric) percentage of occurrence records to be excluded from
-#' suitable areas considering their values of suitability in the continuous model (e.g., 0, 5,
-#' or 10). Ignored if \code{threshold_value} is provided.
-#' @param simplify (logical) if TRUE, polygons of suitable areas will be simplified at a tolerance
-#' defined in \code{simplify_level}. Default = FALSE.
-#' @param simplify_level (numeric) tolerance at the moment of simplifying polygons created from
-#' the suitable areas derived from the ecological niche model. Lower values will produce polygons
-#' more similar to the original geometry. Default = 0. If simplify is needed, try numbers between
-#' 0 and 1 first. Ignored if \code{simplify} = FALSE.
-#' @param polygons (optional) a SpatialPolygon object to adjust created polygons to these limits.
-#' Projection must be Geographic (longitude, latitude). If not defined, a default, simple world
-#' map will be used.
-#' @param final_projection (character) string of projection arguments for resulting Spatial objects.
-#' Arguments must be as in the PROJ.4 documentation. See \code{\link[sp]{CRS-class}} for details.
-#' Default = "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0" = WGS84.
-#' @param save_shp (logical) if TRUE, shapefiles of the species range, occurrences, extent of
-#' occurrence and area of occupancy will be written in the working directory. Default = FALSE.
-#' @param name (character) valid if \code{save_shp} = TRUE. The name of the shapefile to be exported.
-#' A suffix will be added to \code{name} depending on the object as follows: species extent of
-#' occurrence = "_extent_occ", area of occupancy = "_area_occ", and occurrences = "_unique_records".
-#' Default = "range_enm".
+#' @param model_output a RasterLayer that will be binarized using the a
+#' user-defined \code{threshold_value} or a value calculated based on a percentage
+#' of omission (0 - 100) defined in \code{threshold_omission}. If the layer is
+#' projected, this projection must be WGS84 (EPSG:4326); if not projected, WGS84
+#' projection will be assigned for the analysis.
+#' @param occurrences a data.frame containing geographic coordinates of species
+#' occurrences, columns must be: Species, Longitude, and Latitude. Geographic
+#' coordinates must be in decimal degrees. \code{occurrences} may not be defined,
+#' but if so, \code{threshold_value} must be defined. Default = \code{NULL}.
+#' @param threshold_value (numeric) value used for reclasifying the
+#' \code{model_output}. This value will be the lowest considered as suitable for
+#' the species and must be inside the range of values present in \code{model_output}.
+#' If defined, \code{threshold_omission} will be ignored. If \code{occurrences}
+#' is not defined, this parameter is required. Default = \code{NULL}.
+#' @param threshold_omission (numeric) percentage of occurrence records to be
+#' excluded from suitable areas considering their values of suitability in the
+#' continuous model (e.g., 0, 5, or 10). Ignored if \code{threshold_value} is
+#' provided. Default = \code{NULL}.
+#' @param min_polygon_area (numeric) minimum area of polygons that will be kept
+#' as part of the species ranges after defining suitable areas and convert
+#' raster layer to polygon. Default = 0. A value of 0 will keep all polygons.
+#' @param simplify (logical) if \code{TRUE}, polygons of suitable areas will be
+#' simplified at a tolerance defined in \code{simplify_level}. Default =
+#' \code{FALSE}.
+#' @param simplify_level (numeric) tolerance to consider when simplifying polygons
+#' created from suitable areas in \code{model_output}. Lower values will produce
+#' polygons more similar to the original geometry. Default = 0. If simplify is
+#' needed, try numbers 0-1 first. Ignored if \code{simplify} = \code{FALSE}.
+#' @param polygons (optional) a SpatialPolygons* object to clip polygons and
+#' adjust extent of occurrence to these limits. Projection must be WGS84
+#' (EPSG:4326). If \code{NULL}, the default, a simplified world map will be used.
+#' @param final_projection (character) string of projection arguments for
+#' resulting Spatial objects. Arguments must be as in the PROJ.4 documentation.
+#' See \code{\link[sp]{CRS-class}} for details. If \code{NULL}, the default,
+#' projection used is WGS84 (EPSG:4326).
+#' @param save_shp (logical) if \code{TRUE}, shapefiles of the species range,
+#' occurrences, extent of occurrence, and area of occupancy will be written in
+#' the working directory. Default = \code{FALSE}.
+#' @param name (character) valid if \code{save_shp} = \code{TRUE}. The name of
+#' the shapefile to be exported. A suffix will be added to \code{name} depending
+#' on the object, as follows: species extent of occurrence = "_extent_occ", area
+#' of occupancy = "_area_occ", and occurrences = "_unique_records".
+#' @param overwrite (logical) wether or not to overwrite previous results with
+#' the same name. Default = \code{FALSE}.
 #'
 #' @return
-#' If \code{occurrences} and \code{threshold_omission} are defined, a  named list containing:
-#' (1) a data.frame with information about the species range, and SpatialPolygon objects of
-#' (2) unique occurrences, (3) species range, (4) extent of occurrence, and (5) area of occurpancy.
+#' If \code{occurrences} and \code{threshold_omission} are defined, a  sp_range
+#' object (S4) containing: (1) a data.frame with information about the species
+#' range, and Spatial objects of (2) unique occurrences, (3) species range,
+#' (4) extent of occurrence, and (5) area of occurpancy.
 #'
-#' If instead of the two parameters before mentioned, \code{threshold_value} is provided, the result
-#' will be a list of two elements: (1) a data.frame with information about the species range, and
-#' (2) a SpatialPolygon object of the species range.
+#' If instead of \code{occurrences} and \code{threshold_omission},
+#' \code{threshold_value} is provided, the result will be a sp_range object
+#' (S4) of two elements: (1) a data.frame with information about the species
+#' range, and (2) a SpatialPolygons object of the species range.
 #'
 #' @details
-#' All resultant Spatial objects in the list of results will be projected to the \code{final_projection}.
-#' Areas are calculated in square kilometers using the Azimuthal equal area projection.
+#' All resulting Spatial objects in the list of results will be projected to the
+#' \code{final_projection}. Areas are calculated in square kilometers using the
+#' Lambert Azimuthal Equal Area projection, centered on the centroid of occurence
+#' points given as imputs or the resulting range.
 #'
 #' @usage
-#' rangemap_enm(occurrences, model, threshold_value, threshold_omission,
-#'     simplify = FALSE, simplify_level = 0, polygons, final_projection,
-#'     save_shp = FALSE, name = "range_enm", overwrite = FALSE)
+#' rangemap_enm(model_output, occurrences = NULL, threshold_value = NULL,
+#'              threshold_omission = NULL, min_polygon_area = 0,
+#'              simplify = FALSE, simplify_level = 0, polygons = NULL,
+#'              final_projection = NULL, save_shp = FALSE, name,
+#'              overwrite = FALSE)
 #'
 #' @export
 #'
-#' @importFrom raster values extract crs rasterToPolygons area raster extent rasterize
-#' @importFrom rgeos gSimplify gCentroid gBuffer gUnaryUnion gIntersection
+#' @importFrom raster extract crs area
+#' @importFrom rgeos gSimplify gBuffer gUnaryUnion
 #' @importFrom sp CRS SpatialPointsDataFrame SpatialPolygonsDataFrame
-#' @importFrom sp SpatialPolygons Polygons Polygon proj4string over spTransform
-#' @importFrom maps map
-#' @importFrom maptools map2SpatialPolygons
+#' @importFrom sp spTransform
 #' @importFrom rgdal writeOGR
 #'
 #' @examples
 #' # parameters
 #' sp_mod <- raster::raster(list.files(system.file("extdata", package = "rangemap"),
-#'                                     pattern = "sp_model.tif", full.names = TRUE))
-#' sp_train <- read.csv(list.files(system.file("extdata", package = "rangemap"),
-#'                                 pattern = "sp_train.csv", full.names = TRUE))
-#' occ_sp <- data.frame("A_americanum", sp_train)
+#'                                     pattern = "sp_model", full.names = TRUE))
+#' data("occ_train", package = "rangemap")
+#'
 #' thres <- 5
 #' save <- TRUE
 #' name <- "test"
 #'
-#' enm_range <- rangemap_enm(occurrences = occ_sp, model = sp_mod,  threshold_omission = thres,
-#'                           save_shp = save, name = name, overwrite = TRUE)
+#' enm_range <- rangemap_enm(model_output = sp_mod, occurrences = occ_train,
+#'                           threshold_omission = thres)
 #'
-#' # see the species range in a figure
-#' extent <- TRUE
-#' occ <- TRUE
-#' legend <- TRUE
-#' north <- TRUE
-#'
-#' # creating the species range figure
-#' rangemap_fig(enm_range, add_extent = extent, add_occurrences = occ,
-#'              legend = legend, northarrow = north, northarrow_position = "topleft")
+#' summary(enm_range)
 
-rangemap_enm <- function(occurrences, model, threshold_value, threshold_omission,
-                         simplify = FALSE, simplify_level = 0, polygons,
-                         final_projection, save_shp = FALSE, name = "range_enm",
-                         overwrite = FALSE) {
+rangemap_enm <- function(model_output, occurrences = NULL, threshold_value = NULL,
+                         threshold_omission = NULL, min_polygon_area = 0,
+                         simplify = FALSE, simplify_level = 0, polygons = NULL,
+                         final_projection = NULL, save_shp = FALSE,
+                         name, overwrite = FALSE) {
 
   # check for errors
-  if (missing("model")) {
-    stop("model must exist to perform the calculations.")
+  if (is.null(model_output)) {
+    stop("'model_output' is necessary to perform the analysis.")
   }
 
-  if (!missing("threshold_value") | !missing("threshold_omission") | !missing("occurrences")) {
-    if (!missing("threshold_value")) {
-      binary <- model
-      raster::values(binary)[raster::values(binary) < threshold_value] <- 0
-      raster::values(binary)[raster::values(binary) >= threshold_value] <- 1
-    }else {
-      if (!missing("threshold_omission") & !missing("occurrences")) {
+  if (!is.null(threshold_value) | !is.null(threshold_omission) |
+      !is.null(occurrences)) {
+    if (!is.null(threshold_value)) {
+      binary <- model_output >= threshold_value
+    } else {
+      if (!is.null(threshold_omission) & !is.null(occurrences)) {
         # keeping only coordinates
         occ <- occurrences[, 2:3]
 
         # threshold value calculation
-        o_suit <- na.omit(raster::extract(model, occ))
+        o_suit <- na.omit(raster::extract(model_output, occ))
         o_suit_sort <- sort(o_suit)
         thres <- o_suit_sort[ceiling(length(occ[, 1]) * threshold_omission / 100) + 1]
 
         # binarization
-        binary <- model
-        raster::values(binary)[raster::values(binary) < thres] <- 0
-        raster::values(binary)[raster::values(binary) >= thres] <- 1
-      }else {
-        stop(paste("Parameters threshold_omission and occurrences, or threshold_value must be",
-                   "\ndefined to perform the calculations."))
+        binary <- model_output >= thres
+      } else {
+        stop(paste0("Parameters 'threshold_omission' and 'occurrences', or 'threshold_value'",
+                    "\nmust be defined to perform the calculations."))
       }
     }
   }
+
   # keeping only areas of presence
   presence <- binary
-  raster::values(presence)[raster::values(presence) == 0] <- NA
+  presence[presence[] == 0] <- NA
 
   # erase duplicate records
-  if (!missing(occurrences)) {
+  if (!is.null(occurrences)) {
     occ <- as.data.frame(unique(occurrences))[, 1:3]
     colnames(occ) <- c("Species", "Longitude", "Latitude")
-
   }
 
   # convert raster to polygons
-  WGS84 <- sp::CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
-  if (is.na(model@crs)) {
+  WGS84 <- sp::CRS("+init=epsg:4326")
+  if (is.na(model_output@crs)) {
     raster::crs(presence) <- WGS84@projargs
   }
-  enm_range <- raster::rasterToPolygons(presence, dissolve = TRUE)
+
+  enm_range <- as(presence, "SpatialPolygonsDataFrame")
+  enm_range <- rgeos::gUnaryUnion(enm_range, enm_range$layer)
+  enm_range <- sp::SpatialPolygonsDataFrame(enm_range, data = data.frame(ID = 1))
 
   # erasing small polygons
-  areas <- lapply(enm_range@polygons, function(x) sapply(x@Polygons, function(y) y@area))
-
-  bigpolys <- unlist(lapply(areas, function(x) which(x > 0.1)))
-
-  enm_range@polygons[[1]]@Polygons <- enm_range@polygons[[1]]@Polygons[bigpolys]
-  enm_range@polygons[[1]]@plotOrder <- enm_range@polygons[[1]]@plotOrder[enm_range@polygons[[1]]@plotOrder %in% bigpolys]
-
-  slot(enm_range, "polygons") <- lapply(slot(enm_range, "polygons"),
-                                        "comment<-", NULL)
+  enm_range <- keep_big_polygons(polygons = enm_range, min_polygon_area)
 
   if (simplify == TRUE) {
-    enm_range <- suppressWarnings(rgeos::gSimplify(enm_range, tol = simplify_level)) # simplify polygons
+    enm_range <- suppressWarnings(rgeos::gSimplify(enm_range, tol = simplify_level))
   }
+  enm_range <- raster::disaggregate(enm_range)
 
   # world map or user map for creating extent of occurrence
-  if (missing(polygons)) {
-    w_map <- maps::map(database = "world", fill = TRUE, plot = FALSE) # map of the world
-
-    w_po <- sapply(strsplit(w_map$names, ":"), function(x) x[1]) # preparing data to create polygon
-    polygons <- maptools::map2SpatialPolygons(w_map, IDs = w_po, proj4string = WGS84) # map to polygon
+  if (is.null(polygons)) {
+    polygons <- simple_wmap(which = "simple")
   }
 
   # project area and occurrences using the area centriod as reference
-  centroid <- suppressWarnings(rgeos::gCentroid(enm_range, byid = FALSE))
+  LAEA <- LAEA_projection(spatial_onject = enm_range)
 
-  AEQD <- sp::CRS(paste("+proj=aeqd +lat_0=", centroid@coords[2], " +lon_0=", centroid@coords[1],
-                        " +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs", sep = ""))
-
-  if (!missing(occurrences)) {
+  if (!is.null(occurrences)) {
     occ_sp <- sp::SpatialPointsDataFrame(coords = occ[, 2:3], data = occ,
                                          proj4string = WGS84)
-    occ_pr <- sp::spTransform(occ_sp, AEQD)
+    occ_pr <- sp::spTransform(occ_sp, LAEA)
   }
 
-  enm_range_pr <- sp::spTransform(enm_range, AEQD)
-  polygons <- sp::spTransform(polygons, AEQD)
+  enm_range_pr <- sp::spTransform(enm_range, LAEA)
+  polygons <- sp::spTransform(polygons, LAEA)
 
-  polygons <- suppressWarnings(rgeos::gBuffer(polygons, byid = TRUE, width = 0)) # to avoid topology problems
+  polygons <- suppressWarnings(rgeos::gBuffer(polygons, byid = TRUE, width = 0))
   polygons <- rgeos::gUnaryUnion(polygons)
 
+  # calculate areas in km2
+  area <- raster::area(enm_range_pr) / 1000000
+  areakm2 <- sum(area) # total area of the species range
 
-  if (missing(occurrences)) {
-    # calculate areas in km2
-    area <- raster::area(enm_range_pr) / 1000000
-    areakm2 <- sum(area) # total area of the species range
-
+  if (is.null(occurrences)) {
     # adding characteristics to spatial polygons
-    clip_area <- sp::SpatialPolygonsDataFrame(enm_range_pr, # species range
-                                              data = data.frame("Species", area),
+    df <- data.frame(Species = "Species", area)
+    clip_area <- sp::SpatialPolygonsDataFrame(enm_range_pr, data = df,
                                               match.ID = FALSE)
 
     # reprojection
-    if (missing(final_projection)) {
+    if (is.null(final_projection)) {
       final_projection <- WGS84
     } else {
       final_projection <- sp::CRS(final_projection) # character to projection
@@ -209,55 +203,31 @@ rangemap_enm <- function(occurrences, model, threshold_value, threshold_omission
 
     # exporting
     if (save_shp == TRUE) {
-      cat("\nWriting shapefile in the working directory...\n")
+      message("Writing shapefiles in the working directory.")
       rgdal::writeOGR(clip_area, ".", name, driver = "ESRI Shapefile")
     }
 
     # return results
-    sp_dat <- data.frame("Species", areakm2) # extent of occ = total area?
-    colnames(sp_dat) <- c("Species", "Range_area")
+    sp_dat <- data.frame(Species = "Species", Range_area = areakm2)
 
-    results <- list(sp_dat, clip_area)
-    names(results) <- c("Summary", "Species_range")
+    results <- sp_range(Summary = sp_dat, Species_range = clip_area)
 
-  }else {
-    # calculate areas in km2
-    area <- raster::area(enm_range_pr) / 1000000
-    areakm2 <- sum(area) # total area of the species range
+  } else {
+    # extent of occurrence
+    eooc <- eoo(occ_sp@data, polygons)
+    eocckm2 <- eooc$area
+    extent_occurrence <- eooc$spolydf
 
-    ## extent of occurrence
-    coord <- as.data.frame(occ[, 2:3]) # spatial point dataframe to data frame keeping only coordinates
-    covexhull <- chull(coord) # convex hull from points
-    coord_pol <- coord[c(covexhull, covexhull[1]),] # defining coordinates
-    covexhull_polygon <- sp::SpatialPolygons(list(sp::Polygons(list(sp::Polygon(coord_pol)), ID = 1))) # into SpatialPolygons
-    sp::proj4string(covexhull_polygon) <- WGS84 # project
-    covexhull_polygon_pr <- sp::spTransform(covexhull_polygon, AEQD) # reproject
-    c_hull_extent <- rgeos::gIntersection(polygons, covexhull_polygon_pr, byid = TRUE, drop_lower_td = TRUE) # area of interest
-
-    eockm2 <- raster::area(c_hull_extent) / 1000000
-    eocckm2 <- sum(eockm2) # total area of the species range
-
-    ## area of occupancy
-    grid <- raster::raster(ext = raster::extent(occ_pr) + 10000, res = c(2000, 2000), crs = AEQD)
-    raster_sp <- raster::rasterize(occ_pr[, 2:3], grid)[[1]] # raster from points
-    grid_sp <- as(raster_sp, "SpatialPolygonsDataFrame") # raster to polygon
-
-    aockm2 <- raster::area(grid_sp) / 1000000
-    aocckm2 <- sum(aockm2) # area calculation
+    # area of occupancy
+    species <- as.character(occurrences[1, 1])
+    aooc <- aoo(occ_pr, species)
+    aocckm2 <- aooc$area
+    area_occupancy <- aooc$spolydf
 
     # adding characteristics to spatial polygons
-    species <- as.character(occurrences[1, 1])
     clip_area <- sp::SpatialPolygonsDataFrame(enm_range_pr, # species range
                                               data = data.frame(species, area),
                                               match.ID = FALSE)
-
-    extent_occurrence <- sp::SpatialPolygonsDataFrame(c_hull_extent, # extent of occurrence
-                                                      data = data.frame(species, eockm2),
-                                                      match.ID = FALSE)
-
-    area_occupancy <- sp::SpatialPolygonsDataFrame(grid_sp, # area of occupancy
-                                                   data = data.frame(species, aockm2),
-                                                   match.ID = FALSE)
 
     # reprojection
     if (missing(final_projection)) {
@@ -273,20 +243,26 @@ rangemap_enm <- function(occurrences, model, threshold_value, threshold_omission
 
     # exporting
     if (save_shp == TRUE) {
-      cat("Writing shapefiles in the working directory.")
-      rgdal::writeOGR(clip_area, ".", name, driver = "ESRI Shapefile", overwrite_layer = overwrite)
-      rgdal::writeOGR(extent_occurrence, ".", paste(name, "extent_occ", sep = "_"), driver = "ESRI Shapefile", overwrite_layer = overwrite)
-      rgdal::writeOGR(area_occupancy, ".", paste(name, "area_occ", sep = "_"), driver = "ESRI Shapefile", overwrite_layer = overwrite)
-      rgdal::writeOGR(occ_pr, ".", paste(name, "unique_records", sep = "_"), driver = "ESRI Shapefile", overwrite_layer = overwrite)
+      message("Writing shapefiles in the working directory.")
+      rgdal::writeOGR(clip_area, ".", name, driver = "ESRI Shapefile",
+                      overwrite_layer = overwrite)
+      rgdal::writeOGR(extent_occurrence, ".", paste(name, "extent_occ", sep = "_"),
+                      driver = "ESRI Shapefile", overwrite_layer = overwrite)
+      rgdal::writeOGR(area_occupancy, ".", paste(name, "area_occ", sep = "_"),
+                      driver = "ESRI Shapefile", overwrite_layer = overwrite)
+      rgdal::writeOGR(occ_pr, ".", paste(name, "unique_records", sep = "_"),
+                      driver = "ESRI Shapefile", overwrite_layer = overwrite)
     }
 
-    # return results (list or a different object?)
-    sp_dat <- data.frame(occ[1, 1], dim(occ_pr)[1], areakm2, eocckm2, aocckm2) # extent of occ = total area?
-    colnames(sp_dat) <- c("Species", "Unique_records", "Range_area", "Extent_of_occurrence", "Area_of_occupancy")
+    # return results
+    sp_dat <- data.frame(Species = species, Unique_records = dim(occ_pr)[1],
+                         Range_area = areakm2, Extent_of_occurrence = eocckm2,
+                         Area_of_occupancy = aocckm2)
 
-    results <- list(sp_dat, occ_pr, clip_area, extent_occurrence, area_occupancy)
-    names(results) <- c("Summary", "Species_unique_records", "Species_range", "Extent_of_occurrence",
-                        "Area_of_occupancy")
+    results <- sp_range_iucn(Summary = sp_dat, Species_unique_records = occ_pr,
+                             Species_range = clip_area,
+                             Extent_of_occurrence = extent_occurrence,
+                             Area_of_occupancy = area_occupancy)
   }
 
   return(results)
