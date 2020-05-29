@@ -5,89 +5,101 @@
 \title{Species distributional ranges based on convex or concave hull polygons}
 \usage{
 rangemap_hull(occurrences, hull_type = "convex", concave_distance_lim = 5000,
-              buffer_distance = 50000, split = FALSE, cluster_method = "hierarchical",
-              split_distance, n_k_means, polygons = NULL, final_projection = NULL,
+              buffer_distance = 50000, split = FALSE,
+              cluster_method = "hierarchical", split_distance = NULL,
+              n_k_means = NULL, polygons = NULL, final_projection = NULL,
               save_shp = FALSE, name, overwrite = FALSE)
 }
 \arguments{
-\item{occurrences}{a data.frame containing geographic coordinates of species occurrences,
-columns must be: Species, Longitude, and Latitude. Geographic coordinates must be in decimal
-degrees  (WGS84).}
+\item{occurrences}{a data.frame containing geographic coordinates of species
+occurrences, columns must be: Species, Longitude, and Latitude. Geographic
+coordinates must be in decimal degrees  (WGS84).}
 
-\item{hull_type}{(character) type of hull polygons to be created. Available options are:
-"convex" and "concave". Default = "convex".}
+\item{hull_type}{(character) type of hull polygons to be created. Available
+options are: "convex" and "concave". Default = "convex".}
 
-\item{concave_distance_lim}{(numeric) distance, in meters, to be passed to the length_threshold
-parameter of the \code{\link[concaveman]{concaveman}} funcion. Default = 5000. Ignored if
-\code{hull_type} is not "concave".}
+\item{concave_distance_lim}{(numeric) distance, in meters, to be passed to the
+length_threshold parameter of the \code{\link[concaveman]{concaveman}} funcion.
+Default = 5000. Ignored if \code{hull_type} is not "concave".}
 
-\item{buffer_distance}{(numeric) distance, in meters, to be used for creating a buffer
-around resulting hull polygons; default = 50000.}
+\item{buffer_distance}{(numeric) distance, in meters, to be used for creating
+a buffer around resulting hull polygons; default = 50000.}
 
-\item{split}{(logical) if \code{TRUE}, a distance (for hierarchical clustering) or a number (for
-K-means clustering) is used to separate distinct chunks of occurrences. Recommended when
-the species of interest has a disjunct distribution. Default = \code{FALSE}.}
+\item{split}{(logical) if \code{TRUE}, a distance (for hierarchical clustering)
+or a number (for K-means clustering) is used to separate distinct chunks of
+occurrences. Recommended when the species of interest has a disjunct
+distribution. Default = \code{FALSE}.}
 
-\item{cluster_method}{(character) name of the method to be used for clustering the occurrences.
-Options are "hierarchical" and "k-means"; default = "hierarchical". Note that this parameter is
-ignored when \code{split} = \code{FALSE}. See details for more information on the two available methods.}
+\item{cluster_method}{(character) name of the method to be used for clustering
+the occurrences. Options are "hierarchical" and "k-means"; default =
+"hierarchical". Note that this parameter is ignored when \code{split} =
+\code{FALSE}. See details for more information on the two available methods.}
 
-\item{split_distance}{(numeric) distance in meters that will limit connectivity among hull
-polygons created with chunks of points separated by long distances. This parameter is used
-when \code{cluster_method} = "hierarchical" and \code{split} = \code{TRUE}.}
+\item{split_distance}{(numeric) distance in meters that will limit connectivity
+among hull polygons created with chunks of points separated by long distances.
+This parameter is used when \code{cluster_method} = "hierarchical" and
+\code{split} = \code{TRUE}. Default = \code{NULL}.}
 
-\item{n_k_means}{(numeric) if \code{split} = \code{TRUE}, number of clusters in which the species
-occurrences will be grouped when using the "k-means" \code{cluster_method}.}
+\item{n_k_means}{(numeric) if \code{split} = \code{TRUE}, number of clusters
+in which the species occurrences will be grouped when using the "k-means"
+\code{cluster_method}. Default = \code{NULL}.}
 
-\item{polygons}{(optional) a SpatialPolygon object to clip buffer areas and adjust the species
-range and other polygons to these limits. Projection must be WGS84 (EPSG:4326).
-If NULL (the default), a simplified world map will be used.}
+\item{polygons}{(optional) a SpatialPolygons* object to clip polygons and
+adjust the species range and other polygons to these limits. Projection must
+be WGS84 (EPSG:4326). If \code{NULL}, the default, a simplified world map will
+be used.}
 
-\item{final_projection}{(character) string of projection arguments for resulting Spatial objects.
-Arguments must be as in the PROJ.4 documentation. See \code{\link[sp]{CRS-class}} for details.
-Default = "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0" = WGS84.}
+\item{final_projection}{(character) string of projection arguments for resulting
+Spatial objects. Arguments must be as in the PROJ.4 documentation. See
+\code{\link[sp]{CRS-class}} for details. If \code{NULL}, the default, projection
+used is WGS84 (EPSG:4326).}
 
-\item{save_shp}{(logical) if \code{TRUE}, shapefiles of the species range, occurrences, extent of
-occurrence and area of occupancy will be written in the working directory. Default = \code{FALSE}.}
+\item{save_shp}{(logical) if \code{TRUE}, shapefiles of the species range,
+occurrences, extent of occurrence, and area of occupancy will be written in
+the working directory. Default = \code{FALSE}.}
 
-\item{name}{(character) valid if \code{save_shp} = \code{TRUE}. The name of the shapefile to be
-exported. A suffix will be added to \code{name} depending on the object as follows: species
-extent of occurrence = "_extent_occ", area of occupancy = "_area_occ", and occurrences =
-"_unique_records".}
+\item{name}{(character) valid if \code{save_shp} = \code{TRUE}. The name of
+the shapefile to be exported. A suffix will be added to \code{name} depending
+on the object, as follows: species extent of occurrence = "_extent_occ", area
+of occupancy = "_area_occ", and occurrences = "_unique_records".}
 
 \item{overwrite}{(logical) wether or not to overwrite previous results with
 the same name. Default = \code{FALSE}.}
 }
 \value{
-A sp_range object (S4) containing: (1) a data.frame with information about the species range,
-and SpatialPolygon objects of (2) unique occurrences, (3) species range, (4) extent of
-occurrence, and (5) area of occurpancy.
+A sp_range object (S4) containing: (1) a data.frame with information about the
+species range, and Spatial objects of (2) unique occurrences, (3) species range,
+(4) extent of occurrence, and (5) area of occurpancy.
 }
 \description{
 rangemap_hull generates a distributional range for a given species
 by creating convex or concave hull polygons based on occurrence data.
-An approach to the species extent of occurrence (using convex hulls) and the area
-of occupancy according to the IUCN criteria are also generated. Shapefiles can be
-saved in the working directory if it is needed.
+An approach to the species extent of occurrence (using convex hulls) and the
+area of occupancy according to the IUCN criteria are also generated. Shapefiles
+can be saved in the working directory if it is needed.
 }
 \details{
-All resultant Spatial objects in the results will be projected to the \code{final_projection}.
-Areas are calculated in square kilometers using the Lambert Azimuthal Equal
-Area projection, centered in the centroid of occurence points given as imputs.
+All resulting Spatial objects in the results will be projected to the
+\code{final_projection}. Areas are calculated in square kilometers using the
+Lambert Azimuthal Equal Area projection, centered on the centroid of occurence
+points given as imputs.
 
-The \code{cluster_method} must be chosen based on the spatial configuration of the
-species occurrences. Both methods make distinct assumptions and one of them may perform better
-than the other depending on the spatial pattern of the data.
+The \code{cluster_method} must be chosen based on the spatial configuration of
+the species occurrences. Both methods make distinct assumptions and one of
+them may perform better than the other depending on the spatial pattern of the
+data.
 
-The k-means method, for example, perfomrs better when the following assumptions are fulfilled:
-Clusters are spatially grouped—or “spherical” and Clusters are of a similar size. Owing to the
-nature of the hierarchical clustering algorithm it may take more time than the k-means method.
-Both methods make assumptions and they may work well on some data sets, and fail on others.
+The k-means method, for example, perfomrs better when the following assumptions
+are fulfilled: Clusters are spatially grouped—or “spherical” and Clusters are
+of a similar size. Owing to the nature of the hierarchical clustering algorithm
+it may take more time than the k-means method. Both methods make assumptions
+and they may work well on some data sets, and fail on others.
 
-Another important factor to consider is that the k-means method allways starts with a random
-choice of cluster centers, thus it may end in different results on different runs. That may be
-problematic when trying to replicate your methods. With hierarchical clustering, most likely
-the same clusters can be obtained if the process is repeated.
+Another important factor to consider is that the k-means method allways starts
+with a random choice of cluster centers, thus it may end in different results
+on different runs. That may be problematic when trying to replicate your
+methods. With hierarchical clustering, most likely the same clusters can be
+obtained if the process is repeated.
 
 For more information on these clustering methods see Aggarwal and Reddy (2014),
 \href{https://goo.gl/RQ2ebd}{here}.

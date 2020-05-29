@@ -1,39 +1,44 @@
 #' Species distributional ranges based on buffered occurrences
 #'
-#' @description rangemap_buffer generates a distributional range for a given species by
-#' buffering provided occurrences using a defined distance. An approach to the species extent
-#' of occurrence (using convex hulls) and the area of occupancy according to the IUCN criteria
-#' are also generated. Shapefiles can be saved in the working directory if it is needed.
+#' @description rangemap_buffer generates a distributional range for a given
+#' species by buffering provided occurrences using a defined distance. An approach
+#' to the species extent of occurrence (using convex hulls) and the area of
+#' occupancy according to the IUCN criteria are also generated. Shapefiles can
+#' be saved in the working directory if it is needed.
 #'
-#' @param occurrences a data.frame containing geographic coordinates of species occurrences,
-#' columns must be: Species, Longitude, and Latitude. Geographic coordinates must be in decimal
-#' degrees (WGS84).
-#' @param buffer_distance (numeric) distance, in meters, to be used for creating the buffer areas
-#' around occurrences, default = 100000.
-#' @param polygons (optional) a SpatialPolygon object to clip buffer areas and adjust the species
-#' range and other polygons to these limits. Projection must be WGS84 (EPSG:4326).
-#' If \code{NULL}, the default, a simplified world map will be used.
-#' @param final_projection (character) string of projection arguments for resulting Spatial objects.
-#' Arguments must be as in the PROJ.4 documentation. See \code{\link[sp]{CRS-class}} for details.
-#' If \code{NULL}, the default, projection used is WGS84 (EPSG:4326).
-#' @param save_shp (logical) if \code{TRUE}, shapefiles of the species range, occurrences, extent of
-#' occurrence and area of occupancy will be written in the working directory. Default = \code{FALSE}.
-#' @param name (character) valid if \code{save_shp} = \code{TRUE}. The name of the shapefile to be
-#' exported. A suffix will be added to \code{name} depending on the object as follows: species
-#' extent of occurrence = "_extent_occ", area of occupancy = "_area_occ", and occurrences =
-#' "_unique_records".
+#' @param occurrences a data.frame containing geographic coordinates of species
+#' occurrences, columns must be: Species, Longitude, and Latitude. Geographic
+#' coordinates must be in decimal degrees (WGS84).
+#' @param buffer_distance (numeric) distance, in meters, to be used for creating
+#' the buffer areas around occurrences, default = 100000.
+#' @param polygons (optional) a SpatialPolygons* object to clip buffer areas and
+#' adjust the species range and other polygons to these limits. Projection must
+#' be WGS84 (EPSG:4326). If \code{NULL}, the default, a simplified world map
+#' will be used.
+#' @param final_projection (character) string of projection arguments for
+#' resulting Spatial objects. Arguments must be as in the PROJ.4 documentation.
+#' See \code{\link[sp]{CRS-class}} for details. If \code{NULL}, the default,
+#' projection used is WGS84 (EPSG:4326).
+#' @param save_shp (logical) if \code{TRUE}, shapefiles of the species range,
+#' occurrences, extent of occurrence, and area of occupancy will be written in
+#' the working directory. Default = \code{FALSE}.
+#' @param name (character) valid if \code{save_shp} = \code{TRUE}. The name of
+#' the shapefile to be exported. A suffix will be added to \code{name} depending
+#' on the object, as follows: species extent of occurrence = "_extent_occ", area
+#' of occupancy = "_area_occ", and occurrences = "_unique_records".
 #' @param overwrite (logical) wether or not to overwrite previous results with
 #' the same name. Default = \code{FALSE}.
 #'
 #' @return
-#' A sp_range object (S4) containing: (1) a data.frame with information about the species range,
-#' and SpatialPolygon objects of (2) unique occurrences, (3) species range, (4) extent of
-#' occurrence, and (5) area of occurpancy.
+#' A sp_range object (S4) containing: (1) a data.frame with information about the
+#' species range, and Spatial objects of (2) unique occurrences, (3) species range,
+#' (4) extent of occurrence, and (5) area of occurpancy.
 #'
 #' @details
-#' All resultant Spatial objects in the results will be projected to the \code{final_projection}.
-#' Areas are calculated in square kilometers using the Lambert Azimuthal Equal
-#' Area projection, centered in the centroid of occurence points given as imputs.
+#' All resulting Spatial objects in the results will be projected to the
+#' \code{final_projection}. Areas are calculated in square kilometers using the
+#' Lambert Azimuthal Equal Area projection, centered on the centroid of occurence
+#' points given as imputs.
 #'
 #' @usage
 #' rangemap_buffer(occurrences, buffer_distance = 100000, polygons = NULL,
@@ -99,7 +104,7 @@ rangemap_buffer <- function(occurrences, buffer_distance = 100000, polygons = NU
   buff_area <- geobuffer_points(data = occ_sp@coords, radius = buffer_distance)
 
   # clip a world map based on the created buffer
-  polygons <- suppressWarnings(rgeos::gBuffer(polygons, byid = TRUE, width = 0)) # to avoid topology problems
+  polygons <- suppressWarnings(rgeos::gBuffer(polygons, byid = TRUE, width = 0))
   polygons <- rgeos::gUnaryUnion(polygons)
   clip_area <- rgeos::gIntersection(buff_area, polygons, byid = TRUE,
                                     drop_lower_td = TRUE)
