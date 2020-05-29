@@ -413,3 +413,35 @@ hull_polygon <- function(occ_pr, hull_type = "convex", concave_distance_lim = 50
   }
   return(hulls)
 }
+
+
+#' Exclude small polygons from SpatialPolygons object
+#' @param polygons SpatialPolygonsDataFrame object.
+#' @param threshold_size (numeric) threshold value of area to determine whether
+#' polygons are big or not. Areas must be according to projection of \code{polygons}.
+#' @return A SpatialPolygonsDataFrame with polygons with areas above
+#' \code{threshold_size}.
+#' @export
+#' @examples
+#' data("spdf_range", package = "rangemap")
+#' sp::plot(spdf_range)
+#'
+#' big_polys <- keep_big_polygons(polygons = spdf_range, threshold_size = 0.2)
+#' sp::plot(big_polys)
+
+keep_big_polygons <- function(polygons, threshold_size) {
+  areas <- lapply(polygons@polygons, function(x){
+    sapply(x@Polygons, function(y) {y@area})
+  })
+  bigpolys <- lapply(areas, function(x){which(x > threshold_size)})
+
+  for (i in 1:length(bigpolys)) {
+    polygons@polygons[[i]]@Polygons <- polygons@polygons[[i]]@Polygons[bigpolys[[i]]]
+    porder <- polygons@polygons[[i]]@plotOrder
+    polygons@polygons[[i]]@plotOrder <- porder[porder %in% bigpolys[[i]]]
+  }
+  slot(polygons, "polygons") <- lapply(slot(polygons, "polygons"),
+                                       "comment<-", NULL)
+
+  return(polygons)
+}
