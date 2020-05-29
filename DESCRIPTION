@@ -1,7 +1,7 @@
 Package: rangemap
 Type: Package
 Title: Simple Tools for Defining Species Ranges
-Version: 0.1.6
+Version: 0.1.7
 Authors@R: c(
     person("Marlon E.", "Cobos", email = "manubio13@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-2611-1767")), 
