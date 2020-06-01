@@ -14,7 +14,7 @@
 #' a biogeographical region. Projection must be WGS84 (EPSG:4326).
 #' @param cell_size (numeric) vector of length 1 or 2, defining the size of cells
 #' (km) at which the resultant trend surface will be created; default = 5.
-#' \code(cell_size) will depend on the extent of \code{region_of_interest}.
+#' \code{cell_size} will depend on the extent of \code{region_of_interest}.
 #' Values lower than 1 are only recomended when the species is locally distributed.
 #' @param threshold (numeric) percentage of occurrence records to be excluded
 #' when deciding the minimum value trend surface output to be considered as part
