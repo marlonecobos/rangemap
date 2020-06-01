@@ -11,7 +11,7 @@ GADM_spoly(country_code, boundary_level, keep_data = FALSE)
 
 \item{boundary_level}{(numeric) level of admisnistrative division to be considered.}
 
-\item{keep_data}{(logical) whether or not to keep downloaded files. Default = FALSE.}
+\item{keep_data}{(logical) whether or not to keep downloaded files. Default = \code{FALSE}.}
 }
 \value{
 A SpatialPolygonsDataFrame from the GADM database at the level selected.

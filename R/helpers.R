@@ -13,6 +13,8 @@ isnested <- function(l) {
 #' Get a simplified SpatialPolygonsDataFrame of the world
 #' @param which (charatcer) name of type of SpatialPolygons to be obtained. Options
 #' are: "simple" and "simplest"; default = "simplest".
+#' @param regions (character) name of the country (or region if \code{which} =
+#' "simple") for which to obtain the SpatialPolygonsDataFrame.
 #' @return A simplified SpatialPolygonsDataFrame of the world in WGS84 projection.
 #' @export
 #' @importFrom sp CRS SpatialPolygonsDataFrame spTransform
@@ -21,18 +23,24 @@ isnested <- function(l) {
 #' @examples
 #' map <- simple_wmap()
 
-simple_wmap <- function(which = "simplest") {
+simple_wmap <- function(which = "simplest", regions = ".") {
   WGS84 <- sp::CRS("+init=epsg:4326")
   if (which == "simplest") {
     data("wrld_simpl", package = "maptools")
     polygons <- sp::spTransform(wrld_simpl, WGS84)
+    if (regions != ".") {
+      polygons <- polygons[polygons$NAME %in% regions, ]
+    }
     rm("wrld_simpl", pos = ".GlobalEnv")
   } else {
-    w_map <- maps::map(database = "world", fill = TRUE, plot = FALSE)
+    w_map <- maps::map(database = "world", regions = regions, fill = TRUE,
+                       plot = FALSE)
 
-    w_po <- sapply(strsplit(w_map$names, ":"), function(x) x[1])
-    polygons <- maptools::map2SpatialPolygons(w_map, IDs = w_po, proj4string = WGS84)
-    polygons <- sp::SpatialPolygonsDataFrame(polygons, data = data.frame(ID = 1:length(polygons)),
+    w_po <- sub(":.*", "", w_map$names)
+    polygons <- maptools::map2SpatialPolygons(w_map, IDs = w_po,
+                                              proj4string = WGS84)
+    df <- data.frame(ID = 1:length(polygons))
+    polygons <- sp::SpatialPolygonsDataFrame(polygons, data = df,
                                              match.ID = FALSE)
   }
   return(polygons)
@@ -43,7 +51,7 @@ simple_wmap <- function(which = "simplest") {
 #' @param occurrences matrix or data.frame conaining coordinates to serve as
 #' a reference for the center of the projection. Columns must be:
 #' "longitude" and "latitude", in that order.
-#' @param spatial_onject Spatial* objects, Poinst or Polygons, to be used to
+#' @param spatial_object Spatial* objects, Poinst or Polygons, to be used to
 #' calculate a reference for the center of the projection. Projection must be
 #' WGS84 (EPSG:4326).
 #' @details If arguments are not defined projection is centered in 0, 0 for
@@ -60,19 +68,19 @@ simple_wmap <- function(which = "simplest") {
 #' AED_projection(occ)
 #' @rdname LAEA_projection
 
-LAEA_projection <- function(occurrences = NULL, spatial_onject = NULL) {
-  if (!is.null(occurrences) | !is.null(spatial_onject)) {
+LAEA_projection <- function(occurrences = NULL, spatial_object = NULL) {
+  if (!is.null(occurrences) | !is.null(spatial_object)) {
     if (!is.null(occurrences)) {
       if (!class(occurrences)[1] %in% c("matrix", "data.frame", "tbl_df")) {
         stop("Argument 'occurrences' is not valid, see functions help.")
       }
       cent <- apply(occ, 2, mean)
     } else {
-      if (!class(spatial_onject)[1] %in% c("SpatialPointsDataFrame", "SpatialPoints",
+      if (!class(spatial_object)[1] %in% c("SpatialPointsDataFrame", "SpatialPoints",
                                            "SpatialPolygonsDataFrame", "SpatialPolygons")) {
-        stop("Argument 'spatial_onject' is not valid, see functions help.")
+        stop("Argument 'spatial_object' is not valid, see functions help.")
       } else {
-        cent <- rgeos::gCentroid(spatial_onject, byid = FALSE)@coords
+        cent <- rgeos::gCentroid(spatial_object, byid = FALSE)@coords
       }
     }
     LAEA <- sp::CRS(paste0("+proj=laea +lat_0=", cent[2], " +lon_0=", cent[1],
@@ -85,19 +93,19 @@ LAEA_projection <- function(occurrences = NULL, spatial_onject = NULL) {
 }
 
 #' @rdname LAEA_projection
-AED_projection <- function(occurrences = NULL, spatial_onject = NULL) {
-  if (!is.null(occurrences) | !is.null(spatial_onject)) {
+AED_projection <- function(occurrences = NULL, spatial_object = NULL) {
+  if (!is.null(occurrences) | !is.null(spatial_object)) {
     if (!is.null(occurrences)) {
       if (!class(occurrences)[1] %in% c("matrix", "data.frame", "tbl_df")) {
         stop("Argument 'occurrences' is not valid, see functions help.")
       }
       cent <- apply(occ, 2, mean)
     } else {
-      if (!class(spatial_onject)[1] %in% c("SpatialPointsDataFrame", "SpatialPoints",
+      if (!class(spatial_object)[1] %in% c("SpatialPointsDataFrame", "SpatialPoints",
                                            "SpatialPolygonsDataFrame", "SpatialPolygons")) {
-        stop("Argument 'spatial_onject' is not valid, see functions help.")
+        stop("Argument 'spatial_object' is not valid, see functions help.")
       } else {
-        cent <- rgeos::gCentroid(spatial_onject, byid = FALSE)@coords
+        cent <- rgeos::gCentroid(spatial_object, byid = FALSE)@coords
       }
     }
     AEQD <- sp::CRS(paste0("+proj=aeqd +lat_0=", cent[2], " +lon_0=", cent[1],

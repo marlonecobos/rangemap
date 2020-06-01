@@ -3,7 +3,7 @@
 #' @description rangemap_buffer generates a distributional range for a given
 #' species by buffering provided occurrences using a defined distance. An approach
 #' to the species extent of occurrence (using convex hulls) and the area of
-#' occupancy according to the IUCN criteria are also generated. Shapefiles can
+#' occupancy according to the IUCN criteria is also generated. Shapefiles can
 #' be saved in the working directory if it is needed.
 #'
 #' @param occurrences a data.frame containing geographic coordinates of species
@@ -110,7 +110,7 @@ rangemap_buffer <- function(occurrences, buffer_distance = 100000, polygons = NU
                                     drop_lower_td = TRUE)
 
   # project polygons and points
-  LAEA <- LAEA_projection(spatial_onject = occ_sp)
+  LAEA <- LAEA_projection(spatial_object = occ_sp)
   clip_area <- sp::spTransform(clip_area, LAEA)
   occ_pr <- sp::spTransform(occ_sp, LAEA)
 

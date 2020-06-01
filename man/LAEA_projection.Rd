@@ -5,16 +5,16 @@
 \alias{AED_projection}
 \title{Prepare Equal-Area or Equidistante Projection}
 \usage{
-LAEA_projection(occurrences = NULL, spatial_onject = NULL)
+LAEA_projection(occurrences = NULL, spatial_object = NULL)
 
-AED_projection(occurrences = NULL, spatial_onject = NULL)
+AED_projection(occurrences = NULL, spatial_object = NULL)
 }
 \arguments{
 \item{occurrences}{matrix or data.frame conaining coordinates to serve as
 a reference for the center of the projection. Columns must be:
 "longitude" and "latitude", in that order.}
 
-\item{spatial_onject}{Spatial* objects, Poinst or Polygons, to be used to
+\item{spatial_object}{Spatial* objects, Poinst or Polygons, to be used to
 calculate a reference for the center of the projection. Projection must be
 WGS84 (EPSG:4326).}
 }

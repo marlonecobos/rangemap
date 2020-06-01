@@ -11,7 +11,8 @@ rangemap_enm(model_output, occurrences = NULL, threshold_value = NULL,
              overwrite = FALSE)
 }
 \arguments{
-\item{model_output}{a RasterLayer that will be binarized using the a
+\item{model_output}{a RasterLayer of suitability for the species of interest
+generated using a ENM or SDM algorithm, that will be binarized using the a
 user-defined \code{threshold_value} or a value calculated based on a percentage
 of omission (0 - 100) defined in \code{threshold_omission}. If the layer is
 projected, this projection must be WGS84 (EPSG:4326); if not projected, WGS84
@@ -43,7 +44,7 @@ simplified at a tolerance defined in \code{simplify_level}. Default =
 
 \item{simplify_level}{(numeric) tolerance to consider when simplifying polygons
 created from suitable areas in \code{model_output}. Lower values will produce
-polygons more similar to the original geometry. Default = 0. If simplify is
+polygons more similar to the original geometry. Default = 0. If simplifying is
 needed, try numbers 0-1 first. Ignored if \code{simplify} = \code{FALSE}.}
 
 \item{polygons}{(optional) a SpatialPolygons* object to clip polygons and
@@ -84,14 +85,14 @@ using a continuous raster layer produced using ecological niche modeling or
 species distribution modeling tools. This function binarizes the model in
 suitable and unsuitable areas using a user specified level of omission or a
 given threshold value. An approach to the species extent of occurrence (using
-convex hulls) and the area of occupancy according to the IUCN criteria are
+convex hulls) and the area of occupancy according to the IUCN criteria is
 also generated. Shapefiles can be saved in the working directory if it is needed.
 }
 \details{
 All resulting Spatial objects in the list of results will be projected to the
 \code{final_projection}. Areas are calculated in square kilometers using the
 Lambert Azimuthal Equal Area projection, centered on the centroid of occurence
-points given as imputs or the resulting range.
+points given as imputs or, if points are not provided, the resulting range.
 }
 \examples{
 # parameters

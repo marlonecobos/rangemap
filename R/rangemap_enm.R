@@ -5,10 +5,11 @@
 #' species distribution modeling tools. This function binarizes the model in
 #' suitable and unsuitable areas using a user specified level of omission or a
 #' given threshold value. An approach to the species extent of occurrence (using
-#' convex hulls) and the area of occupancy according to the IUCN criteria are
+#' convex hulls) and the area of occupancy according to the IUCN criteria is
 #' also generated. Shapefiles can be saved in the working directory if it is needed.
 #'
-#' @param model_output a RasterLayer that will be binarized using the a
+#' @param model_output a RasterLayer of suitability for the species of interest
+#' generated using a ENM or SDM algorithm, that will be binarized using the a
 #' user-defined \code{threshold_value} or a value calculated based on a percentage
 #' of omission (0 - 100) defined in \code{threshold_omission}. If the layer is
 #' projected, this projection must be WGS84 (EPSG:4326); if not projected, WGS84
@@ -34,7 +35,7 @@
 #' \code{FALSE}.
 #' @param simplify_level (numeric) tolerance to consider when simplifying polygons
 #' created from suitable areas in \code{model_output}. Lower values will produce
-#' polygons more similar to the original geometry. Default = 0. If simplify is
+#' polygons more similar to the original geometry. Default = 0. If simplifying is
 #' needed, try numbers 0-1 first. Ignored if \code{simplify} = \code{FALSE}.
 #' @param polygons (optional) a SpatialPolygons* object to clip polygons and
 #' adjust extent of occurrence to these limits. Projection must be WGS84
@@ -68,7 +69,7 @@
 #' All resulting Spatial objects in the list of results will be projected to the
 #' \code{final_projection}. Areas are calculated in square kilometers using the
 #' Lambert Azimuthal Equal Area projection, centered on the centroid of occurence
-#' points given as imputs or the resulting range.
+#' points given as imputs or, if points are not provided, the resulting range.
 #'
 #' @usage
 #' rangemap_enm(model_output, occurrences = NULL, threshold_value = NULL,
@@ -110,6 +111,14 @@ rangemap_enm <- function(model_output, occurrences = NULL, threshold_value = NUL
   if (is.null(model_output)) {
     stop("'model_output' is necessary to perform the analysis.")
   }
+  if (save_shp == TRUE) {
+    if (missing(name)) {
+      stop("Argument 'name' must be defined if 'save_shp' = TRUE.")
+    }
+    if (file.exists(paste0(name, ".shp")) & overwrite == FALSE) {
+      stop("Files already exist, use 'overwrite' = TRUE.")
+    }
+  }
 
   if (!is.null(threshold_value) | !is.null(threshold_omission) |
       !is.null(occurrences)) {
@@ -135,8 +144,7 @@ rangemap_enm <- function(model_output, occurrences = NULL, threshold_value = NUL
   }
 
   # keeping only areas of presence
-  presence <- binary
-  presence[presence[] == 0] <- NA
+  binary[binary[] == 0] <- NA
 
   # erase duplicate records
   if (!is.null(occurrences)) {
@@ -147,10 +155,10 @@ rangemap_enm <- function(model_output, occurrences = NULL, threshold_value = NUL
   # convert raster to polygons
   WGS84 <- sp::CRS("+init=epsg:4326")
   if (is.na(model_output@crs)) {
-    raster::crs(presence) <- WGS84@projargs
+    raster::crs(binary) <- WGS84@projargs
   }
 
-  enm_range <- as(presence, "SpatialPolygonsDataFrame")
+  enm_range <- as(binary, "SpatialPolygonsDataFrame")
   enm_range <- rgeos::gUnaryUnion(enm_range, enm_range$layer)
   enm_range <- sp::SpatialPolygonsDataFrame(enm_range, data = data.frame(ID = 1))
 
@@ -168,7 +176,7 @@ rangemap_enm <- function(model_output, occurrences = NULL, threshold_value = NUL
   }
 
   # project area and occurrences using the area centriod as reference
-  LAEA <- LAEA_projection(spatial_onject = enm_range)
+  LAEA <- LAEA_projection(spatial_object = enm_range)
 
   if (!is.null(occurrences)) {
     occ_sp <- sp::SpatialPointsDataFrame(coords = occ[, 2:3], data = occ,

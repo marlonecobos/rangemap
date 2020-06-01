@@ -47,7 +47,7 @@ species range, and Spatial objects of (2) unique occurrences, (3) species range,
 rangemap_buffer generates a distributional range for a given
 species by buffering provided occurrences using a defined distance. An approach
 to the species extent of occurrence (using convex hulls) and the area of
-occupancy according to the IUCN criteria are also generated. Shapefiles can
+occupancy according to the IUCN criteria is also generated. Shapefiles can
 be saved in the working directory if it is needed.
 }
 \details{

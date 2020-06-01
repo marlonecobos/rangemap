@@ -4,11 +4,14 @@
 \alias{simple_wmap}
 \title{Get a simplified SpatialPolygonsDataFrame of the world}
 \usage{
-simple_wmap(which = "simplest")
+simple_wmap(which = "simplest", regions = ".")
 }
 \arguments{
 \item{which}{(charatcer) name of type of SpatialPolygons to be obtained. Options
 are: "simple" and "simplest"; default = "simplest".}
+
+\item{regions}{(character) name of the country (or region if \code{which} =
+"simple") for which to obtain the SpatialPolygonsDataFrame.}
 }
 \value{
 A simplified SpatialPolygonsDataFrame of the world in WGS84 projection.
