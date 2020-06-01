@@ -77,7 +77,7 @@ setMethod("summary", signature(object = "sp_range_iucnextra"),
             cat("\n                  Summary of sp_range_iucnextra object\n")
             cat("---------------------------------------------------------------------------\n\n")
             print(object@Summary, row.names = F)
-            nameess <- slotNames(object)[c(5, 1:3)]
+            nameess <- slotNames(object)[c(6, 2:4, 1)]
             l <- lapply(1:length(nameess), function(x) {
               slot(object, nameess[x])
             })

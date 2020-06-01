@@ -4,113 +4,93 @@
 \alias{rangemap_tsa}
 \title{Species distributional ranges based on trend surface analyses}
 \usage{
-rangemap_tsa(occurrences, region_of_interest, resolution = 5, threshold = 0,
-    simplify_level = 0, save_shp = FALSE, save_tsmodel = FALSE,
-    name = "range_tsa", overwrite = FALSE)
+rangemap_tsa(occurrences, region_of_interest, cell_size = 5, threshold = 0,
+             simplify_level = 0, save_shp = FALSE, save_ts_layer = FALSE,
+             name, overwrite = FALSE)
 }
 \arguments{
-\item{occurrences}{a data.frame containing geographic coordinates of species occurrences,
-columns must be: Species, Longitude, and Latitude. Geographic coordinates must be in
-decimal degrees.}
+\item{occurrences}{a data.frame containing geographic coordinates of species
+occurrences, columns must be: Species, Longitude, and Latitude. Geographic
+coordinates must be in decimal degrees  (WGS84).}
 
-\item{region_of_interest}{a SpatialPolygon object on which the trend surface analysis
-will be performed. For instance, a country, an ecoregion, or a biogeogeographical region.
-Projection must be Geographic (longitude, latitude).}
+\item{region_of_interest}{a SpatialPolygonsDataFrame object on which the trend
+surface analysis will be performed. For instance, a country, an ecoregion, or
+a biogeographical region. Projection must be WGS84 (EPSG:4326).}
 
-\item{resolution}{(numeric) resolution in kilometers in which the resultant surface will
-be created, default = 5. Rsolution will depend on the size of the area in wich the species
-is distributed and values lower than 1 are only recomended when the species is narrowly
-distributed.}
+\item{cell_size}{(numeric) vector of length 1 or 2, defining the size of cells
+(km) at which the resultant trend surface will be created; default = 5.
+\code(cell_size) will depend on the extent of \code{region_of_interest}.
+Values lower than 1 are only recomended when the species is locally distributed.}
 
-\item{threshold}{(numeric) percentage of occurrence records to be excluded when deciding
-the minimum trend surface value to be considered as part of the species range. Default = 0.}
+\item{threshold}{(numeric) percentage of occurrence records to be excluded
+when deciding the minimum value trend surface output to be considered as part
+of the species range. Default = 0.}
 
-\item{simplify_level}{(numeric) tolerance at the moment of simplifying polygons created
-with the trend surface model. Lower values will produce polygons more similar to the original
-geometry. Default = 0. If simplify is needed, try numbers between 0 and 1 first.}
+\item{simplify}{(logical) if \code{TRUE}, polygons of suitable areas will be
+simplified at a tolerance defined in \code{simplify_level}. Default =
+\code{FALSE}.}
 
-\item{final_projection}{(character) string of projection arguments for resulting Spatial objects.
-Arguments must be as in the PROJ.4 documentation. See \code{\link[sp]{CRS-class}} for details.
-Default = "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0" = WGS84.}
+\item{simplify_level}{(numeric) tolerance at the moment of simplifying polygons
+created using the trend surface model. Lower values will produce polygons more
+similar to the original geometry. Default = 0. If simplifying is needed, try
+numbers between 0 and 1 first.}
 
-\item{save_shp}{(logical) if TRUE, shapefiles of the species range, occurrences, extent of
-occurrence and area of occupancy will be written in the working directory. Default = FALSE.}
+\item{final_projection}{(character) string of projection arguments for resulting
+Spatial objects. Arguments must be as in the PROJ.4 documentation. See
+\code{\link[sp]{CRS-class}} for details. If \code{NULL}, the default, projection
+used is WGS84 (EPSG:4326).}
 
-\item{save_tsmodel}{(logical) if TRUE, the species tsa model will be included as part of the
-object (list) returned, and if other shapefiles are also saved, \code{save_shp} = TRUE, the
-tsa model will be written in GeoTif format in the working directory. Default = FALSE.}
+\item{save_shp}{(logical) if \code{TRUE}, shapefiles of the species range,
+occurrences, extent of occurrence, and area of occupancy will be written in
+the working directory. Default = \code{FALSE}.}
 
-\item{name}{(character) valid if \code{save_shp} = TRUE. The name of the geographic files
-to be exported. A suffix will be added to \code{name} depending on the object as follows:
-species extent of occurrence = "_extent_occ", area of occupancy = "_area_occ", occurrences
-= "_unique_records", and, if \code{save_tsmodel} = TRUE, trend surface model "_tsa".
-Default = "range_tsa".}
+\item{save_ts_layer}{(logical) if \code{TRUE}, the tsa model will be included
+as part of the object returned. If \code{save_shp} = TRUE, the tsa model will
+be written in GeoTiff format. Default = \code{FALSE}}
+
+\item{name}{(character) valid if \code{save_shp} = TRUE. The name of the
+geographic files to be exported. A suffix will be added to \code{name}
+depending on the object as follows: species extent of occurrence = "_extent_occ",
+area of occupancy = "_area_occ", occurrences = "_unique_records", and,
+if \code{save_ts_layer} = \code{TRUE}, trend surface layer "_tsa".}
+
+\item{overwrite}{(logical) wether or not to overwrite previous results with
+the same name. Default = \code{FALSE}.}
 }
 \value{
-A named list containing: (1) a data.frame with information about the species range,
-and SpatialPolygon objects of (2) unique occurrences, (3) species range, (4) extent of
-occurrence, and (5) area of occurpancy. If \code{save_tsmodel} = TRUE, the (6) tsa model
-will be included as well. All Spatial objects will be in Azimuthal equal area projection.
+A sp_range object (S4) containing: (1) a data.frame with information about
+the species range, and SpatialPolygon objects of (2) unique occurrences,
+(3) species range, (4) extent of occurrence, and (5) area of occurpancy.
+If \code{save_ts_layer} = TRUE, a (6) tsa layer will be included as well.
 }
 \description{
 rangemap_tsa generates a distributional range for a given species
 using a trend surface analysis. An approach to the species extent of occurrence
 (using convex hulls) and the area of occupancy according to the IUCN criteria
-are also generated. Shapefiles can be saved in the working directory if it is needed.
+is also generated. Shapefiles can be saved in the working directory if it is
+needed.
 }
 \details{
+All resulting Spatial objects in the results will be projected to the
+\code{final_projection}. Areas are calculated in square kilometers using the
+Lambert Azimuthal Equal Area projection, centered on the centroid of occurence
+points given as imputs.
+
 Trend surface analysis is a method based on low-order polynomials of spatial
-coordinates for estimating a regular grid of points from scattered observations. This
-method assumes that all cells not occupied by occurrences are absences; hence its use
-depends on the quality of data and the certainty of having or not a complete sampling
-of the \code{regiong_of_interest}.
+coordinates for estimating a regular grid of points from scattered observations.
+This method assumes that all cells not occupied by occurrences are absences;
+hence its use depends on the quality of data and the certainty of having or
+not a complete sampling of the \code{regiong_of_interest}.
 }
 \examples{
-suppressWarnings({if(!require(spocc)){
-  install.packages("spocc")
-  library(spocc)
-}
- if(!require(maps)){
-  install.packages("maps")
-  library(maps)
-}
-if(!require(maptools)){
- install.packages("maptools")
- library(maptools)
-}})
+# data
+data("occ_f", package = "rangemap")
 
+CU <- simple_wmap("simple", regions = "Cuba")
 
-# getting the data from GBIF
-occs <- occ(query = "Peltophryne taladai", from = "gbif",
-            limit = 1000)$gbif$data[[1]]
+# running
+tsa_range <- rangemap_tsa(occurrences = occ_f, region_of_interest = CU,
+                          cell_size = 5)
 
-# keeping only georeferenced records
-occ_g <- occs[!is.na(occs$latitude) & !is.na(occs$longitude),
-              c("name", "longitude", "latitude")]
-
-# region of interest
-WGS84 <- CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
-w_map <- map(database = "world", regions = "Cuba", fill = TRUE, plot = FALSE) # map of the world
-w_po <- sapply(strsplit(w_map$names, ":"), function(x) x[1]) # preparing data to create polygon
-reg <- map2SpatialPolygons(w_map, IDs = w_po, proj4string = WGS84) # map to polygon
-
-# other data
-res <- 5
-thr <- 0
-save <- TRUE
-name <- "test"
-
-tsa <- rangemap_tsa(occurrences = occ_g, region_of_interest = reg,
-                    threshold = thr, resolution = res, save_shp = save,
-                    name = name, overwrite = TRUE)
-
-# see the species range in a figure
-extent <- TRUE
-occ <- TRUE
-legend <- TRUE
-north <- TRUE
-
-# creating the species range figure
-rangemap_fig(tsa, add_extent = extent, add_occurrences = occ,
-             legend = legend, northarrow = north, legend_position = "bottomleft")
+summary(tsa_range)
 }

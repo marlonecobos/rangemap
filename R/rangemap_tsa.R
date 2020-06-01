@@ -3,52 +3,69 @@
 #' @description rangemap_tsa generates a distributional range for a given species
 #' using a trend surface analysis. An approach to the species extent of occurrence
 #' (using convex hulls) and the area of occupancy according to the IUCN criteria
-#' are also generated. Shapefiles can be saved in the working directory if it is needed.
+#' is also generated. Shapefiles can be saved in the working directory if it is
+#' needed.
 #'
-#' @param occurrences a data.frame containing geographic coordinates of species occurrences,
-#' columns must be: Species, Longitude, and Latitude. Geographic coordinates must be in
-#' decimal degrees.
-#' @param region_of_interest a SpatialPolygon object on which the trend surface analysis
-#' will be performed. For instance, a country, an ecoregion, or a biogeogeographical region.
-#' Projection must be Geographic (longitude, latitude).
-#' @param resolution (numeric) resolution in kilometers in which the resultant surface will
-#' be created, default = 5. Rsolution will depend on the size of the area in wich the species
-#' is distributed and values lower than 1 are only recomended when the species is narrowly
-#' distributed.
-#' @param threshold (numeric) percentage of occurrence records to be excluded when deciding
-#' the minimum trend surface value to be considered as part of the species range. Default = 0.
-#' @param simplify_level (numeric) tolerance at the moment of simplifying polygons created
-#' with the trend surface model. Lower values will produce polygons more similar to the original
-#' geometry. Default = 0. If simplify is needed, try numbers between 0 and 1 first.
-#' @param final_projection (character) string of projection arguments for resulting Spatial objects.
-#' Arguments must be as in the PROJ.4 documentation. See \code{\link[sp]{CRS-class}} for details.
-#' Default = "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0" = WGS84.
-#' @param save_shp (logical) if TRUE, shapefiles of the species range, occurrences, extent of
-#' occurrence and area of occupancy will be written in the working directory. Default = FALSE.
-#' @param save_tsmodel (logical) if TRUE, the species tsa model will be included as part of the
-#' object (list) returned, and if other shapefiles are also saved, \code{save_shp} = TRUE, the
-#' tsa model will be written in GeoTif format in the working directory. Default = FALSE.
-#' @param name (character) valid if \code{save_shp} = TRUE. The name of the geographic files
-#' to be exported. A suffix will be added to \code{name} depending on the object as follows:
-#' species extent of occurrence = "_extent_occ", area of occupancy = "_area_occ", occurrences
-#' = "_unique_records", and, if \code{save_tsmodel} = TRUE, trend surface model "_tsa".
-#' Default = "range_tsa".
+#' @param occurrences a data.frame containing geographic coordinates of species
+#' occurrences, columns must be: Species, Longitude, and Latitude. Geographic
+#' coordinates must be in decimal degrees  (WGS84).
+#' @param region_of_interest a SpatialPolygonsDataFrame object on which the trend
+#' surface analysis will be performed. For instance, a country, an ecoregion, or
+#' a biogeographical region. Projection must be WGS84 (EPSG:4326).
+#' @param cell_size (numeric) vector of length 1 or 2, defining the size of cells
+#' (km) at which the resultant trend surface will be created; default = 5.
+#' \code(cell_size) will depend on the extent of \code{region_of_interest}.
+#' Values lower than 1 are only recomended when the species is locally distributed.
+#' @param threshold (numeric) percentage of occurrence records to be excluded
+#' when deciding the minimum value trend surface output to be considered as part
+#' of the species range. Default = 0.
+#' @param simplify (logical) if \code{TRUE}, polygons of suitable areas will be
+#' simplified at a tolerance defined in \code{simplify_level}. Default =
+#' \code{FALSE}.
+#' @param simplify_level (numeric) tolerance at the moment of simplifying polygons
+#' created using the trend surface model. Lower values will produce polygons more
+#' similar to the original geometry. Default = 0. If simplifying is needed, try
+#' numbers between 0 and 1 first.
+#' @param final_projection (character) string of projection arguments for resulting
+#' Spatial objects. Arguments must be as in the PROJ.4 documentation. See
+#' \code{\link[sp]{CRS-class}} for details. If \code{NULL}, the default, projection
+#' used is WGS84 (EPSG:4326).
+#' @param save_shp (logical) if \code{TRUE}, shapefiles of the species range,
+#' occurrences, extent of occurrence, and area of occupancy will be written in
+#' the working directory. Default = \code{FALSE}.
+#' @param save_ts_layer (logical) if \code{TRUE}, the tsa model will be included
+#' as part of the object returned. If \code{save_shp} = TRUE, the tsa model will
+#' be written in GeoTiff format. Default = \code{FALSE}
+#' @param name (character) valid if \code{save_shp} = TRUE. The name of the
+#' geographic files to be exported. A suffix will be added to \code{name}
+#' depending on the object as follows: species extent of occurrence = "_extent_occ",
+#' area of occupancy = "_area_occ", occurrences = "_unique_records", and,
+#' if \code{save_ts_layer} = \code{TRUE}, trend surface layer "_tsa".
+#' @param overwrite (logical) wether or not to overwrite previous results with
+#' the same name. Default = \code{FALSE}.
 #'
-#' @return A named list containing: (1) a data.frame with information about the species range,
-#' and SpatialPolygon objects of (2) unique occurrences, (3) species range, (4) extent of
-#' occurrence, and (5) area of occurpancy. If \code{save_tsmodel} = TRUE, the (6) tsa model
-#' will be included as well. All Spatial objects will be in Azimuthal equal area projection.
+#' @return
+#' A sp_range object (S4) containing: (1) a data.frame with information about
+#' the species range, and SpatialPolygon objects of (2) unique occurrences,
+#' (3) species range, (4) extent of occurrence, and (5) area of occurpancy.
+#' If \code{save_ts_layer} = TRUE, a (6) tsa layer will be included as well.
 #'
-#' @details Trend surface analysis is a method based on low-order polynomials of spatial
-#' coordinates for estimating a regular grid of points from scattered observations. This
-#' method assumes that all cells not occupied by occurrences are absences; hence its use
-#' depends on the quality of data and the certainty of having or not a complete sampling
-#' of the \code{regiong_of_interest}.
+#' @details
+#' All resulting Spatial objects in the results will be projected to the
+#' \code{final_projection}. Areas are calculated in square kilometers using the
+#' Lambert Azimuthal Equal Area projection, centered on the centroid of occurence
+#' points given as imputs.
+#'
+#' Trend surface analysis is a method based on low-order polynomials of spatial
+#' coordinates for estimating a regular grid of points from scattered observations.
+#' This method assumes that all cells not occupied by occurrences are absences;
+#' hence its use depends on the quality of data and the certainty of having or
+#' not a complete sampling of the \code{regiong_of_interest}.
 #'
 #' @usage
-#' rangemap_tsa(occurrences, region_of_interest, resolution = 5, threshold = 0,
-#'     simplify_level = 0, save_shp = FALSE, save_tsmodel = FALSE,
-#'     name = "range_tsa", overwrite = FALSE)
+#' rangemap_tsa(occurrences, region_of_interest, cell_size = 5, threshold = 0,
+#'              simplify_level = 0, save_shp = FALSE, save_ts_layer = FALSE,
+#'              name, overwrite = FALSE)
 #'
 #' @export
 #'
@@ -61,69 +78,42 @@
 #' @importFrom spatial surf.ls predict.trls
 #'
 #' @examples
-#' suppressWarnings({if(!require(spocc)){
-#'   install.packages("spocc")
-#'   library(spocc)
-#' }
-#'  if(!require(maps)){
-#'   install.packages("maps")
-#'   library(maps)
-#' }
-#' if(!require(maptools)){
-#'  install.packages("maptools")
-#'  library(maptools)
-#' }})
+#' # data
+#' data("occ_f", package = "rangemap")
 #'
+#' CU <- simple_wmap("simple", regions = "Cuba")
 #'
-#' # getting the data from GBIF
-#' occs <- occ(query = "Peltophryne taladai", from = "gbif",
-#'             limit = 1000)$gbif$data[[1]]
+#' # running
+#' tsa_range <- rangemap_tsa(occurrences = occ_f, region_of_interest = CU,
+#'                           cell_size = 5)
 #'
-#' # keeping only georeferenced records
-#' occ_g <- occs[!is.na(occs$latitude) & !is.na(occs$longitude),
-#'               c("name", "longitude", "latitude")]
-#'
-#' # region of interest
-#' WGS84 <- CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
-#' w_map <- map(database = "world", regions = "Cuba", fill = TRUE, plot = FALSE) # map of the world
-#' w_po <- sapply(strsplit(w_map$names, ":"), function(x) x[1]) # preparing data to create polygon
-#' reg <- map2SpatialPolygons(w_map, IDs = w_po, proj4string = WGS84) # map to polygon
-#'
-#' # other data
-#' res <- 5
-#' thr <- 0
-#' save <- TRUE
-#' name <- "test"
-#'
-#' tsa <- rangemap_tsa(occurrences = occ_g, region_of_interest = reg,
-#'                     threshold = thr, resolution = res, save_shp = save,
-#'                     name = name, overwrite = TRUE)
-#'
-#' # see the species range in a figure
-#' extent <- TRUE
-#' occ <- TRUE
-#' legend <- TRUE
-#' north <- TRUE
-#'
-#' # creating the species range figure
-#' rangemap_fig(tsa, add_extent = extent, add_occurrences = occ,
-#'              legend = legend, northarrow = north, legend_position = "bottomleft")
+#' summary(tsa_range)
 
-rangemap_tsa <- function(occurrences, region_of_interest, resolution = 5, threshold = 0,
-                         simplify_level = 0, final_projection, save_shp = FALSE,
-                         save_tsmodel = FALSE, name = "range_tsa", overwrite = FALSE) {
+rangemap_tsa <- function(occurrences, region_of_interest, cell_size = 5,
+                         threshold = 0, simplify = FALSE, simplify_level = 0,
+                         final_projection = NULL, save_shp = FALSE,
+                         save_ts_layer = FALSE, name, overwrite = FALSE) {
+
   # testing potential issues
   if (missing(occurrences)) {
-    stop("Argument occurrences is necessary to perform the analysis")
+    stop("Argument 'occurrences' is necessary to perform the analysis")
   }
   if (dim(occurrences)[2] != 3) {
-    stop("occurrences data.frame must have the following columns: \nSpecies, Longitude, and Latitude")
+    stop("'occurrences' must have the following columns: \nSpecies, Longitude, Latitude")
   }
   if (missing(region_of_interest)) {
-    stop("Argument region_of_interest is necessary to perform the analysis")
+    stop("Argument 'region_of_interest' is necessary to perform the analysis")
   }
   if (threshold > 0) {
-    warning("Since threshold > 0, some occurrences may be excluded form the species range.")
+    warning("As 'threshold' > 0, some occurrences may be excluded from the species range.")
+  }
+  if (save_shp == TRUE) {
+    if (missing(name)) {
+      stop("Argument 'name' must be defined if 'save_shp' = TRUE.")
+    }
+    if (file.exists(paste0(name, ".shp")) & overwrite == FALSE) {
+      stop("Files already exist, use 'overwrite' = TRUE.")
+    }
   }
 
   # erase duplicate records
@@ -131,152 +121,126 @@ rangemap_tsa <- function(occurrences, region_of_interest, resolution = 5, thresh
   colnames(occ) <- c("Species", "Longitude", "Latitude")
 
   # making spatial points
-  WGS84 <- sp::CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
+  WGS84 <- sp::CRS("+init=epsg:4326")
   occ_sp <- sp::SpatialPointsDataFrame(coords = occ[, 2:3], data = occ,
                                        proj4string = WGS84)
 
-  # region of interest
-  region <- region_of_interest
-
   # keeping only records in land
-  occ_sp <- occ_sp[!is.na(sp::over(occ_sp, region)), ]
+  occ_sp <- occ_sp[region_of_interest, ]
 
   # project the points using their centriods as reference
-  centroid <- rgeos::gCentroid(occ_sp, byid = FALSE)
-
-  AEQD <- sp::CRS(paste("+proj=aeqd +lat_0=", centroid@coords[2], " +lon_0=", centroid@coords[1],
-                        " +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs", sep = ""))
-
-  occ_pr <- sp::spTransform(occ_sp, AEQD)
+  LAEA <- LAEA_projection(spatial_object = occ_sp)
+  occ_pr <- sp::spTransform(occ_sp, LAEA)
 
   # region of interest projected
-  region <- sp::spTransform(region, AEQD)
+  region_of_interest <- sp::spTransform(region_of_interest, LAEA)
 
   # preparing variables
   ## creating a grid
-  grid <- raster::raster(raster::extent(region))
+  grid <- raster::raster(raster::extent(region_of_interest))
 
   ## grid resolution and values
-  raster::res(grid) <- resolution * 1000
+  raster::res(grid) <- cell_size * 1000
   raster::values(grid) <- 0
 
   ## grid projection
-  sp::proj4string(grid) <- sp::proj4string(region)
+  sp::proj4string(grid) <- sp::proj4string(region_of_interest)
 
   ## extract grid with region
-  grid_reg <- raster::mask(grid, region)
+  grid_reg <- raster::mask(grid, region_of_interest)
 
   ## grid for region of interest
   grid_r_pol <- raster::rasterToPolygons(grid_reg)
 
   ## points for region of interest
-  matrix_a <- raster::rasterToPoints(grid_reg)
+  matrix_pa <- raster::rasterToPoints(grid_reg)
 
   ## selecting grids with occurrences
-  grid_pres <- grid_r_pol[!is.na(sp::over(grid_r_pol, as(occ_pr, "SpatialPoints"))), ]
+  grid_r_pol <- grid_r_pol[occ_pr, ]
 
   ## grid to points
-  ras_grid <- raster::rasterize(grid_pres, grid_reg, "layer")
-  point_pres <- raster::rasterToPoints(ras_grid)[, 1:2]
+  ras_grid <- raster::rasterize(grid_r_pol, grid_reg, "layer")
+  ras_grid <- raster::rasterToPoints(ras_grid)[, 1:2]
 
   ## asigning 1 to cells occupied by occurrenes
-  matrix_pa <- matrix_a
-  matrix_pa[, 3] <- ifelse(paste(matrix_pa[, 1], matrix_pa[, 2], sep = "_") %in%
-                             paste(point_pres[, 1], point_pres[, 2], sep = "_"),  1, 0)
+  matrix_pa[, 3] <- ifelse(paste(matrix_pa[, 1], matrix_pa[, 2]) %in%
+                             paste(ras_grid[, 1], ras_grid[, 2]), 1, 0)
 
   ## data for models
-  if (dim(matrix_pa)[1] > 10000 + dim(point_pres)[1]) {
-    ma_p <- matrix_pa[matrix_pa[, 3] == 0, ]
-    ma_p <- ma_p[sample(nrow(ma_p), 10000), ]
-    ma_a <- matrix_pa[matrix_pa[, 3] == 1, ]
+  condition <- nrow(matrix_pa) > (10000 + nrow(ras_grid))
+  if (condition) {
+    all_matrix <- matrix_pa[, 1:2]
 
-    matrix_spa <- rbind(ma_p, ma_a)
-  }else {
-    matrix_spa <- matrix_pa
+    ma_a <- matrix_pa[matrix_pa[, 3] == 1, ]
+    matrix_pa <- matrix_pa[matrix_pa[, 3] == 0, ]
+    matrix_pa <- matrix_pa[sample(nrow(matrix_pa), 10000), ]
+
+    matrix_pa <- rbind(matrix_pa, ma_a)
   }
 
-  ## variables
-  longitude <- matrix_spa[, 1]
-  latitude <- matrix_spa[, 2]
-  pres_abs <- matrix_spa[, 3]
-
-  project_matrix1 <- data.frame(matrix_pa[, 1:2], matrix_pa[, 1:2])
-  names(project_matrix1) <- c("x", "y", "longitude", "latitude")
-  sp::coordinates(project_matrix1) <- ~ x + y
-  rast_r <- raster::raster(ncol = dim(grid_reg)[2],
-                           nrow = dim(grid_reg)[1])
-  raster::extent(rast_r) <- raster::extent(grid_reg)
-  sp::proj4string(rast_r) <- sp::proj4string(region)
+  ## preparing layer
+  #names(all_matrix) <- c("x", "y", "longitude", "latitude")
+  #sp::coordinates(all_matrix) <- ~ x + y
+  #rast_r <- raster::raster(ncol = ncol(grid_reg), nrow = nrow(grid_reg))
+  #raster::extent(rast_r) <- raster::extent(grid_reg)
+  #sp::proj4string(rast_r) <- sp::proj4string(region_of_interest)
 
   # tsa
   ## tsa model
-  tsa <- spatial::surf.ls(np = 3, x = longitude, y = latitude, z = pres_abs)
+  tsa <- spatial::surf.ls(np = 3, x = matrix_pa[, 1], y = matrix_pa[, 2],
+                          z = matrix_pa[, 3])
 
   # tsa prediction to region of insterest
-  tsa_reg <- spatial::predict.trls(tsa, project_matrix1$longitude, project_matrix1$latitude) # try with raster stack x, y, ...
-
-  tsa_model <- raster::rasterize(project_matrix1, rast_r, tsa_reg)
+  if (condition) {
+    tsa_reg <- spatial::predict.trls(tsa, all_matrix[, 1], all_matrix[, 2])
+    tsa_model <- raster::rasterize(all_matrix, grid_reg, tsa_reg)
+  } else {
+    tsa_reg <- spatial::predict.trls(tsa, matrix_pa[, 1], matrix_pa[, 2])
+    tsa_model <- raster::rasterize(matrix_pa[, 1:2], grid_reg, tsa_reg)
+  }
 
   # tsa thresholded
   tsa_t <- tsa_model
   occ_val <- na.omit(raster::extract(tsa_t, occ_pr@coords))
-  val <- ceiling(length(occ[, 1]) * threshold / 100) + 1
+  val <- ceiling(nrow(occ) * threshold / 100) + 1
   thres <- sort(occ_val)[val]
 
-  raster::values(tsa_t)[raster::values(tsa_t) < thres] <- 0
-  raster::values(tsa_t)[raster::values(tsa_t) >= thres] <- 1
+  tsa_t <- tsa_t >= thres
 
   # only presence
-  raster::values(tsa_t)[raster::values(tsa_t) == 0] <- NA
+  tsa_t[tsa_t[] == 0] <- NA
 
   # tsa to spatial polygon
-  tsa_pol <- raster::rasterToPolygons(tsa_t)
-  tsa_pol@data$union_field <- rep("Union", length(tsa_pol@data[, 1])) # new field for union
-  tsa_pol <- rgeos::gUnaryUnion(tsa_pol, id = tsa_pol@data$union_field) # now dissolve
+  tsa_t <- raster::rasterToPolygons(tsa_t)
+  tsa_t <- rgeos::gUnaryUnion(tsa_t, tsa_t$layer)
+  tsa_t <- raster::disaggregate(tsa_t)
 
-  tsa_pol <- suppressWarnings(rgeos::gSimplify(tsa_pol, tol = simplify_level)) # simplify polygons
+  if (simplify == TRUE) {
+    tsa_t <- suppressWarnings(rgeos::gSimplify(tsa_t, tol = simplify_level))
+  }
 
   # calculate areas in km2
-  area <- raster::area(tsa_pol) / 1000000
+  area <- raster::area(tsa_t) / 1000000
   areakm2 <- sum(area) # total area of the species range
-
-  ## extent of occurrence
-  coord <- as.data.frame(occ[, 2:3]) # spatial point dataframe to data frame keeping only coordinates
-  covexhull <- chull(coord) # convex hull from points
-  coord_pol <- coord[c(covexhull, covexhull[1]),] # defining coordinates
-  covexhull_polygon <- sp::SpatialPolygons(list(sp::Polygons(list(sp::Polygon(coord_pol)), ID = 1))) # into SpatialPolygons
-  sp::proj4string(covexhull_polygon) <- WGS84 # project
-  covexhull_polygon_pr <- sp::spTransform(covexhull_polygon, AEQD) # reproject
-  c_hull_extent <- rgeos::gIntersection(region, covexhull_polygon_pr, byid = TRUE, drop_lower_td = TRUE) # area of interest
-
-  eockm2 <- raster::area(c_hull_extent) / 1000000
-  eocckm2 <- sum(eockm2) # total area of the species range
-
-  ## area of occupancy
-  grid <- raster::raster(ext = raster::extent(occ_pr) + 10000, res = c(2000, 2000), crs = AEQD)
-  raster_sp <- raster::rasterize(occ_pr[, 2:3], grid)[[1]] # raster from points
-  grid_sp <- as(raster_sp, "SpatialPolygonsDataFrame") # raster to polygon
-
-  aockm2 <- raster::area(grid_sp) / 1000000
-  aocckm2 <- sum(aockm2) # area calculation
 
   # adding characteristics to spatial polygons
   species <- as.character(occurrences[1, 1])
-  clip_area <- sp::SpatialPolygonsDataFrame(tsa_pol, data = data.frame(species, areakm2, # species range
-                                                                       eocckm2, aocckm2),
+  clip_area <- sp::SpatialPolygonsDataFrame(tsa_t,
+                                            data = data.frame(species, area),
                                             match.ID = FALSE)
 
-  extent_occurrence <- sp::SpatialPolygonsDataFrame(c_hull_extent, # extent of occurrence
-                                                    data = data.frame(species,
-                                                                      eockm2),
-                                                    match.ID = FALSE)
+  # extent of occurrence
+  eooc <- eoo(occ_sp@data, region_of_interest)
+  eocckm2 <- eooc$area
+  extent_occurrence <- eooc$spolydf
 
-  area_occupancy <- sp::SpatialPolygonsDataFrame(grid_sp, data = data.frame(species, # area of occupancy
-                                                                            aockm2),
-                                                 match.ID = FALSE)
+  # area of occupancy
+  aooc <- aoo(occ_pr, species)
+  aocckm2 <- aooc$area
+  area_occupancy <- aooc$spolydf
 
   # reprojection
-  if (missing(final_projection)) {
+  if (is.null(final_projection)) {
     final_projection <- WGS84
   } else {
     final_projection <- sp::CRS(final_projection) # character to projection
@@ -289,30 +253,39 @@ rangemap_tsa <- function(occurrences, region_of_interest, resolution = 5, thresh
 
   # exporting
   if (save_shp == TRUE) {
-    cat("Writing shapefiles in the working directory.")
-    rgdal::writeOGR(clip_area, ".", name, driver = "ESRI Shapefile", overwrite_layer = overwrite)
-    rgdal::writeOGR(extent_occurrence, ".", paste(name, "extent_occ", sep = "_"), driver = "ESRI Shapefile", overwrite_layer = overwrite)
-    rgdal::writeOGR(area_occupancy, ".", paste(name, "area_occ", sep = "_"), driver = "ESRI Shapefile", overwrite_layer = overwrite)
-    rgdal::writeOGR(occ_pr, ".", paste(name, "unique_records", sep = "_"), driver = "ESRI Shapefile", overwrite_layer = overwrite)
+    message("Writing shapefiles in the working directory.")
+    rgdal::writeOGR(clip_area, ".", name, driver = "ESRI Shapefile",
+                    overwrite_layer = overwrite)
+    rgdal::writeOGR(extent_occurrence, ".", paste(name, "extent_occ", sep = "_"),
+                    driver = "ESRI Shapefile", overwrite_layer = overwrite)
+    rgdal::writeOGR(area_occupancy, ".", paste(name, "area_occ", sep = "_"),
+                    driver = "ESRI Shapefile", overwrite_layer = overwrite)
+    rgdal::writeOGR(occ_pr, ".", paste(name, "unique_records", sep = "_"),
+                    driver = "ESRI Shapefile", overwrite_layer = overwrite)
+
+    if (save_ts_layer == TRUE) {
+      message("Writing trend surface layer in the working directory.")
+      raster::writeRaster(tsa_model, paste0(name, "_ts_layer.tif"),
+                          format = "GTiff", overwrite = overwrite)
+    }
   }
 
-  if (save_tsmodel == TRUE) {
-    cat("Writing trend surface model in the working directory.")
-    raster::writeRaster(tsa_model, paste(name, "_tsa.tif", sep = ""), format = "GTiff", overwrite = overwrite)
-  }
+  # return results
+  sp_dat <- data.frame(Species = species, Unique_records = dim(occ_pr)[1],
+                       Range_area = areakm2, Extent_of_occurrence = eocckm2,
+                       Area_of_occupancy = aocckm2)
 
-  # return results (list or a different object?)
-  sp_dat <- data.frame(occ[1, 1], dim(occ_pr)[1], areakm2, eocckm2, aocckm2) # extent of occ = total area?
-  colnames(sp_dat) <- c("Species", "Unique_records", "Range_area", "Extent_of_occurrence", "Area_of_occupancy")
-
-  if (save_tsmodel == TRUE) {
-    results <- list(sp_dat, occ_pr, clip_area, extent_occurrence, area_occupancy, tsa_model)
-    names(results) <- c("Summary", "Species_unique_records", "Species_range", "Extent_of_occurrence",
-                        "Area_of_occupancy", "Trend_surface_model")
+  if (save_ts_layer == TRUE) {
+    results <- sp_range_iucnextra(Summary = sp_dat, Species_unique_records = occ_pr,
+                                  Species_range = clip_area,
+                                  Extent_of_occurrence = extent_occurrence,
+                                  Area_of_occupancy = area_occupancy,
+                                  Trend_surface_model = tsa_model)
   }else {
-    results <- list(sp_dat, occ_pr, clip_area, extent_occurrence, area_occupancy)
-    names(results) <- c("Summary", "Species_unique_records", "Species_range", "Extent_of_occurrence",
-                        "Area_of_occupancy")
+    results <- sp_range_iucn(Summary = sp_dat, Species_unique_records = occ_pr,
+                             Species_range = clip_area,
+                             Extent_of_occurrence = extent_occurrence,
+                             Area_of_occupancy = area_occupancy)
   }
 
   return(results)
