@@ -164,10 +164,11 @@ rangemap_buffer <- function(occurrences, buffer_distance = 100000, polygons = NU
                        Range_area = areackm2, Extent_of_occurrence = eocckm2,
                        Area_of_occupancy = aocckm2)
 
-  results <- sp_range_iucn(Summary = sp_dat, Species_unique_records = occ_pr,
-                           Species_range = clip_area,
-                           Extent_of_occurrence = extent_occurrence,
-                           Area_of_occupancy = area_occupancy)
+  results <- sp_range_iucn(name = "Buffer", summary = sp_dat,
+                           species_unique_records = occ_pr,
+                           species_range = clip_area,
+                           extent_of_occurrence = extent_occurrence,
+                           area_of_occupancy = area_occupancy)
 
   return(results)
 }

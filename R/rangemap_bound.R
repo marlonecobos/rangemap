@@ -305,7 +305,8 @@ rangemap_boundaries <- function(occurrences = NULL, adm_areas = NULL,
     # return results
     sp_dat <- data.frame(Species = "Species", Range_area = areakm2)
 
-    results <- sp_range(Summary = sp_dat, Species_range = boundaries)
+    results <- sp_range(name = "Boundary", summary = sp_dat,
+                        species_range = boundaries)
 
   } else {
     # calculate areas in km2
@@ -358,10 +359,11 @@ rangemap_boundaries <- function(occurrences = NULL, adm_areas = NULL,
                          Range_area = areakm2, Extent_of_occurrence = eocckm2,
                          Area_of_occupancy = aocckm2)
 
-    results <- sp_range_iucn(Summary = sp_dat, Species_unique_records = occ_pr,
-                             Species_range = boundaries,
-                             Extent_of_occurrence = extent_occurrence,
-                             Area_of_occupancy = area_occupancy)
+    results <- sp_range_iucn(name = "Boundary", summary = sp_dat,
+                             species_unique_records = occ_pr,
+                             species_range = boundaries,
+                             extent_of_occurrence = extent_occurrence,
+                             area_of_occupancy = area_occupancy)
   }
 
   return(results)

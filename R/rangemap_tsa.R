@@ -269,16 +269,18 @@ rangemap_tsa <- function(occurrences, region_of_interest, cell_size = 5,
                        Area_of_occupancy = aocckm2)
 
   if (save_ts_layer == TRUE) {
-    results <- sp_range_iucnextra(Summary = sp_dat, Species_unique_records = occ_pr,
-                                  Species_range = clip_area,
-                                  Extent_of_occurrence = extent_occurrence,
-                                  Area_of_occupancy = area_occupancy,
-                                  Trend_surface_model = tsa_model)
+    results <- sp_range_iucnextra(name = "TSA", summary = sp_dat,
+                                  species_unique_records = occ_pr,
+                                  species_range = clip_area,
+                                  extent_of_occurrence = extent_occurrence,
+                                  area_of_occupancy = area_occupancy,
+                                  trend_surface_model = tsa_model)
   }else {
-    results <- sp_range_iucn(Summary = sp_dat, Species_unique_records = occ_pr,
-                             Species_range = clip_area,
-                             Extent_of_occurrence = extent_occurrence,
-                             Area_of_occupancy = area_occupancy)
+    results <- sp_range_iucn(name = "TSA", summary = sp_dat,
+                             species_unique_records = occ_pr,
+                             species_range = clip_area,
+                             extent_of_occurrence = extent_occurrence,
+                             area_of_occupancy = area_occupancy)
   }
 
   return(results)

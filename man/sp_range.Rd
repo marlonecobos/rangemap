@@ -17,17 +17,19 @@ sp_range, sp_range_iucn, and sp_range_iucnextra.
 \section{Slots}{
 
 \describe{
-\item{\code{Summary}}{a data.frame.}
+\item{\code{name}}{name depending on how species range was constructed.}
 
-\item{\code{Species_unique_records}}{("numeric"), not in sp_range.}
+\item{\code{summary}}{a data.frame.}
 
-\item{\code{Species_range}}{a SpatialPolygonsDataFrame.}
+\item{\code{species_unique_records}}{a SpatialPointsDataFrame, not in sp_range.}
 
-\item{\code{Extent_of_occurrence}}{a SpatialPolygonsDataFrame, not in sp_range.}
+\item{\code{species_range}}{a SpatialPolygonsDataFrame.}
 
-\item{\code{Area_of_occupancy}}{a SpatialPolygonsDataFrame, not in sp_range.}
+\item{\code{extent_of_occurrence}}{a SpatialPolygonsDataFrame, not in sp_range.}
 
-\item{\code{Trend_surface_model}}{a RasterLayer, not in sp_range.}
+\item{\code{area_of_occupancy}}{a SpatialPolygonsDataFrame, not in sp_range.}
+
+\item{\code{trend_surface_model}}{a RasterLayer, not in sp_range.}
 }}
 
 \examples{
