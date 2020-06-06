@@ -18,11 +18,11 @@
 country_codes
 }
 \description{
-A dataset containing codes for identifying countries according to ISO
-norms.
+A dataset containing codes for identifying countries according
+to ISO norms.
 }
 \examples{
-data(country_codes)
+data("country_codes", package = "rangemap")
 View(country_codes)
 }
 \keyword{datasets}

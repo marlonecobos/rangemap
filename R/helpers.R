@@ -1,6 +1,4 @@
-#' Helper function to test if lists are nested
-#' @param l list to be tested.
-#' @export
+# Helper function to test if lists are nested
 isnested <- function(l) {
   stopifnot(is.list(l))
   for (i in l) {
@@ -131,21 +129,20 @@ AED_projection <- function(occurrences = NULL, spatial_object = NULL) {
 #' map_gadm <- GADM_spoly(country_code = "EC", boundary_level = 1)
 
 GADM_spoly <- function(country_code, boundary_level, keep_data = FALSE) {
-  bounds <- list()
-  for (i in 1:length(country_code)){
-    bounds[[i]] <- raster::getData('GADM', country = country_code[i], level = boundary_level)
-  }
-  polygon <- do.call("rbind", bounds)
+  polygon <- lapply(country_code, function(x) {
+    raster::getData(name = "GADM", country = x, level = boundary_level)
+  })
+
+  polygon <- do.call(rbind, polygon)
   polygon@data$GID_0 <- 1:length(polygon@data$GID_0)
 
-  a_names <- ifelse(boundary_level == 0, "NAME_0",
-                    paste("NAME", boundary_level, sep = "_"))
+  a_names <- paste0("NAME", "_", boundary_level)
 
-  polygon@data[, !names(polygon@data) %in% c("GID_0", a_names)] <- NULL # erase columns
+  polygon@data[, !names(polygon@data) %in% c("GID_0", a_names)] <- NULL
   names(polygon@data) <- c("GID_0", "adm_names")
 
   if (keep_data == FALSE) {
-    erase_rds <- list.files(path = ".", pattern = "^GADM_", full.names = TRUE)
+    erase_rds <- list.files(path = ".", pattern = "^gadm", full.names = TRUE)
     unlink(erase_rds)
   }
   return(polygon)
