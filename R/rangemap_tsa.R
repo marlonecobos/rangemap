@@ -69,11 +69,11 @@
 #'
 #' @export
 #'
-#' @importFrom sp CRS SpatialPointsDataFrame SpatialPolygonsDataFrame coordinates
-#' @importFrom sp SpatialPolygons Polygons Polygon proj4string over spTransform
+#' @importFrom sp CRS SpatialPointsDataFrame SpatialPolygonsDataFrame
+#' @importFrom sp proj4string spTransform
 #' @importFrom raster disaggregate area extent rasterize res values mask
 #' @importFrom raster writeRaster extract rasterToPolygons
-#' @importFrom rgeos gCentroid gUnaryUnion gIntersection
+#' @importFrom rgeos gUnaryUnion
 #' @importFrom rgdal writeOGR
 #' @importFrom spatial surf.ls predict.trls
 #'
@@ -177,13 +177,6 @@ rangemap_tsa <- function(occurrences, region_of_interest, cell_size = 5,
 
     matrix_pa <- rbind(matrix_pa, ma_a)
   }
-
-  ## preparing layer
-  #names(all_matrix) <- c("x", "y", "longitude", "latitude")
-  #sp::coordinates(all_matrix) <- ~ x + y
-  #rast_r <- raster::raster(ncol = ncol(grid_reg), nrow = nrow(grid_reg))
-  #raster::extent(rast_r) <- raster::extent(grid_reg)
-  #sp::proj4string(rast_r) <- sp::proj4string(region_of_interest)
 
   # tsa
   ## tsa model
