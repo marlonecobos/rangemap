@@ -35,6 +35,24 @@
 "occ_d"
 
 
+#' Occurrence records for the species peltophryne fustiger
+#'
+#' @description A dataset containing geographic coordinates of the Giant Cuban
+#' Toad.
+#'
+#' @format A data frame with 73 rows and 3 columns.
+#' \describe{
+#'   \item{name}{character, species scientific name.}
+#'   \item{longitude}{numeric, longitude values.}
+#'   \item{latitude}{numeric, latitude values.}
+#' }
+#' @source \url{https://www.gbif.org/}
+#'
+#' @examples
+#' data("occ_f", package = "rangemap")
+#' head(occ_f)
+"occ_f"
+
 #' Occurrence records for the species Amblyomma americanum
 #'
 #' @description A dataset containing geographic coordinates of a North American
