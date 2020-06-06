@@ -31,8 +31,8 @@ function (scale = 50).
 }
 \examples{
 # getting the data
-data("occ_d", package = "rangemap")
+data("occ_f", package = "rangemap")
 
 # simple figure of the species occurrence data
-explore_map <- rangemap_explore(occurrences = occ_d, show_countries = TRUE)
+rangemap_explore(occurrences = occ_f, show_countries = TRUE)
 }
