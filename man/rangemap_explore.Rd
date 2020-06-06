@@ -7,42 +7,32 @@
 rangemap_explore(occurrences, show_countries = FALSE, graphic_device = FALSE)
 }
 \arguments{
-\item{occurrences}{a data.frame containing geographic coordinates of species occurrences,
-columns must be: Species, Longitude, and Latitude. Geographic coordinates must be in
-decimal degrees.}
+\item{occurrences}{a data.frame containing geographic coordinates of species
+occurrences, columns must be: Species, Longitude, and Latitude. Geographic
+coordinates must be in decimal degrees  (WGS84).}
 
-\item{show_countries}{(logical) if TRUE, ISO 3 country codes will label country polygons.}
+\item{show_countries}{(logical) if \code{TRUE}, ISO 3 country codes will label
+country polygons. Default = \code{FALSE}.}
 
-\item{graphic_device}{(logical) if TRUE, a new graphic device is opened to plot the figure.
-Default = FALSE.}
+\item{graphic_device}{(logical) if \code{TRUE}, a new graphic device is opened
+to plot the figure. Default = \code{FALSE}.}
 }
 \value{
-A simple figure of the species occurrences in a geographical context.
+A simple figure of species occurrences in a geographical context.
 }
 \description{
-rangemap_explore generates simple figures to visualize species occurrence
-data in the geographic space.
+rangemap_explore generates simple figures to visualize species
+occurrence data in the geography.
 }
 \details{
 Base map of countries of the world is a SpatialPolygonDataFrame downloaded from
-the Natural Earth database using the \code{\link[rnaturalearth]{ne_countries}} function (scale = 50).
+the Natural Earth database using the \code{\link[rnaturalearth]{ne_countries}}
+function (scale = 50).
 }
 \examples{
-suppressWarnings({if(!require(spocc)){
-  install.packages("spocc")
-  library(spocc)
-}})
-
-# getting the data from GBIF
-occs <- occ(query = "Dasypus kappleri", from = "gbif",
-            limit = 1000)$gbif$data[[1]]
-
-# keeping only georeferenced records
-occ_g <- occs[!is.na(occs$latitude) & !is.na(occs$longitude),
-              c("name", "longitude", "latitude")]
+# getting the data
+data("occ_d", package = "rangemap")
 
 # simple figure of the species occurrence data
-explore_map <- rangemap_explore(occurrences = occ_g, show_countries = TRUE)
-
-#dev.off() # for returning to default par settings
+explore_map <- rangemap_explore(occurrences = occ_d, show_countries = TRUE)
 }

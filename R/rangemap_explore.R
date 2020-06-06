@@ -1,19 +1,23 @@
 #' Exploring occurrences before creating range maps
 #'
-#' @description rangemap_explore generates simple figures to visualize species occurrence
-#' data in the geographic space.
+#' @description rangemap_explore generates simple figures to visualize species
+#' occurrence data in the geography.
 #'
-#' @param occurrences a data.frame containing geographic coordinates of species occurrences,
-#' columns must be: Species, Longitude, and Latitude. Geographic coordinates must be in
-#' decimal degrees.
-#' @param show_countries (logical) if TRUE, ISO 3 country codes will label country polygons.
-#' @param graphic_device (logical) if TRUE, a new graphic device is opened to plot the figure.
-#' Default = FALSE.
+#' @param occurrences a data.frame containing geographic coordinates of species
+#' occurrences, columns must be: Species, Longitude, and Latitude. Geographic
+#' coordinates must be in decimal degrees  (WGS84).
+#' @param show_countries (logical) if \code{TRUE}, ISO 3 country codes will label
+#' country polygons. Default = \code{FALSE}.
+#' @param graphic_device (logical) if \code{TRUE}, a new graphic device is opened
+#' to plot the figure. Default = \code{FALSE}.
 #'
-#' @return A simple figure of the species occurrences in a geographical context.
+#' @return
+#' A simple figure of species occurrences in a geographical context.
 #'
-#' @details Base map of countries of the world is a SpatialPolygonDataFrame downloaded from
-#' the Natural Earth database using the \code{\link[rnaturalearth]{ne_countries}} function (scale = 50).
+#' @details
+#' Base map of countries of the world is a SpatialPolygonDataFrame downloaded from
+#' the Natural Earth database using the \code{\link[rnaturalearth]{ne_countries}}
+#' function (scale = 50).
 #'
 #' @export
 #'
@@ -23,27 +27,14 @@
 #' @importFrom graphics points text axis
 #'
 #' @examples
-#' suppressWarnings({if(!require(spocc)){
-#'   install.packages("spocc")
-#'   library(spocc)
-#' }})
-#'
-#' # getting the data from GBIF
-#' occs <- occ(query = "Dasypus kappleri", from = "gbif",
-#'             limit = 1000)$gbif$data[[1]]
-#'
-#' # keeping only georeferenced records
-#' occ_g <- occs[!is.na(occs$latitude) & !is.na(occs$longitude),
-#'               c("name", "longitude", "latitude")]
+#' # getting the data
+#' data("occ_f", package = "rangemap")
 #'
 #' # simple figure of the species occurrence data
-#' explore_map <- rangemap_explore(occurrences = occ_g, show_countries = TRUE)
-#'
-#' #dev.off() # for returning to default par settings
+#' rangemap_explore(occurrences = occ_f, show_countries = TRUE)
 
-rangemap_explore <- function(occurrences, show_countries = FALSE, graphic_device = FALSE) {
-
-  suppressMessages(library(maptools))
+rangemap_explore <- function(occurrences, show_countries = FALSE,
+                             graphic_device = FALSE) {
 
   # testing potential issues
   if (missing(occurrences)) {
@@ -59,27 +50,28 @@ rangemap_explore <- function(occurrences, show_countries = FALSE, graphic_device
   colnames(occ) <- c("Species", "Longitude", "Latitude")
 
   # make a spatial object from coordinates
-  WGS84 <- sp::CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0") # generic
+  WGS84 <- sp::CRS("+init=epsg:4326")
   occ_sp <- sp::SpatialPointsDataFrame(coords = occ[, 2:3], data = occ,
                                        proj4string = WGS84)
 
   # bringing maps if polygons false
-  data(wrld_simpl)
-  polygons1 <- wrld_simpl
-  rm("wrld_simpl", pos = ".GlobalEnv")
-  polygons1 <- sp::spTransform(polygons1, WGS84)
+  polygons1 <- simple_wmap(which = "simple")
 
   # keeping only records in land with better resolution polygon
   polygons <- rnaturalearth::ne_countries(scale = 50)
   polygons <- sp::spTransform(polygons, WGS84)
 
   occ_sp <- occ_sp[polygons, ]
-  occ_poly <- polygons1[occ_sp, ] # polygons with occurrences
+  polygons1 <- polygons1[occ_sp, ] # polygons with occurrences
+
+  # par settings
+  opar <- par(no.readonly = TRUE)
+  on.exit(par(opar))
 
   # plot a background map and the range
   ## limits of map
-  xlim <- as.numeric(c(occ_poly@bbox[1, 1:2]))
-  ylim <- as.numeric(c(occ_poly@bbox[2, 1:2]))
+  xlim <- as.numeric(c(polygons1@bbox[1, 1:2]))
+  ylim <- as.numeric(c(polygons1@bbox[2, 1:2]))
 
   ## labels
   if (show_countries == TRUE) {
@@ -98,8 +90,9 @@ rangemap_explore <- function(occurrences, show_countries = FALSE, graphic_device
   }
 
   par(mar = c(0, 0, 0, 0), tcl = 0.25)
-  sp::plot(polygons, xlim = xlim, ylim = ylim, col = "grey92", xaxt = "n", yaxt = "n") # base map
-  points(occ_sp, pch = 21, bg = scales::alpha("yellow", 0.3), cex = 1.2)  #plot my sample sites
+  sp::plot(polygons, xlim = xlim, ylim = ylim, col = "grey92", xaxt = "n",
+           yaxt = "n")
+  points(occ_sp, pch = 21, bg = scales::alpha("yellow", 0.3), cex = 1.2)
 
   if (show_countries == TRUE) {
     text(x = cords, labels = lab, cex = 0.65)
