@@ -62,8 +62,8 @@
 #'
 #' @export
 #'
-#' @importFrom sp CRS plot
-#' @importFrom raster projectRaster plot
+#' @importFrom sp CRS
+#' @importFrom raster projectRaster
 #'
 #' @examples
 #' # example data
@@ -139,7 +139,7 @@ ranges_emaps <- function(..., variables, add_occurrences = FALSE,
   variables <- raster::projectRaster(variables, crs = WGS84)
   #variables <- raster::projectRaster(variables, crs = AEQD)
 
-  # getting the species ranges and x and y limits of plots
+  # x and y limits of plots
   xbox <- unlist(lapply(sp_ranges, function(x) {c(x@bbox[1, ])}))
   ybox <- unlist(lapply(sp_ranges, function(x) {c(x@bbox[2, ])}))
 
@@ -151,15 +151,6 @@ ranges_emaps <- function(..., variables, add_occurrences = FALSE,
             xbox[2] + ((((xbox[2] - xbox[1]) * 1/zoom) - (xbox[2] - xbox[1])) / 2))
   ylim <- c(ybox[1] - ((((ybox[2] - ybox[1]) * 1/zoom) - (ybox[2] - ybox[1])) / 2),
             ybox[2] + ((((ybox[2] - ybox[1]) * 1/zoom) - (ybox[2] - ybox[1])) / 2))
-
-  # range and variable colors
-  if (is.null(range_colors)) {
-    range_colors <- gray.colors(length(ranges))
-  }
-
-  if (is.null(color_variables)) {
-    color_variables <- rev(terrain.colors(255))
-  }
 
   # plot
   ## par options
@@ -181,7 +172,7 @@ ranges_emaps <- function(..., variables, add_occurrences = FALSE,
                 range_colors, color_variables, xlim, ylim)
   }
 
-  ## ranges legends
+  ## legend
   if (ranges_legend == TRUE) {
     if (class(legend_position) == "character") {
       if (add_occurrences == TRUE) {
