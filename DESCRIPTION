@@ -1,7 +1,7 @@
 Package: rangemap
 Type: Package
 Title: Simple Tools for Defining Species Ranges
-Version: 0.1.9
+Version: 0.1.10
 Authors@R: c(
     person("Marlon E.", "Cobos", email = "manubio13@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-2611-1767")), 
@@ -16,7 +16,7 @@ Author: Marlon E. Cobos [aut, cre],
     Narayani Barve [aut],
     Alberto Jiménez-Valverde [aut]
 Maintainer: Marlon E. Cobos <manubio13@gmail.com>
-Date: 2020-05-15
+Date: 2020-06-07
 Description: A collection of tools to create species range maps based on 
     occurrence data, statistics, and spatial objects. Other tools in this 
     collection can be used to analyze the environmental characteristics of 
