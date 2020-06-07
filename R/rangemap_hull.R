@@ -248,7 +248,8 @@ rangemap_hull <- function(occurrences, hull_type = "convex", concave_distance_li
                        Range_area = areackm2, Extent_of_occurrence = eocckm2,
                        Area_of_occupancy = aocckm2)
 
-  rmname <- paste0(gsub("^c", "C", cluster_method), ifelse(split, "_split", ""))
+  rmname <- paste0(gsub("^c", "C", hull_type),
+                   ifelse(split, "_hull_split", "_hull"))
 
   results <- sp_range_iucn(name = rmname, summary = sp_dat,
                            species_unique_records = occ_pr,

@@ -23,9 +23,11 @@ setMethod("summary", signature(object = "sp_range"),
 
             cat("\n                         Summary of sp_range object\n")
             cat("---------------------------------------------------------------------------\n\n")
-            print(object@Summary, row.names = F)
+            cat("Species range derived from:\t")
+            cat(object@name, "\n\n")
+            print(object@summary, row.names = F)
             nameess <- slotNames(object)
-            l <- slot(object, nameess[2])
+            l <- slot(object, nameess[3])
             cat("\n\n\nSpecies range\n\n")
             sp::summary(l)
           }
@@ -48,8 +50,10 @@ setMethod("summary", signature(object = "sp_range_iucn"),
 
             cat("\n                      Summary of sp_range_iucn object\n")
             cat("---------------------------------------------------------------------------\n\n")
-            print(object@Summary, row.names = F)
-            nameess <- slotNames(object)[c(5, 1:3)]
+            cat("Species range derived from:\t")
+            cat(object@name, "\n\n")
+            print(object@summary, row.names = F)
+            nameess <- slotNames(object)[c(6, 1:3)]
             l <- lapply(1:length(nameess), function(x) {
               slot(object, nameess[x])
             })
@@ -76,8 +80,10 @@ setMethod("summary", signature(object = "sp_range_iucnextra"),
 
             cat("\n                  Summary of sp_range_iucnextra object\n")
             cat("---------------------------------------------------------------------------\n\n")
-            print(object@Summary, row.names = F)
-            nameess <- slotNames(object)[c(6, 2:4, 1)]
+            cat("Species range derived from:\t")
+            cat(object@name, "\n\n")
+            print(object@summary, row.names = F)
+            nameess <- slotNames(object)[c(7, 2:4, 1)]
             l <- lapply(1:length(nameess), function(x) {
               slot(object, nameess[x])
             })

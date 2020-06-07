@@ -297,14 +297,3 @@ ranges_espace <- function(ranges, add_occurrences = TRUE, variables, max_backgro
   # return results
   return(p)
 }
-
-#' Helper function to test if lists are nested.
-#' @param l list to be tested.
-#' @export
-isnested <- function(l) {
-  stopifnot(is.list(l))
-  for (i in l) {
-    if (is.list(i)) return(TRUE)
-  }
-  return(FALSE)
-}

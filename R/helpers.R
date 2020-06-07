@@ -388,7 +388,6 @@ hull_polygon <- function(occ_pr, hull_type = "convex", concave_distance_lim = 50
           coord_pol <- coord[c(covexhull, covexhull[1]),] # defining coordinates
           hull <- sp::SpatialPolygons(list(sp::Polygons(list(sp::Polygon(coord_pol)),
                                                         ID = 1)), proj4string = proje)
-          #sp::proj4string(hull) <- AEQD # project
         }else {
           hull <- sp::SpatialPointsDataFrame(coords = coord, data = coord,
                                              proj4string = proje)
