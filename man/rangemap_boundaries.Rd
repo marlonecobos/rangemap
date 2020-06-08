@@ -38,7 +38,7 @@ instead of boundaries especified in \code{country_code} to create species
 ranges based on overlapping of species records with these layer, as well as
 names defined in \code{adm_areas}. Projection must be WGS84 (EPSG:4326).
 If \code{adm_areas} is defined, \code{polygons} must have, as part of its
-data, a fied (column) named "adm_areas" for selecting extra areas based on
+data, a fied (column) named "adm_names" for selecting extra areas based on
 names. If \code{polygons} is defined, arguments \code{country_code} and
 \code{boundary_level} will be ignored.}
 

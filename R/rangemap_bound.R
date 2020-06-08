@@ -32,7 +32,7 @@
 #' ranges based on overlapping of species records with these layer, as well as
 #' names defined in \code{adm_areas}. Projection must be WGS84 (EPSG:4326).
 #' If \code{adm_areas} is defined, \code{polygons} must have, as part of its
-#' data, a fied (column) named "adm_areas" for selecting extra areas based on
+#' data, a fied (column) named "adm_names" for selecting extra areas based on
 #' names. If \code{polygons} is defined, arguments \code{country_code} and
 #' \code{boundary_level} will be ignored.
 #' @param keep_data (logical) if \code{TRUE} and \code{polygons} is not defined, data
@@ -144,36 +144,36 @@ rangemap_boundaries <- function(occurrences = NULL, adm_areas = NULL,
                        "\ncreated using 'adm_areas' only."))
       }
       if (!missing(polygons)) {
-        if(sum("adm_areas" %in% names(polygons@data)) == 0) {
-          stop("Data of 'polygons' does not contain a field (column) named 'adm_areas', see help.")
+        if(sum("adm_names" %in% names(polygons@data)) == 0) {
+          stop("Data of 'polygons' does not contain a field (column) named 'adm_names', see help.")
         }
       }
     }
 
     if (!missing(adm_areas)) {
       if (!missing(polygons)) {
-        if(sum("adm_areas" %in% names(polygons@data)) == 0) {
-          stop("Data of 'polygons' does not contain a field (column) named 'adm_areas', see help.")
+        if(sum("adm_names" %in% names(polygons@data)) == 0) {
+          stop("Data of 'polygons' does not contain a field (column) named 'adm_names', see help.")
         }
 
         polynam <- polygons@data
-        a_a_names <- as.vector(unique(polynam[, "adm_areas"]))
+        a_a_names <- as.vector(unique(polynam[, "adm_names"]))
 
         if (sum(adm_areas %in% a_a_names) != length(adm_areas)) {
-          warning(paste("Not all of the administrative areas defined in 'adm_areas' coincide",
+          warning(paste("Not all of the administrative areas defined in 'adm_names' coincide",
                         "\nwith the available names for administrative areas in 'polygons',",
                         "\nonly those that coincide will be used.", sep = ""))
         }
 
         if (sum(adm_areas %in% a_a_names) == 0 & missing(occurrences)) {
-          stop(paste("None of the administrative areas defined in 'adm_areas' coincides",
+          stop(paste("None of the administrative areas defined in 'adm_names' coincides",
                      "\nwith the available names for administrative areas in 'polygons'.",
                      sep = ""))
         }
 
         if (sum(adm_areas %in% a_a_names) == 0 & !missing(occurrences)) {
           rm("adm_areas")
-          warning(paste("None of the administrative areas defined in 'adm_areas' coincides",
+          warning(paste("None of the administrative areas defined in 'adm_names' coincides",
                         "\nwith the available names for administrative areas in 'polygons'.",
                         "\nSpecies range will be created using occurrences only.",
                         sep = ""))
@@ -185,20 +185,20 @@ rangemap_boundaries <- function(occurrences = NULL, adm_areas = NULL,
                                                      a_names]))
 
         if (sum(adm_areas %in% a_a_names) != length(adm_areas)) {
-          warning(paste("Not all of the administrative areas defined in 'adm_areas' coincide",
+          warning(paste("Not all of the administrative areas defined in 'adm_names' coincide",
                         "\nwith the available names for that level in the countries listed",
                         "\nin 'country_code'.", sep = ""))
         }
 
         if (sum(adm_areas %in% a_a_names) == 0 & missing(occurrences)) {
-          stop(paste("None of the administrative areas defined in 'adm_areas' coincides",
+          stop(paste("None of the administrative areas defined in 'adm_names' coincides",
                      "\nwith the available names for that level in the countries listed",
                      "\nin 'country_code'.", sep = ""))
         }
 
         if (sum(adm_areas %in% a_a_names) == 0 & !missing(occurrences)) {
           rm("adm_areas")
-          warning(paste("None of the administrative areas defined in 'adm_areas' coincides",
+          warning(paste("None of the administrative areas defined in 'adm_names' coincides",
                         "\nwith the available names for that level in the countries listed",
                         "\nin 'country_code'. Species range will be created using occurrences only.",
                         sep = ""))
