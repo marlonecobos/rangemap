@@ -26,6 +26,14 @@ Jimenez-Valverde
       - [Species ranges and environmental
         factors](#species-ranges-and-environmental-factors)
 
+<br>
+
+<!-- badges: start -->
+
+[![Travis build
+status](https://travis-ci.org/marlonecobos/rangemap.svg?branch=master)](https://travis-ci.org/marlonecobos/rangemap)
+<!-- badges: end -->
+
 <hr>
 
 **This repository is for the GSoC 2018 project “Species range maps in
