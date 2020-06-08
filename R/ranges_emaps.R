@@ -175,7 +175,7 @@ ranges_emaps <- function(..., variables, add_occurrences = FALSE,
     color_variables <- rev(terrain.colors(255))
   }
 
-  par(mar = c(0, 0, 0, 2), mfrow = fig_config)
+  par(mar = c(0, 0, 0, 3), mfrow = fig_config)
 
   ## the plot and variable legends
   for (i in 1:raster::nlayers(variables)) {
