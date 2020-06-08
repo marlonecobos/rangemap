@@ -19,7 +19,7 @@ coordinates must be in decimal degrees  (WGS84).}
 options are: "convex" and "concave". Default = "convex".}
 
 \item{concave_distance_lim}{(numeric) distance, in meters, to be passed to the
-length_threshold parameter of the \code{\link[concaveman]{concaveman}} funcion.
+length_threshold parameter of the \code{\link[concaveman]{concaveman}} function.
 Default = 5000. Ignored if \code{hull_type} is not "concave".}
 
 \item{buffer_distance}{(numeric) distance, in meters, to be used for creating
@@ -63,13 +63,13 @@ the shapefile to be exported. A suffix will be added to \code{name} depending
 on the object, as follows: species extent of occurrence = "_extent_occ", area
 of occupancy = "_area_occ", and occurrences = "_unique_records".}
 
-\item{overwrite}{(logical) wether or not to overwrite previous results with
+\item{overwrite}{(logical) whether or not to overwrite previous results with
 the same name. Default = \code{FALSE}.}
 }
 \value{
 A sp_range object (S4) containing: (1) a data.frame with information about the
 species range, and Spatial objects of (2) unique occurrences, (3) species range,
-(4) extent of occurrence, and (5) area of occurpancy.
+(4) extent of occurrence, and (5) area of occupancy.
 }
 \description{
 rangemap_hull generates a distributional range for a given species
@@ -81,21 +81,21 @@ can be saved in the working directory if it is needed.
 \details{
 All resulting Spatial objects in the results will be projected to the
 \code{final_projection}. Areas are calculated in square kilometers using the
-Lambert Azimuthal Equal Area projection, centered on the centroid of occurence
-points given as imputs.
+Lambert Azimuthal Equal Area projection, centered on the centroid of occurrence
+points given as inputs.
 
 The \code{cluster_method} must be chosen based on the spatial configuration of
 the species occurrences. Both methods make distinct assumptions and one of
 them may perform better than the other depending on the spatial pattern of the
 data.
 
-The k-means method, for example, perfomrs better when the following assumptions
+The k-means method, for example, performs better when the following assumptions
 are fulfilled: Clusters are spatially grouped—or “spherical” and Clusters are
 of a similar size. Owing to the nature of the hierarchical clustering algorithm
 it may take more time than the k-means method. Both methods make assumptions
 and they may work well on some data sets, and fail on others.
 
-Another important factor to consider is that the k-means method allways starts
+Another important factor to consider is that the k-means method always starts
 with a random choice of cluster centers, thus it may end in different results
 on different runs. That may be problematic when trying to replicate your
 methods. With hierarchical clustering, most likely the same clusters can be

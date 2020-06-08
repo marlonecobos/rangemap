@@ -33,23 +33,23 @@ is provided.}
 0 to 2; 0 is the country level and higher values indicate finer divisions).
 Default = 0. Ignored if \code{polygons} is defined.}
 
-\item{polygons}{(optional) a SpatialPolygonDataFrame object that will be used
-instead of boundaries especified in \code{country_code} to create species
+\item{polygons}{(optional) a SpatialPolygonsDataFrame object that will be used
+instead of boundaries specified in \code{country_code} to create species
 ranges based on overlapping of species records with these layer, as well as
 names defined in \code{adm_areas}. Projection must be WGS84 (EPSG:4326).
 If \code{adm_areas} is defined, \code{polygons} must have, as part of its
-data, a fied (column) named "adm_names" for selecting extra areas based on
+data, a field (column) named "adm_names" for selecting extra areas based on
 names. If \code{polygons} is defined, arguments \code{country_code} and
 \code{boundary_level} will be ignored.}
 
 \item{keep_data}{(logical) if \code{TRUE} and \code{polygons} is not defined, data
-dowloaded from the GADM data base will be kept in the working directory. Useful
+downloaded from the GADM data base will be kept in the working directory. Useful
 if all or part of the downloaded files will be used in posterior analyses since
 those files will not be downloaded again and time will be saved. Default =
 \code{FALSE}.}
 
-\item{dissolve}{(logical) if \code{TRUE}, distint polygons selected as part of the
-species range will be disolved for creating simpler shapes, default = \code{FALSE}.
+\item{dissolve}{(logical) if \code{TRUE}, distinct polygons selected as part of the
+species range will be dissolved for creating simpler shapes, default = \code{FALSE}.
 Owing to the high resolution in the GADM data the dissolving process may be
 time consuming, specially if the species has a broad
 distribution.}
@@ -68,17 +68,17 @@ the shapefile to be exported. A suffix will be added to \code{name} depending
 on the object, as follows: species extent of occurrence = "_extent_occ", area
 of occupancy = "_area_occ", and occurrences = "_unique_records".}
 
-\item{overwrite}{(logical) wether or not to overwrite previous results with
+\item{overwrite}{(logical) whether or not to overwrite previous results with
 the same name. Default = \code{FALSE}.}
 }
 \value{
 A sp_range object (S4) containing: (1) a data.frame with information about
-the species range, and SpatialPolygon objects of (2) unique occurrences,
-(3) species range, (4) extent of occurrence, and (5) area of occurpancy.
+the species range, and SpatialPolygons objects of (2) unique occurrences,
+(3) species range, (4) extent of occurrence, and (5) area of occupancy.
 
 If only \code{adm_areas}, the result will be a sp_range object (S4) with two
 elements: (1) a data.frame with information about the species range, and
-(2) a SpatialPolygon object of the species range.
+(2) a SpatialPolygons object of the species range.
 }
 \description{
 rangemap_boundaries generates a distributional range for a given
@@ -90,8 +90,8 @@ needed.
 }
 \details{
 Data for countries defined in \code{country_code} are downloaded and loaded
-using the funcion \code{\link[raster]{getData}}. Iformation about country codes
-and names of administrative areas, at distinct levels, can be cosulted
+using the function \code{\link[raster]{getData}}. Information about country codes
+and names of administrative areas, at distinct levels, can be consulted
 using: \code{\link{country_codes}} and \code{\link{adm_area_names}}.
 }
 \examples{

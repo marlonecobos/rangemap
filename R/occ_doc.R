@@ -1,6 +1,6 @@
 #' Occurrence records for the species Peltophryne empusa
 #'
-#' @description A dataset containing geographic coordinates of a Caribean toad.
+#' @description A dataset containing geographic coordinates of a Caribbean toad.
 #'
 #' @format A data frame with 182 rows and 3 columns.
 #' \describe{
@@ -35,7 +35,7 @@
 "occ_d"
 
 
-#' Occurrence records for the species peltophryne fustiger
+#' Occurrence records for the species Peltophryne fustiger
 #'
 #' @description A dataset containing geographic coordinates of the Giant Cuban
 #' Toad.

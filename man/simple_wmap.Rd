@@ -7,7 +7,7 @@
 simple_wmap(which = "simplest", regions = ".")
 }
 \arguments{
-\item{which}{(charatcer) name of type of SpatialPolygons to be obtained. Options
+\item{which}{(character) name of type of SpatialPolygons to be obtained. Options
 are: "simple" and "simplest"; default = "simplest".}
 
 \item{regions}{(character) name of the country (or region if \code{which} =

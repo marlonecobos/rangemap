@@ -4,7 +4,7 @@ Marlon E. Cobos, Vijay Barve, Narayani Barve, and Alberto
 Jimenez-Valverde
 
   - [Project description](#project-description)
-      - [Estatus of the project](#estatus-of-the-project)
+      - [Status of the project](#status-of-the-project)
   - [Package description](#package-description)
   - [Installing the package](#installing-the-package)
   - [Using the package functions](#using-the-package-functions)
@@ -35,7 +35,7 @@ R”.**
 
 Student: *Marlon E. Cobos*
 
-Mentors: *Narayani Barve, Vijay Barve, and Alberto Jiménez Valverde*
+Mentors: *Narayani Barve, Vijay Barve, and Alberto Jimenez Valverde*
 
 The species range maps project is motivated by the importance of
 information about species distribution for processes of conservation
@@ -55,7 +55,7 @@ researchers, and conservation managers can be benefited by this project
 since these tools will be freely available and will improve the way in
 which studies of species distributions are developed.
 
-### Estatus of the project
+### Status of the project
 
 At the moment we have completed all the proposed tasks. Some of the
 planned functions were not developed since other packages have similar
@@ -78,7 +78,7 @@ well as some examples of its use.
 ## Package description
 
 The **rangemap** R package presents various tools to create species
-range maps based on occurrence data, statistics, and SpatialPolygon
+range maps based on occurrence data, statistics, and SpatialPolygons
 objects. Other tools of this package can be used to analyze
 environmental characteristics of the species ranges and to create high
 quality figures of these maps. All the functions that create species
@@ -808,7 +808,7 @@ rangemap_plot(tsa_r, polygons = CU, zoom = 0.5)
 The *rangemap\_plot* function can be used to plot not only the generated
 species ranges but also the extent of occurrence and the species records
 in the same map. The species range will be plot on a simplified world
-map, but users can use a SpatialPolygon object of their choice.
+map, but users can use a SpatialPolygons object of their choice.
 
 The function’s help can be consulted using the following line of code:
 

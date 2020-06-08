@@ -7,7 +7,7 @@
 clusters(occ_pr, cluster_method = "hierarchical", split_distance, n_k_means)
 }
 \arguments{
-\item{occ_pr}{SpatialPointsDataFrame of ocurrence records. Projection must be
+\item{occ_pr}{SpatialPointsDataFrame of occurrence records. Projection must be
 one that allows safe calculation of distances (e.g., Azimuthal equidistant)}
 
 \item{cluster_method}{(character) name of the method to be used for clustering
@@ -32,13 +32,13 @@ Finds clusters for SpatialPointsDataFrame based on distinct methods
 species occurrences. Both methods make distinct assumptions and one of them may
 perform better than the other depending on the spatial pattern of the data.
 
-The k-means method, for example, perfomrs better when the following assumptions
+The k-means method, for example, performs better when the following assumptions
 are fulfilled: Clusters are spatially grouped—or “spherical” and Clusters are
 of a similar size. Owing to the nature of the hierarchical clustering algorithm
 it may take more time than the k-means method. Both methods make assumptions
 and they may work well on some data sets, and fail on others.
 
-Another important factor to consider is that the k-means method allways starts
+Another important factor to consider is that the k-means method always starts
 with a random choice of cluster centers, thus it may end in different results
 on different runs. That may be problematic when trying to replicate your methods.
 With hierarchical clustering, most likely the same clusters can be obtained if

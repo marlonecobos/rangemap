@@ -24,7 +24,7 @@ north_arrow plots a North arrow in user defined places in a map.
 # simple plot
 plot(1:10, 1:10, col = "transparent")
 
-# nort arrows
+# north arrows
 north_arrow(position = "topright")
 north_arrow(position = "bottomright")
 }

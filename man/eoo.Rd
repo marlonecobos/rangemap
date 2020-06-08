@@ -11,13 +11,13 @@ eoo(occurrences, polygons)
 occurrences, columns must be: Species, Longitude, and Latitude. Geographic
 coordinates must be in decimal degrees (WGS84).}
 
-\item{polygons}{SpatialPolygon object to clip convex hulls to these limits.
+\item{polygons}{SpatialPolygons object to clip convex hulls to these limits.
 Projection of this object defines projection of the extent of occurrence. This
 projection must be one that allows safe calculation of areas (e.g., Lambert
 Azimuthal Equal Area).}
 }
 \value{
-A list comtaining a SpatialPolygonsDataFrame of the extent of occurrence, and
+A list containing a SpatialPolygonsDataFrame of the extent of occurrence, and
 a vector with the areas in km2 of the spatial polygons resulted.
 }
 \description{

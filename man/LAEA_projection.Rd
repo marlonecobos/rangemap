@@ -3,18 +3,18 @@
 \name{LAEA_projection}
 \alias{LAEA_projection}
 \alias{AED_projection}
-\title{Prepare Equal-Area or Equidistante Projection}
+\title{Prepare Equal-Area or Equidistant Projection}
 \usage{
 LAEA_projection(occurrences = NULL, spatial_object = NULL)
 
 AED_projection(occurrences = NULL, spatial_object = NULL)
 }
 \arguments{
-\item{occurrences}{matrix or data.frame conaining coordinates to serve as
+\item{occurrences}{matrix or data.frame containing coordinates to serve as
 a reference for the center of the projection. Columns must be:
 "longitude" and "latitude", in that order.}
 
-\item{spatial_object}{Spatial* objects, Poinst or Polygons, to be used to
+\item{spatial_object}{Spatial* objects, Points or Polygons, to be used to
 calculate a reference for the center of the projection. Projection must be
 WGS84 (EPSG:4326).}
 }
@@ -22,7 +22,7 @@ WGS84 (EPSG:4326).}
 An object of class CRS.
 }
 \description{
-Prepare Equal-Area or Equidistante Projection
+Prepare Equal-Area or Equidistant Projection
 }
 \details{
 If arguments are not defined projection is centered in 0, 0 for

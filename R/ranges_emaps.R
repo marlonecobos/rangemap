@@ -31,12 +31,12 @@
 #' will be added to the last panel of the plot at \code{legend_position}.
 #' Default = \code{TRUE}.
 #' @param legend_position (numeric or character) location where the legend will
-#' be placed in the plot. If numeric, vector of leght = 2 indicating x and y
+#' be placed in the plot. If numeric, vector of length = 2 indicating x and y
 #' coordinates to position the legend. See details in \code{\link[graphics]{legend}}
 #' for character options of position. Default = "bottomright".
-#' @param legend_cex (numeric) size of the legend with respect to cex option in
-#' \code{\link[graphics]{par}}. Default = 0.7.
-#' @param zoom (numeric) zoom factor when ploting the species range in a map
+#' @param legend_cex (numeric) size of the legend with respect to \code{cex}
+#' option in \code{\link[graphics]{par}}. Default = 0.7.
+#' @param zoom (numeric) zoom factor when plotting the species range in a map
 #' (based on the largest range). Default = 1.3. Larger values will zoom in into
 #' the species range and smaller values will zoom out. A value of 0.5 will
 #' duplicate the area that the biggest range is covering.
@@ -45,11 +45,6 @@
 #' A plot showing species ranges on top of maps of environmental variables.
 #'
 #' @details
-#' Ranges should be generated with any of the functions:
-#' \code{\link{rangemap_buffer}}, \code{\link{rangemap_boundaries}},
-#' \code{\link{rangemap_hull}}, \code{\link{rangemap_enm}}, and
-#' \code{\link{rangemap_tsa}}.
-#'
 #' Position of distinct elements depend on the spatial configuration of the
 #' species range. Therefore, their position may need to be changed if such
 #' elements are needed (e.g., legend). Current character options available for

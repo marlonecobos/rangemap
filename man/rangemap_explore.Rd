@@ -25,7 +25,7 @@ rangemap_explore generates simple figures to visualize species
 occurrence data in the geography.
 }
 \details{
-Base map of countries of the world is a SpatialPolygonDataFrame downloaded from
+Base map of countries of the world is a SpatialPolygonsDataFrame downloaded from
 the Natural Earth database using the \code{\link[rnaturalearth]{ne_countries}}
 function (scale = 50).
 }

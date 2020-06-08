@@ -1,7 +1,7 @@
 # R classes for rangemap objects
 # June 2020
 # Version 0.1.5
-# Licence GPL v3
+# License GPL v3
 
 #' An S4 class to organize data and results of sp_range* objects
 #' @description A list of classes (some of them inherited) to contain information

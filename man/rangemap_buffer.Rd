@@ -35,13 +35,13 @@ the shapefile to be exported. A suffix will be added to \code{name} depending
 on the object, as follows: species extent of occurrence = "_extent_occ", area
 of occupancy = "_area_occ", and occurrences = "_unique_records".}
 
-\item{overwrite}{(logical) wether or not to overwrite previous results with
+\item{overwrite}{(logical) whether or not to overwrite previous results with
 the same name. Default = \code{FALSE}.}
 }
 \value{
 A sp_range object (S4) containing: (1) a data.frame with information about the
 species range, and Spatial objects of (2) unique occurrences, (3) species range,
-(4) extent of occurrence, and (5) area of occurpancy.
+(4) extent of occurrence, and (5) area of occupancy.
 }
 \description{
 rangemap_buffer generates a distributional range for a given
@@ -53,8 +53,8 @@ be saved in the working directory if it is needed.
 \details{
 All resulting Spatial objects in the results will be projected to the
 \code{final_projection}. Areas are calculated in square kilometers using the
-Lambert Azimuthal Equal Area projection, centered on the centroid of occurence
-points given as imputs.
+Lambert Azimuthal Equal Area projection, centered on the centroid of occurrence
+points given as inputs.
 }
 \examples{
 # getting the data

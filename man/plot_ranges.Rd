@@ -8,7 +8,8 @@ plot_ranges(sp_ranges, sp_records = NULL, variable, range_colors = NULL,
             color_variable = NULL, xlim = NULL, ylim = NULL)
 }
 \arguments{
-\item{sp_ranges}{list of SpatalPolygonsDataFrames representing species ranges.}
+\item{sp_ranges}{list of SpatialPolygonsDataFrame objects representing
+species ranges.}
 
 \item{sp_records}{a SpatialPointsDataFrame of species occurrences.}
 

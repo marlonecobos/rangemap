@@ -17,13 +17,13 @@
 #' will be added to the figure. Ignored if the \code{sp_range} is product of the
 #' \code{\link{rangemap_boundaries}} function and administrative areas were selected
 #' only based on names. Default = \code{FALSE}.
-#' @param basemap_color color for the basemap (\code{polygons}) to be ploted.
-#' Default = "grey93".
-#' @param range_color color for the species \code{sp_range} to be ploted.
+#' @param basemap_color color for the basemap (\code{polygons}) to be plotted.
+#' Default = "gray93".
+#' @param range_color color for the species \code{sp_range} to be plotted.
 #' Default = "darkgreen".
-#' @param extent_color color for the species extent of occurrence to be ploted.
+#' @param extent_color color for the species extent of occurrence to be plotted.
 #' Default = "blue".
-#' @param occurrences_color color for the species \code{occurrences} to be ploted.
+#' @param occurrences_color color for the species \code{occurrences} to be plotted.
 #' Default = "yellow".
 #' @param grid (logical) if \code{TRUE}, labels and grid division ticks will be
 #' inserted in \code{grid_sides}. Default = \code{FALSE}.
@@ -36,25 +36,25 @@
 #' @param legend (logical) if \code{TRUE}, a legend of the plotted features will
 #' be added to the figure at \code{legend_position}. Default = \code{FALSE}.
 #' @param legend_position (numeric or character) site in the figure where the
-#' legend will be placed. If numeric, vector of leght two indicating x and y
+#' legend will be placed. If numeric, vector of length two indicating x and y
 #' coordinates to be used to position the legend. See details for options of
 #' character indicators of position. Default = "bottomright".
 #' @param northarrow (logical) if \code{TRUE}, a simple north arrow will be placed
 #' in \code{northarrow_position}. Default = \code{FALSE}.
 #' @param northarrow_position (numeric or character) site in the figure where the
-#' north legend will be placed. If numeric, vector of leght two indicating x and
+#' north legend will be placed. If numeric, vector of length two indicating x and
 #' y coordinates to be used to position the north arrow. See details for options
 #' of character indicators of position. Default = "topright".
 #' @param scalebar (logical) if \code{TRUE}, a simple scale bar will be inserted
 #' in the figure at \code{scalebar_position} with a length of \code{scalebar_length}.
 #' Default = \code{FALSE}.
 #' @param scalebar_position (numeric or character) site in the figure where the
-#' scale bar will be placed. If numeric, vector of leght two indicating x and y
+#' scale bar will be placed. If numeric, vector of length two indicating x and y
 #' coordinates to be used to position the scale bar. See details for options of
 #' character indicators of position. Default = "bottomleft".
 #' @param scalebar_length (numeric) length of the scale bar in km. Using entire
-#' numbers divisble for two is recommended. Default = 100.
-#' @param zoom (numeric) zoom factor when ploting the species range in a map.
+#' numbers divisible for two is recommended. Default = 100.
+#' @param zoom (numeric) zoom factor when plotting the species range in a map.
 #' Default = 1. Larger values will zoom in into the species range and smaller
 #' values will zoom out. A value of 0.5 will duplicate the area that the biggest
 #' range is covering.
@@ -71,7 +71,7 @@
 #'
 #' @usage
 #' rangemap_plot(sp_range, polygons, add_EOO = FALSE, add_occurrences = FALSE,
-#'               basemap_color = "grey93", range_color = "darkgreen",
+#'               basemap_color = "gray93", range_color = "darkgreen",
 #'               extent_color = "blue", occurrences_color = "yellow",
 #'               grid = FALSE, grid_sides = "bottomleft", ylabels_position = 1.3,
 #'               legend = FALSE, legend_position = "bottomright",
@@ -101,7 +101,7 @@
 #'               legend = legend)
 
 rangemap_plot <- function(sp_range, polygons = NULL, add_EOO = FALSE,
-                          add_occurrences = FALSE, basemap_color = "grey93",
+                          add_occurrences = FALSE, basemap_color = "gray93",
                           range_color = "darkgreen", extent_color = "blue",
                           occurrences_color = "yellow", grid = FALSE,
                           grid_sides = "bottomleft", ylabels_position = 1.3,

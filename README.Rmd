@@ -21,11 +21,11 @@ opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>")
 
 Student: *Marlon E. Cobos*
 
-Mentors: *Narayani Barve, Vijay Barve, and Alberto Jiménez Valverde*
+Mentors: *Narayani Barve, Vijay Barve, and Alberto Jimenez Valverde*
 
 The species range maps project is motivated by the importance of information about species distribution for processes of conservation planning and the study of spatial patterns of biodiversity. In the face of multiple threats related to Global Change, protection and mitigation actions are crucial for maintaining the health of the planet, and knowing where species are located constitutes in primary information for starting these efforts. Currently, generation of species ranges maps may take several steps and the use of specialized software. Thanks to the recent development of specialized packages, R is rapidly becoming an excellent alternative for analyzing the spatial patterns of biodiversity. Taking advantage of these packages and the versatility of R, the aim of this project was offering handily and robust open source tools to obtain reliable proposals of species distribution ranges and to analyze their geographical patterns. A large community of students, researchers, and conservation managers can be benefited by this project since these tools will be freely available and will improve the way in which studies of species distributions are developed.
 
-### Estatus of the project
+### Status of the project
 
 At the moment we have completed all the proposed tasks. Some of the planned functions were not developed since other packages have similar functionalities. Instead, we created other functions not considered initially but that complement this package with useful options for visualization. Next steps include massive testing of this package functions and submitting it to CRAN.
 
@@ -39,7 +39,7 @@ Following you can find a brief description of the produced R package, as well as
 
 ## Package description
 
-The **rangemap** R package presents various tools to create species range maps based on occurrence data, statistics, and SpatialPolygon objects. Other tools of this package can be used to analyze environmental characteristics of the species ranges and to create high quality figures of these maps. All the functions that create species ranges also generate an approach to the species extent of occurrence (using convex hulls) and the area of occupancy according to the IUCN criteria. Shapefiles of the resultant polygons can be saved in the working directory if it is needed.
+The **rangemap** R package presents various tools to create species range maps based on occurrence data, statistics, and SpatialPolygons objects. Other tools of this package can be used to analyze environmental characteristics of the species ranges and to create high quality figures of these maps. All the functions that create species ranges also generate an approach to the species extent of occurrence (using convex hulls) and the area of occupancy according to the IUCN criteria. Shapefiles of the resultant polygons can be saved in the working directory if it is needed.
 
 <br>
 
@@ -435,7 +435,7 @@ rangemap_plot(tsa_r, polygons = CU, zoom = 0.5)
 
 ### Nice figures of species ranges
 
-The *rangemap_plot* function can be used to plot not only the generated species ranges but also the extent of occurrence and the species records in the same map. The species range will be plot on a simplified world map, but users can use a SpatialPolygon object of their choice. 
+The *rangemap_plot* function can be used to plot not only the generated species ranges but also the extent of occurrence and the species records in the same map. The species range will be plot on a simplified world map, but users can use a SpatialPolygons object of their choice. 
 
 The function's help can be consulted using the following line of code:
   

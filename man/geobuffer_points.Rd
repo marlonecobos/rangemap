@@ -13,8 +13,8 @@ Columns must be "longitude" and "latitude", in that order.}
 
 \item{radius}{(numeric) radius of buffer in meters.}
 
-\item{by_point}{(logical) whether or not to di buffers by point. If FALSE, the
-default, buffer polygons that overlap will be disolved to obtain an only
+\item{by_point}{(logical) whether or not to do buffers by point. If FALSE, the
+default, buffer polygons that overlap will be dissolved to obtain an only
 feature. Default = 100.}
 
 \item{n_segments}{(numeric) number of segments to approximate a circle.}
@@ -36,7 +36,7 @@ Pole and then rotates this buffer into the actual location. The rotation is
 effected by converting the original buffer to geocentric Cartesian (XYZ)
 coordinates. A matrix multiplication helps to  rotate those coordinates
 along the Prime Meridian to the target latitude, converting the coordinates
-back to Geographic (lon-lat). Then the buffer is spun around the Earth's
+back to Geographic (WGS84). Then the buffer is spun around the Earth's
 axis by adding the target longitude to each second coordinate.
 
 The algorithm was developed by a moderator of the Geographic Information

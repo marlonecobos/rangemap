@@ -16,18 +16,18 @@ any of the following functions: \code{\link{rangemap_buffer}},
 five ranges is allowed for more precise comparisons.}
 
 \item{add_occurrences}{(logical) if \code{TRUE}, species occurrences contained
-in one of the \code{sp_range} objects will be ploted. Default = \code{TRUE}.
+in one of the \code{sp_range} objects will be plotted. Default = \code{TRUE}.
 If  none of the objects contains occurrences this argument will be ignored.}
 
 \item{variables}{a RasterStack object of at least 3 environmental variables
-that will be used to perform a principal component analisis, and use the 3
+that will be used to perform a principal component analysis, and use the 3
 first principal components to represent the environmental space. Projection
 is assumed to be WGS84 (EPSG:4326).}
 
 \item{max_background}{(numeric) maximum number of data from variables to be
 used for representing the environmental space. Default = 10000.}
 
-\item{occurrence_color}{color for ocurrence records in environmental space.}
+\item{occurrence_color}{color for occurrence records in environmental space.}
 
 \item{range_colors}{vector of colors for the ranges to be represented. If
 \code{NULL}, the default, a set of colors will be used. Since transparency is

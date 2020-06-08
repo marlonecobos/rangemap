@@ -10,15 +10,15 @@
 #' \code{\link{rangemap_enm}}, and/or \code{\link{rangemap_tsa}}. Using up to
 #' five ranges is allowed for more precise comparisons.
 #' @param add_occurrences (logical) if \code{TRUE}, species occurrences contained
-#' in one of the \code{sp_range} objects will be ploted. Default = \code{TRUE}.
+#' in one of the \code{sp_range} objects will be plotted. Default = \code{TRUE}.
 #' If  none of the objects contains occurrences this argument will be ignored.
 #' @param variables a RasterStack object of at least 3 environmental variables
-#' that will be used to perform a principal component analisis, and use the 3
+#' that will be used to perform a principal component analysis, and use the 3
 #' first principal components to represent the environmental space. Projection
 #' is assumed to be WGS84 (EPSG:4326).
 #' @param max_background (numeric) maximum number of data from variables to be
 #' used for representing the environmental space. Default = 10000.
-#' @param occurrence_color color for ocurrence records in environmental space.
+#' @param occurrence_color color for occurrence records in environmental space.
 #' @param range_colors vector of colors for the ranges to be represented. If
 #' \code{NULL}, the default, a set of colors will be used. Since transparency is
 #' used for representing ranges in the plot, colors may look different.

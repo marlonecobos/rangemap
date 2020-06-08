@@ -3,7 +3,7 @@
 \docType{data}
 \name{occ_f}
 \alias{occ_f}
-\title{Occurrence records for the species peltophryne fustiger}
+\title{Occurrence records for the species Peltophryne fustiger}
 \format{A data frame with 73 rows and 3 columns.
 \describe{
 \item{name}{character, species scientific name.}

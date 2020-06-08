@@ -9,17 +9,17 @@ hull_polygon(occ_pr, hull_type = "convex", concave_distance_lim = 5000)
 \arguments{
 \item{occ_pr}{SpatialPoints* object containing geographic points to be used
 to create hull polygons. This spatial object must be projected to a system
-with th argument "+units=m".}
+with the argument "+units=m".}
 
 \item{hull_type}{(character) type of hull polygons to be created. Available
 options are: "convex" and "concave". Default = "convex".}
 
 \item{concave_distance_lim}{(numeric) distance, in meters, to be passed to the
-length_threshold parameter of the \code{\link[concaveman]{concaveman}} funcion.
+length_threshold parameter of the \code{\link[concaveman]{concaveman}} function.
 Default = 5000. Ignored if \code{hull_type} is not "concave".}
 }
 \value{
-A SpatialPolygon object with the hull polygon. If the number of points
+A SpatialPolygons object with the hull polygon. If the number of points
 in occ_pr is 1 or 2 a SpatialPointsDataFrame object is returned.
 }
 \description{

@@ -22,7 +22,7 @@
 #'
 #' @format sp_range_iucn with 6 slots.
 #' \describe{
-#'   \item{name}{character, name identifying the origing of the object.}
+#'   \item{name}{character, name identifying the origin of the object.}
 #'   \item{summary}{data.frame, summary of results.}
 #'   \item{species_range}{SpatialPolygonsDataFrame of species range.}
 #'   \item{species_unique_records}{SpatialPointsDataFrame of species occurrences.}
@@ -43,7 +43,7 @@
 #'
 #' @format sp_range_iucn with 6 slots.
 #' \describe{
-#'   \item{name}{character, name identifying the origing of the object.}
+#'   \item{name}{character, name identifying the origin of the object.}
 #'   \item{summary}{data.frame, summary of results.}
 #'   \item{species_range}{SpatialPolygonsDataFrame of species range.}
 #'   \item{species_unique_records}{SpatialPointsDataFrame of species occurrences.}
@@ -65,7 +65,7 @@
 #'
 #' @format sp_range_iucn with 6 slots.
 #' \describe{
-#'   \item{name}{character, name identifying the origing of the object.}
+#'   \item{name}{character, name identifying the origin of the object.}
 #'   \item{summary}{data.frame, summary of results.}
 #'   \item{species_range}{SpatialPolygonsDataFrame of species range.}
 #'   \item{species_unique_records}{SpatialPointsDataFrame of species occurrences.}

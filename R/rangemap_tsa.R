@@ -11,11 +11,11 @@
 #' coordinates must be in decimal degrees  (WGS84).
 #' @param region_of_interest a SpatialPolygonsDataFrame object on which the trend
 #' surface analysis will be performed. For instance, a country, an ecoregion, or
-#' a biogeographical region. Projection must be WGS84 (EPSG:4326).
+#' a biogeographic region. Projection must be WGS84 (EPSG:4326).
 #' @param cell_size (numeric) vector of length 1 or 2, defining the size of cells
 #' (km) at which the resultant trend surface will be created; default = 5.
 #' \code{cell_size} will depend on the extent of \code{region_of_interest}.
-#' Values lower than 1 are only recomended when the species is locally distributed.
+#' Values lower than 1 are only recommended when the species is locally distributed.
 #' @param threshold (numeric) percentage of occurrence records to be excluded
 #' when deciding the minimum value trend surface output to be considered as part
 #' of the species range. Default = 0.
@@ -33,28 +33,28 @@
 #' @param save_shp (logical) if \code{TRUE}, shapefiles of the species range,
 #' occurrences, extent of occurrence, and area of occupancy will be written in
 #' the working directory. Default = \code{FALSE}.
-#' @param save_ts_layer (logical) if \code{TRUE}, the tsa model will be included
-#' as part of the object returned. If \code{save_shp} = TRUE, the tsa model will
+#' @param save_ts_layer (logical) if \code{TRUE}, the TSA layer will be included
+#' as part of the object returned. If \code{save_shp} = TRUE, the TSA layer will
 #' be written in GeoTiff format. Default = \code{FALSE}
 #' @param name (character) valid if \code{save_shp} = TRUE. The name of the
 #' geographic files to be exported. A suffix will be added to \code{name}
 #' depending on the object as follows: species extent of occurrence = "_extent_occ",
 #' area of occupancy = "_area_occ", occurrences = "_unique_records", and,
 #' if \code{save_ts_layer} = \code{TRUE}, trend surface layer "_tsa".
-#' @param overwrite (logical) wether or not to overwrite previous results with
+#' @param overwrite (logical) whether or not to overwrite previous results with
 #' the same name. Default = \code{FALSE}.
 #'
 #' @return
 #' A sp_range object (S4) containing: (1) a data.frame with information about
-#' the species range, and SpatialPolygon objects of (2) unique occurrences,
-#' (3) species range, (4) extent of occurrence, and (5) area of occurpancy.
-#' If \code{save_ts_layer} = TRUE, a (6) tsa layer will be included as well.
+#' the species range, and SpatialPolygons objects of (2) unique occurrences,
+#' (3) species range, (4) extent of occurrence, and (5) area of occupancy.
+#' If \code{save_ts_layer} = TRUE, a (6) TSA layer will be included as well.
 #'
 #' @details
 #' All resulting Spatial objects in the results will be projected to the
 #' \code{final_projection}. Areas are calculated in square kilometers using the
-#' Lambert Azimuthal Equal Area projection, centered on the centroid of occurence
-#' points given as imputs.
+#' Lambert Azimuthal Equal Area projection, centered on the centroid of occurrence
+#' points given as inputs.
 #'
 #' Trend surface analysis is a method based on low-order polynomials of spatial
 #' coordinates for estimating a regular grid of points from scattered observations.

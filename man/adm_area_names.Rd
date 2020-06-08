@@ -18,8 +18,8 @@
 adm_area_names
 }
 \description{
-A dataset containing names of all the avilable administrative
-areas from the GADM data base. Names describe distict administrative areas
+A dataset containing names of all the available administrative
+areas from the GADM data base. Names describe distinct administrative areas
 in five levels.
 }
 \examples{

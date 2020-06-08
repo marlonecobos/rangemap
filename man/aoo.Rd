@@ -7,13 +7,13 @@
 aoo(occ_pr, species)
 }
 \arguments{
-\item{occ_pr}{SpatialPointsDataFrame of ocurrence records. Projection must be
+\item{occ_pr}{SpatialPointsDataFrame of occurrence records. Projection must be
 one that allows safe calculation of areas (e.g., Lambert Azimuthal Equal Area).}
 
 \item{species}{(character) scientific name of the species.}
 }
 \value{
-A list comtaining a SpatialPolygonsDataFrame of the area of occupancy, and
+A list containing a SpatialPolygonsDataFrame of the area of occupancy, and
 a vector with the areas in km2 of the spatial polygons resulted.
 }
 \description{

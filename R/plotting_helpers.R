@@ -1,5 +1,6 @@
 #' Helper to plot multiple ranges on top of environmental layers
-#' @param sp_ranges list of SpatalPolygonsDataFrames representing species ranges.
+#' @param sp_ranges list of SpatialPolygonsDataFrame objects representing
+#' species ranges.
 #' @param sp_records a SpatialPointsDataFrame of species occurrences.
 #' @param variable a RasterLayer representing an environmental variable.
 #' @param range_colors vector of colors for borders of species ranges. If
@@ -109,7 +110,7 @@ plot_ranges <- function(sp_ranges, sp_records = NULL, variable, range_colors = N
 #' # simple plot
 #' plot(1:10, 1:10, col = "transparent")
 #'
-#' # nort arrows
+#' # north arrows
 #' north_arrow(position = "topright")
 #' north_arrow(position = "bottomright")
 

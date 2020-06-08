@@ -9,7 +9,7 @@ isnested <- function(l) {
 
 
 #' Get a simplified SpatialPolygonsDataFrame of the world
-#' @param which (charatcer) name of type of SpatialPolygons to be obtained. Options
+#' @param which (character) name of type of SpatialPolygons to be obtained. Options
 #' are: "simple" and "simplest"; default = "simplest".
 #' @param regions (character) name of the country (or region if \code{which} =
 #' "simple") for which to obtain the SpatialPolygonsDataFrame.
@@ -46,11 +46,11 @@ simple_wmap <- function(which = "simplest", regions = ".") {
 }
 
 
-#' Prepare Equal-Area or Equidistante Projection
-#' @param occurrences matrix or data.frame conaining coordinates to serve as
+#' Prepare Equal-Area or Equidistant Projection
+#' @param occurrences matrix or data.frame containing coordinates to serve as
 #' a reference for the center of the projection. Columns must be:
 #' "longitude" and "latitude", in that order.
-#' @param spatial_object Spatial* objects, Poinst or Polygons, to be used to
+#' @param spatial_object Spatial* objects, Points or Polygons, to be used to
 #' calculate a reference for the center of the projection. Projection must be
 #' WGS84 (EPSG:4326).
 #' @details If arguments are not defined projection is centered in 0, 0 for
@@ -120,7 +120,7 @@ AED_projection <- function(occurrences = NULL, spatial_object = NULL) {
 
 #' Get SpatialPolygons of countries at distinct administrative levels
 #' @param country_code (character) code of country or countries of interest.
-#' @param boundary_level (numeric) level of admisnistrative division to be considered.
+#' @param boundary_level (numeric) level of administrative division to be considered.
 #' @param keep_data (logical) whether or not to keep downloaded files. Default = \code{FALSE}.
 #' @return A SpatialPolygonsDataFrame from the GADM database at the level selected.
 #' @export
@@ -164,12 +164,12 @@ GADM_spoly <- function(country_code, boundary_level, keep_data = FALSE) {
 #' @param occurrences a data.frame containing geographic coordinates of species
 #' occurrences, columns must be: Species, Longitude, and Latitude. Geographic
 #' coordinates must be in decimal degrees (WGS84).
-#' @param polygons SpatialPolygon object to clip convex hulls to these limits.
+#' @param polygons SpatialPolygons object to clip convex hulls to these limits.
 #' Projection of this object defines projection of the extent of occurrence. This
 #' projection must be one that allows safe calculation of areas (e.g., Lambert
 #' Azimuthal Equal Area).
 #' @return
-#' A list comtaining a SpatialPolygonsDataFrame of the extent of occurrence, and
+#' A list containing a SpatialPolygonsDataFrame of the extent of occurrence, and
 #' a vector with the areas in km2 of the spatial polygons resulted.
 #' @export
 #' @importFrom sp CRS SpatialPolygons Polygons Polygon proj4string over spTransform
@@ -223,11 +223,11 @@ eoo <- function(occurrences, polygons) {
 
 
 #' Area of occupancy of a species as defined by the IUCN
-#' @param occ_pr SpatialPointsDataFrame of ocurrence records. Projection must be
+#' @param occ_pr SpatialPointsDataFrame of occurrence records. Projection must be
 #' one that allows safe calculation of areas (e.g., Lambert Azimuthal Equal Area).
 #' @param species (character) scientific name of the species.
 #' @return
-#' A list comtaining a SpatialPolygonsDataFrame of the area of occupancy, and
+#' A list containing a SpatialPolygonsDataFrame of the area of occupancy, and
 #' a vector with the areas in km2 of the spatial polygons resulted.
 #' @export
 #' @importFrom sp SpatialPolygonsDataFrame
@@ -272,7 +272,7 @@ aoo <- function(occ_pr, species) {
 
 
 #' Finds clusters for SpatialPointsDataFrame based on distinct methods
-#' @param occ_pr SpatialPointsDataFrame of ocurrence records. Projection must be
+#' @param occ_pr SpatialPointsDataFrame of occurrence records. Projection must be
 #' one that allows safe calculation of distances (e.g., Azimuthal equidistant)
 #' @param cluster_method (character) name of the method to be used for clustering
 #' the occurrences. Options are "hierarchical" and "k-means"; default = "hierarchical".
@@ -288,13 +288,13 @@ aoo <- function(occ_pr, species) {
 #' species occurrences. Both methods make distinct assumptions and one of them may
 #' perform better than the other depending on the spatial pattern of the data.
 #'
-#' The k-means method, for example, perfomrs better when the following assumptions
+#' The k-means method, for example, performs better when the following assumptions
 #' are fulfilled: Clusters are spatially grouped—or “spherical” and Clusters are
 #' of a similar size. Owing to the nature of the hierarchical clustering algorithm
 #' it may take more time than the k-means method. Both methods make assumptions
 #' and they may work well on some data sets, and fail on others.
 #'
-#' Another important factor to consider is that the k-means method allways starts
+#' Another important factor to consider is that the k-means method always starts
 #' with a random choice of cluster centers, thus it may end in different results
 #' on different runs. That may be problematic when trying to replicate your methods.
 #' With hierarchical clustering, most likely the same clusters can be obtained if
@@ -363,13 +363,13 @@ clusters <- function(occ_pr, cluster_method = "hierarchical", split_distance,
 #' Convex or concave hull polygons from spatial points
 #' @param occ_pr SpatialPoints* object containing geographic points to be used
 #' to create hull polygons. This spatial object must be projected to a system
-#' with th argument "+units=m".
+#' with the argument "+units=m".
 #' @param hull_type (character) type of hull polygons to be created. Available
 #' options are: "convex" and "concave". Default = "convex".
 #' @param concave_distance_lim (numeric) distance, in meters, to be passed to the
-#' length_threshold parameter of the \code{\link[concaveman]{concaveman}} funcion.
+#' length_threshold parameter of the \code{\link[concaveman]{concaveman}} function.
 #' Default = 5000. Ignored if \code{hull_type} is not "concave".
-#' @return A SpatialPolygon object with the hull polygon. If the number of points
+#' @return A SpatialPolygons object with the hull polygon. If the number of points
 #' in occ_pr is 1 or 2 a SpatialPointsDataFrame object is returned.
 #' @export
 #' @importFrom sp CRS SpatialPointsDataFrame

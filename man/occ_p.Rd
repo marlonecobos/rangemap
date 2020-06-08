@@ -17,7 +17,7 @@
 occ_p
 }
 \description{
-A dataset containing geographic coordinates of a Caribean toad.
+A dataset containing geographic coordinates of a Caribbean toad.
 }
 \examples{
 data("occ_p", package = "rangemap")

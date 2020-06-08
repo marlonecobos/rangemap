@@ -9,7 +9,7 @@ GADM_spoly(country_code, boundary_level, keep_data = FALSE)
 \arguments{
 \item{country_code}{(character) code of country or countries of interest.}
 
-\item{boundary_level}{(numeric) level of admisnistrative division to be considered.}
+\item{boundary_level}{(numeric) level of administrative division to be considered.}
 
 \item{keep_data}{(logical) whether or not to keep downloaded files. Default = \code{FALSE}.}
 }

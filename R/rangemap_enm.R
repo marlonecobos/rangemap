@@ -18,7 +18,7 @@
 #' occurrences, columns must be: Species, Longitude, and Latitude. Geographic
 #' coordinates must be in decimal degrees. \code{occurrences} may not be defined,
 #' but if so, \code{threshold_value} must be defined. Default = \code{NULL}.
-#' @param threshold_value (numeric) value used for reclasifying the
+#' @param threshold_value (numeric) value used for reclassifying the
 #' \code{model_output}. This value will be the lowest considered as suitable for
 #' the species and must be inside the range of values present in \code{model_output}.
 #' If defined, \code{threshold_omission} will be ignored. If \code{occurrences}
@@ -51,14 +51,14 @@
 #' the shapefile to be exported. A suffix will be added to \code{name} depending
 #' on the object, as follows: species extent of occurrence = "_extent_occ", area
 #' of occupancy = "_area_occ", and occurrences = "_unique_records".
-#' @param overwrite (logical) wether or not to overwrite previous results with
+#' @param overwrite (logical) whether or not to overwrite previous results with
 #' the same name. Default = \code{FALSE}.
 #'
 #' @return
 #' If \code{occurrences} and \code{threshold_omission} are defined, a  sp_range
 #' object (S4) containing: (1) a data.frame with information about the species
 #' range, and Spatial objects of (2) unique occurrences, (3) species range,
-#' (4) extent of occurrence, and (5) area of occurpancy.
+#' (4) extent of occurrence, and (5) area of occupancy.
 #'
 #' If instead of \code{occurrences} and \code{threshold_omission},
 #' \code{threshold_value} is provided, the result will be a sp_range object
@@ -68,8 +68,8 @@
 #' @details
 #' All resulting Spatial objects in the list of results will be projected to the
 #' \code{final_projection}. Areas are calculated in square kilometers using the
-#' Lambert Azimuthal Equal Area projection, centered on the centroid of occurence
-#' points given as imputs or, if points are not provided, the resulting range.
+#' Lambert Azimuthal Equal Area projection, centered on the centroid of occurrence
+#' points given as inputs or, if points are not provided, the resulting range.
 #'
 #' @usage
 #' rangemap_enm(model_output, occurrences = NULL, threshold_value = NULL,
