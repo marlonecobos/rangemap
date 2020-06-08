@@ -13,11 +13,11 @@
 #' @name sp_model
 #'
 #' @examples
-#' model <- raster::raster(list.files(system.file("extdata", package = "rangemap"),
-#'                                    pattern = "sp_model.tif", full.names = TRUE))
+#' model <- raster::raster(system.file("extdata", "sp_model.tif",
+#'                                     package = "rangemap"))
 #'
 #' raster::plot(model)
-
+NULL
 
 
 #' A set of environmental variables for examples
@@ -43,3 +43,4 @@
 #' names(vars) <- c("bio5", "bio6", "bio13", "bio14")
 #'
 #' raster::plot(vars)
+NULL
