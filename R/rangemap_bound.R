@@ -213,10 +213,10 @@ rangemap_boundaries <- function(occurrences = NULL, adm_areas = NULL,
   # world map or user map fro creating species range
   if (missing(polygons)) {
     polygons <- GADM_spoly(country_code, boundary_level, keep_data)
+  } else {
+    # project polygons
+    polygons <- sp::spTransform(polygons, WGS84)
   }
-
-  # project polygons
-  polygons <- sp::spTransform(polygons, WGS84)
 
   # anlysis
   if (!missing(occurrences)) {

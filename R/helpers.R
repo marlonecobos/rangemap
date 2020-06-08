@@ -127,10 +127,18 @@ AED_projection <- function(occurrences = NULL, spatial_object = NULL) {
 #' @importFrom raster getData
 #' @importFrom maps map
 #' @importFrom maptools map2SpatialPolygons
+#' @importFrom sp CRS spTransform
 #' @examples
 #' map_gadm <- GADM_spoly(country_code = "EC", boundary_level = 1)
 
 GADM_spoly <- function(country_code, boundary_level, keep_data = FALSE) {
+  if (missing(country_code)) {
+    stop("Argument 'country_code' is necessary to perform the analysis")
+  }
+  if (missing(boundary_level)) {
+    stop("Argument 'boundary_level' is necessary to perform the analysis")
+  }
+  WGS84 <- sp::CRS("+init=epsg:4326")
   polygon <- lapply(country_code, function(x) {
     raster::getData(name = "GADM", country = x, level = boundary_level)
   })
@@ -142,6 +150,7 @@ GADM_spoly <- function(country_code, boundary_level, keep_data = FALSE) {
 
   polygon@data[, !names(polygon@data) %in% c("GID_0", a_names)] <- NULL
   names(polygon@data) <- c("GID_0", "adm_names")
+  polygon <- sp::spTransform(polygon, WGS84)
 
   if (keep_data == FALSE) {
     erase_rds <- list.files(path = ".", pattern = "^gadm", full.names = TRUE)
@@ -185,6 +194,12 @@ GADM_spoly <- function(country_code, boundary_level, keep_data = FALSE) {
 #' eoo_pe <- eoo(occurrences = occ, polygons = poly_pr)
 
 eoo <- function(occurrences, polygons) {
+  if (missing(occurrences)) {
+    stop("Argument 'occurrences' is necessary to perform the analysis")
+  }
+  if (missing(polygons)) {
+    stop("Argument 'polygons' is necessary to perform the analysis")
+  }
   WGS84 <- sp::CRS("+init=epsg:4326")
   species <- as.character(occurrences[1, 1])
   coord <- as.data.frame(occurrences[, 2:3])
@@ -235,6 +250,12 @@ eoo <- function(occurrences, polygons) {
 #' aoo_pe <- aoo(occ_pr = occ_pr, species = sp)
 
 aoo <- function(occ_pr, species) {
+  if (missing(occ_pr)) {
+    stop("Argument 'occ_pr' is necessary to perform the analysis")
+  }
+  if (missing(species)) {
+    stop("Argument 'species' is necessary to perform the analysis")
+  }
   grid <- raster::raster(ext = raster::extent(occ_pr) + 10000,
                          res = c(2000, 2000), crs = occ_pr@proj4string)
   raster_sp <- raster::rasterize(occ_pr[, 2:3], grid)[[1]] # raster from points
@@ -441,6 +462,12 @@ hull_polygon <- function(occ_pr, hull_type = "convex", concave_distance_lim = 50
 #' sp::plot(big_polys)
 
 keep_big_polygons <- function(polygons, threshold_size) {
+  if (missing(polygons)) {
+    stop("Argument 'polygons' is necessary to perform the analysis")
+  }
+  if (missing(threshold_size)) {
+    stop("Argument 'threshold_size' is necessary to perform the analysis")
+  }
   areas <- lapply(polygons@polygons, function(x){
     sapply(x@Polygons, function(y) {y@area})
   })
