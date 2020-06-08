@@ -1,7 +1,7 @@
 Package: rangemap
 Type: Package
 Title: Simple Tools for Defining Species Ranges
-Version: 0.1.11
+Version: 0.1.12
 Authors@R: c(
     person("Marlon E.", "Cobos", email = "manubio13@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-2611-1767")), 
@@ -34,7 +34,6 @@ Imports:
     maptools (>= 0.9),
     rnaturalearth (>= 0.1),
     rnaturalearthdata (>= 0.1),
-    plotly (>= 4.7),
     raster (>= 2.6),
     rgdal (>= 1.2),
     rgeos (>= 0.3),
