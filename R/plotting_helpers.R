@@ -41,10 +41,6 @@ plot_ranges <- function(sp_ranges, sp_records = NULL, variable, range_colors = N
     stop("Argument 'variable' must be defined See function's help for details.")
   }
 
-  # par settings
-  #opar <- par(no.readonly = TRUE)
-  #on.exit(par(opar))
-
   # range and variable colors
   if (is.null(range_colors)) {
     range_colors <- gray.colors(length(sp_ranges))
@@ -92,4 +88,115 @@ plot_ranges <- function(sp_ranges, sp_records = NULL, variable, range_colors = N
                                 line = NULL, cex.axis = 0.8),
                legend.args = list(text = names(variable), side = 4, font = 2,
                                   line = 0.5, cex = 0.9))
+}
+
+
+
+#' Helper to add north arrow to map plots
+#' @description north_arrow plots a North arrow in user defined places in a map.
+#'
+#' @param position (character or numeric) position of the North arrow. If
+#' character, options are: "topright", "topleft", "bottomleft", or "bottomright".
+#' Default = "topright".
+#' @param xlim (numeric) vector of two numbers indicating the x limits of the
+#' plotting area. Default = \code{NULL}.
+#' @param ylim (numeric) vector of two numbers indicating the y limits of the
+#' plotting area. Default = \code{NULL}.
+#'
+#' @export
+#' @importFrom graphics polygon
+#' @examples
+#' # simple plot
+#' plot(1:10, 1:10, col = "transparent")
+#'
+#' # nort arrows
+#' north_arrow(position = "topright")
+#' north_arrow(position = "bottomright")
+
+north_arrow <- function(position = "topright", xlim = NULL, ylim = NULL) {
+  if (is.null(xlim) & is.null(ylim)) {
+    xlim <- par("usr")[1:2]
+    ylim <- par("usr")[3:4]
+  } else {
+    if(is.null(xlim)) {
+      xlim <- par("usr")[1:2]
+    }
+    if(is.null(ylim)) {
+      ylim <- par("usr")[3:4]
+    }
+  }
+
+  # defining key points
+  xdif <- (xlim[2] - xlim[1])
+  ydif <- (ylim[2] - ylim[1])
+
+  if (class(position) == "character") {
+    if (!position %in% c("topright", "bottomright", "bottomleft", "topleft")) {
+      stop("Argument 'position' is not valid, see function's help.")
+    }
+
+    if (position == "topright") {
+      xmulta <- c(0.91, 0.93, 0.93)
+      ymulta <- c(0.90, 0.955, 0.92)
+      xmultb <- c(0.93, 0.95, 0.93)
+      ymultb <- c(0.955, 0.90, 0.92)
+
+    }
+    if (position == "topleft") {
+      xmulta <- c(0.05, 0.07, 0.07)
+      ymulta <- c(0.90, 0.955, 0.92)
+      xmultb <- c(0.07, 0.09, 0.07)
+      ymultb <- c(0.955, 0.90, 0.92)
+    }
+    if (position == "bottomleft") {
+      xmulta <- c(0.05, 0.07, 0.07)
+      ymulta <- c(0.045, 0.1, 0.065)
+      xmultb <- c(0.07, 0.09, 0.07)
+      ymultb <- c(0.1, 0.045, 0.065)
+    }
+    if (position == "bottomright") {
+      xmulta <- c(0.91, 0.93, 0.93)
+      ymulta <- c(0.045, 0.1, 0.065)
+      xmultb <- c(0.93, 0.95, 0.93)
+      ymultb <- c(0.1, 0.045, 0.065)
+    }
+
+    # coordinates for polygons
+    xarrowa <- c((xlim[1] + (xdif * xmulta[1])),
+                 (xlim[1] + (xdif * xmulta[2])),
+                 (xlim[1] + (xdif * xmulta[3])))
+    yarrowa <- c((ylim[1] + (ydif * ymulta[1])),
+                 (ylim[1] + (ydif * ymulta[2])),
+                 (ylim[1] + (ydif * ymulta[3])))
+
+    xarrowb <- c((xlim[1] + (xdif * xmultb[1])),
+                 (xlim[1] + (xdif * xmultb[2])),
+                 (xlim[1] + (xdif * xmultb[3])))
+    yarrowb <- c((ylim[1] + (ydif * ymultb[1])),
+                 (ylim[1] + (ydif * ymultb[2])),
+                 (ylim[1] + (ydif * ymultb[3])))
+  } else {
+    xmulta <- c(0, 0.02, 0.02)
+    ymulta <- c(0.075, 0.02, 0.055)
+    xmultb <- c(0.02, 0.04, 0.02)
+    ymultb <- c(0.02, 0.075, 0.055)
+
+    # coordinates for polygons
+    xarrowa <- c((position[1] + (xdif * xmulta[1])),
+                 (position[1] + (xdif * xmulta[2])),
+                 (position[1] + (xdif * xmulta[3])))
+    yarrowa <- c((position[2] - (ydif * ymulta[1])),
+                 (position[2] - (ydif * ymulta[2])),
+                 (position[2] - (ydif * ymulta[3])))
+
+    xarrowb <- c((position[1] + (xdif * xmultb[1])),
+                 (position[1] + (xdif * xmultb[2])),
+                 (position[1] + (xdif * xmultb[3])))
+    yarrowb <- c((position[2] - (ydif * ymultb[1])),
+                 (position[2] - (ydif * ymultb[2])),
+                 (position[2] - (ydif * ymultb[3])))
+  }
+
+  polygon(xarrowb, yarrowb, border = "black", col = "white")
+  polygon(xarrowa, yarrowa, border = "black", col = "black")
 }

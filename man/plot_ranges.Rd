@@ -37,9 +37,11 @@ Helper to plot multiple ranges on top of environmental layers
 data("buffer_range", package = "rangemap")
 data("cxhull_range", package = "rangemap")
 
+ranges <- list(buffer_range@species_range, cxhull_range@species_range)
+
 var <- raster::stack(system.file("extdata", "variables.tif",
                                  package = "rangemap"))[[1]]
 
 # plotting
-plot_ranges(list(buffer_range, cxhull_range), variable = var)
+plot_ranges(ranges, variable = var)
 }
