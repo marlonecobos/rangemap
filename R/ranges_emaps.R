@@ -102,7 +102,7 @@ ranges_emaps <- function(..., variables, add_occurrences = FALSE,
 
   # preparing data
   ## plain projection
-  WGS84 <- sp::CRS("+init=epsg:4326")
+  WGS84 <- ranges[[1]]@species_range@proj4string
 
   ## extracting data
   sp_ranges <- lapply(ranges, function(x) {x@species_range})
@@ -137,7 +137,6 @@ ranges_emaps <- function(..., variables, add_occurrences = FALSE,
 
   ## projecting
   variables <- raster::projectRaster(variables, crs = WGS84)
-  #variables <- raster::projectRaster(variables, crs = AEQD)
 
   # x and y limits of plots
   xbox <- unlist(lapply(sp_ranges, function(x) {c(x@bbox[1, ])}))
