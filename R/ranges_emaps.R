@@ -56,14 +56,17 @@
 #' position are: "bottomright", "bottomleft", "topleft", and "topright".
 #'
 #' @usage
-#' ranges_emaps(..., variables, add_occurrences = FALSE, range_colors = NULL,
-#'              color_variables = NULL, ranges_legend = TRUE,
-#'              legend_position = "bottomright", legend_cex = 0.7, zoom = 1.3)
+#' ranges_emaps(..., variables, add_occurrences = FALSE,
+#'              range_colors = NULL, color_variables = NULL,
+#'              ranges_legend = TRUE, legend_position = "bottomright",
+#'              legend_cex = 0.7, zoom = 0.7)
 #'
 #' @export
 #'
 #' @importFrom sp CRS
 #' @importFrom raster projectRaster
+#' @importFrom grDevices gray.colors terrain.colors
+#' @importFrom graphics legend par
 #'
 #' @examples
 #' # example data
@@ -161,6 +164,15 @@ ranges_emaps <- function(..., variables, add_occurrences = FALSE,
     if (raster::nlayers(variables) == i) {
       fig_config <- fig_conf[[i]]
     }
+  }
+
+  # range and variable colors
+  if (is.null(range_colors)) {
+    range_colors <- gray.colors(length(sp_ranges))
+  }
+
+  if (is.null(color_variables)) {
+    color_variables <- rev(terrain.colors(255))
   }
 
   par(mar = c(0, 0, 0, 2), mfrow = fig_config)

@@ -17,6 +17,7 @@
 #' @slot area_of_occupancy a SpatialPolygonsDataFrame, not in sp_range.
 #' @slot trend_surface_model a RasterLayer, not in sp_range.
 #' @export
+#' @importFrom methods new
 #' @examples
 #' showClass("sp_range")
 #' showClass("sp_range_iucn")

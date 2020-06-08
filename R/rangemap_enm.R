@@ -85,6 +85,7 @@
 #' @importFrom sp CRS SpatialPointsDataFrame SpatialPolygonsDataFrame
 #' @importFrom sp spTransform
 #' @importFrom rgdal writeOGR
+#' @importFrom stats na.omit
 #'
 #' @examples
 #' # parameters

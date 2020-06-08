@@ -23,6 +23,6 @@ to ISO norms.
 }
 \examples{
 data("country_codes", package = "rangemap")
-View(country_codes)
+head(country_codes)
 }
 \keyword{datasets}

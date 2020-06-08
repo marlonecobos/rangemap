@@ -30,8 +30,11 @@ occ <- unique(occ_p)
 
 # polygons
 data("wrld_simpl", package = "maptools")
-LAEA <- LAEA_projection(occ_sp)
-poly_pr <- sp::spTransform(wrld_simpl, ECK4)
+LAEA <- LAEA_projection(occ[, 2:3])
+poly_pr <- sp::spTransform(wrld_simpl, LAEA)
+
+# to fix topology problems
+poly_pr <- rgeos::gBuffer(poly_pr, width = 0)
 
 # EOO
 eoo_pe <- eoo(occurrences = occ, polygons = poly_pr)

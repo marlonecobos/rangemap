@@ -63,9 +63,10 @@
 #' not a complete sampling of the \code{regiong_of_interest}.
 #'
 #' @usage
-#' rangemap_tsa(occurrences, region_of_interest, cell_size = 5, threshold = 0,
-#'              simplify_level = 0, save_shp = FALSE, save_ts_layer = FALSE,
-#'              name, overwrite = FALSE)
+#' rangemap_tsa(occurrences, region_of_interest, cell_size = 5,
+#'              threshold = 0, simplify = FALSE, simplify_level = 0,
+#'              final_projection = NULL, save_shp = FALSE,
+#'              save_ts_layer = FALSE, name, overwrite = FALSE)
 #'
 #' @export
 #'
@@ -76,6 +77,7 @@
 #' @importFrom rgeos gUnaryUnion
 #' @importFrom rgdal writeOGR
 #' @importFrom spatial surf.ls predict.trls
+#' @importFrom stats na.omit
 #'
 #' @examples
 #' # data

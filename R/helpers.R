@@ -18,18 +18,19 @@ isnested <- function(l) {
 #' @importFrom sp CRS SpatialPolygonsDataFrame spTransform
 #' @importFrom maps map
 #' @importFrom maptools map2SpatialPolygons
+#' @importFrom utils data
 #' @examples
 #' map <- simple_wmap()
 
 simple_wmap <- function(which = "simplest", regions = ".") {
   WGS84 <- sp::CRS("+init=epsg:4326")
   if (which == "simplest") {
-    data("wrld_simpl", package = "maptools")
+    requireNamespace(package = "maptools", quietly = TRUE)
+    data("wrld_simpl", package = "maptools", envir = environment())
     polygons <- sp::spTransform(wrld_simpl, WGS84)
     if (regions != ".") {
       polygons <- polygons[polygons$NAME %in% regions, ]
     }
-    rm("wrld_simpl", pos = ".GlobalEnv")
   } else {
     w_map <- maps::map(database = "world", regions = regions, fill = TRUE,
                        plot = FALSE)
@@ -72,7 +73,7 @@ LAEA_projection <- function(occurrences = NULL, spatial_object = NULL) {
       if (!class(occurrences)[1] %in% c("matrix", "data.frame", "tbl_df")) {
         stop("Argument 'occurrences' is not valid, see functions help.")
       }
-      cent <- apply(occ, 2, mean)
+      cent <- apply(occurrences, 2, mean)
     } else {
       if (!class(spatial_object)[1] %in% c("SpatialPointsDataFrame", "SpatialPoints",
                                            "SpatialPolygonsDataFrame", "SpatialPolygons")) {
@@ -91,13 +92,14 @@ LAEA_projection <- function(occurrences = NULL, spatial_object = NULL) {
 }
 
 #' @rdname LAEA_projection
+#' @export
 AED_projection <- function(occurrences = NULL, spatial_object = NULL) {
   if (!is.null(occurrences) | !is.null(spatial_object)) {
     if (!is.null(occurrences)) {
       if (!class(occurrences)[1] %in% c("matrix", "data.frame", "tbl_df")) {
         stop("Argument 'occurrences' is not valid, see functions help.")
       }
-      cent <- apply(occ, 2, mean)
+      cent <- apply(occurrences, 2, mean)
     } else {
       if (!class(spatial_object)[1] %in% c("SpatialPointsDataFrame", "SpatialPoints",
                                            "SpatialPolygonsDataFrame", "SpatialPolygons")) {
@@ -173,8 +175,11 @@ GADM_spoly <- function(country_code, boundary_level, keep_data = FALSE) {
 #'
 #' # polygons
 #' data("wrld_simpl", package = "maptools")
-#' LAEA <- LAEA_projection(occ_sp)
-#' poly_pr <- sp::spTransform(wrld_simpl, ECK4)
+#' LAEA <- LAEA_projection(occ[, 2:3])
+#' poly_pr <- sp::spTransform(wrld_simpl, LAEA)
+#'
+#' # to fix topology problems
+#' poly_pr <- rgeos::gBuffer(poly_pr, width = 0)
 #'
 #' # EOO
 #' eoo_pe <- eoo(occurrences = occ, polygons = poly_pr)
@@ -212,6 +217,7 @@ eoo <- function(occurrences, polygons) {
 #' @export
 #' @importFrom sp SpatialPolygonsDataFrame
 #' @importFrom raster area extent rasterize
+#' @importFrom methods as
 #' @examples
 #' # data
 #' data("occ_p", package = "rangemap")
@@ -220,7 +226,7 @@ eoo <- function(occurrences, polygons) {
 #' occ_sp <- sp::SpatialPointsDataFrame(coords = occ[, 2:3], data = occ,
 #'                                      proj4string = WGS84)
 #'
-#' LAEA <- LAEA_projection(occ_sp)
+#' LAEA <- LAEA_projection(spatial_object = occ_sp)
 #' occ_pr <- sp::spTransform(occ_sp, LAEA)
 #'
 #' sp <- as.character(occ[1, 1])
@@ -278,7 +284,7 @@ aoo <- function(occ_pr, species) {
 #'
 #' @export
 #' @importFrom sp coordinates
-#' @importFrom stats hclust cutree kmeans
+#' @importFrom stats hclust cutree kmeans dist
 #' @examples
 #' # data
 #' data("occ_p", package = "rangemap")
@@ -290,7 +296,7 @@ aoo <- function(occ_pr, species) {
 #'                                      proj4string = WGS84)
 #'
 #' # reprojecting for measuring distances
-#' LAEA <- LAEA_projection(occ_sp)
+#' LAEA <- LAEA_projection(spatial_object = occ_sp)
 #' occ_pr <- sp::spTransform(occ_sp, LAEA)
 #'
 #' # clustering
@@ -360,7 +366,7 @@ clusters <- function(occ_pr, cluster_method = "hierarchical", split_distance,
 #'                                      proj4string = WGS84)
 #'
 #' # reprojecting
-#' LAEA <- LAEA_projection(occ_sp)
+#' LAEA <- LAEA_projection(spatial_object = occ_sp)
 #' occ_pr <- sp::spTransform(occ_sp, LAEA)
 #'
 #' # convex hull polygon
@@ -426,6 +432,7 @@ hull_polygon <- function(occ_pr, hull_type = "convex", concave_distance_lim = 50
 #' @return A SpatialPolygonsDataFrame with polygons with areas above
 #' \code{threshold_size}.
 #' @export
+#' @importFrom methods slot slot<-
 #' @examples
 #' data("spdf_range", package = "rangemap")
 #' sp::plot(spdf_range)

@@ -4,6 +4,7 @@
 #' @aliases summary,sp_range_iucnextra-method
 #' @param object object of class sp_range*.
 #' @export
+#' @importFrom methods slotNames
 #' @return
 #' A written summary.
 #' @rdname summary

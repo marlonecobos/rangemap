@@ -4,9 +4,10 @@
 \alias{ranges_emaps}
 \title{Plots of species ranges on maps of environmental variables}
 \usage{
-ranges_emaps(..., variables, add_occurrences = FALSE, range_colors = NULL,
-             color_variables = NULL, ranges_legend = TRUE,
-             legend_position = "bottomright", legend_cex = 0.7, zoom = 1.3)
+ranges_emaps(..., variables, add_occurrences = FALSE,
+             range_colors = NULL, color_variables = NULL,
+             ranges_legend = TRUE, legend_position = "bottomright",
+             legend_cex = 0.7, zoom = 0.7)
 }
 \arguments{
 \item{...}{one or more objects of class \code{\link{sp_range}} produced with

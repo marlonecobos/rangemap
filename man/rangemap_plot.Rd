@@ -24,12 +24,12 @@ the map. If \code{NULL}, a simplified world map will be used.}
 
 \item{add_EOO}{(logical) if \code{TRUE}, the extent of occurrence of the
 species will be added to the figure. Ignored if the \code{sp_range} is product
-of the \code{\link{rangemap_bound}} function and administrative areas were
+of the \code{\link{rangemap_boundaries}} function and administrative areas were
 selected only based on names. Default = \code{FALSE}.}
 
 \item{add_occurrences}{(logical) if \code{TRUE}, the species occurrence records
 will be added to the figure. Ignored if the \code{sp_range} is product of the
-\code{\link{rangemap_bound}} function and administrative areas were selected
+\code{\link{rangemap_boundaries}} function and administrative areas were selected
 only based on names. Default = \code{FALSE}.}
 
 \item{basemap_color}{color for the basemap (\code{polygons}) to be ploted.

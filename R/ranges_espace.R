@@ -41,7 +41,7 @@
 #' @importFrom sp CRS SpatialPointsDataFrame
 #' @importFrom raster rasterToPoints extract
 #' @importFrom rgl ellipse3d plot3d legend3d aspect3d
-#' @importFrom stats prcomp
+#' @importFrom stats prcomp cov
 #'
 #' @examples
 #' # example data
@@ -126,7 +126,7 @@ ranges_espace <- function(..., add_occurrences = TRUE, variables,
     ## combining these data
     vdata <- rbind(vdata, pdata)
   }else {
-    vdata <- idata
+    vdata <- vdata
   }
 
   # pca

@@ -52,5 +52,5 @@ coords <- occ_p[, 2:3]
 # buffers
 bufferp <- geobuffer_points(data = coords, radius = 25000)
 
-sp::plot(bufferp, axes = T)
+sp::plot(bufferp, axes = TRUE)
 }

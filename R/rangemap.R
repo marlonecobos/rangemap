@@ -11,7 +11,7 @@
 #' @section rangemap main functions:
 #' \code{\link{rangemap_boundaries}}, \code{\link{rangemap_buffer}},
 #' \code{\link{rangemap_enm}}, \code{\link{rangemap_explore}},
-#' \code{\link{rangemap_fig}}, \code{\link{rangemap_hull}},
+#' \code{\link{rangemap_plot}}, \code{\link{rangemap_hull}},
 #' \code{\link{rangemap_tsa}}, \code{\link{ranges_emaps}},
 #' \code{\link{ranges_espace}}
 #'

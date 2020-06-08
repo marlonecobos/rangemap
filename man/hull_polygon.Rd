@@ -36,7 +36,7 @@ occ_sp <- sp::SpatialPointsDataFrame(coords = occ[, 2:3], data = occ,
                                      proj4string = WGS84)
 
 # reprojecting
-LAEA <- LAEA_projection(occ_sp)
+LAEA <- LAEA_projection(spatial_object = occ_sp)
 occ_pr <- sp::spTransform(occ_sp, LAEA)
 
 # convex hull polygon

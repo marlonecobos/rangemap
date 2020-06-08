@@ -24,7 +24,7 @@ in five levels.
 }
 \examples{
 data("adm_area_names", package = "rangemap")
-adm_area_names[1:10, 1:6]
+adm_area_names[1:10, 1:4]
 
 # Country names: Level 0
 unique(adm_area_names$NAME_0)

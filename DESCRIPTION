@@ -9,8 +9,8 @@ Authors@R: c(
            comment = c(ORCID = "0000-0002-4852-2567")), 
     person("Narayani", "Barve", email = "narayani.ku@gmail.com", role = "aut",
            comment = c(ORCID = "0000-0002-7893-8774")),
-    person("Alberto", "Jiménez-Valverde", email = "alberto.jimenez.valverde@gmail.com", 
-           role = "aut", comment = c(ORCID = "0000-0001-9962-2106"))
+    person("Alberto", "Jimenez-Valverde", email = "alberto.jimenez.valverde@gmail.com", 
+           role = "aut", comment = c(ORCID = "0000-0001-9962-2106")))
 Author: Marlon E. Cobos [aut, cre],
     Vijay Barve [aut],
     Narayani Barve [aut],
@@ -24,7 +24,7 @@ Description: A collection of tools to create species range maps based on
     manners are also available. Results obtained using these tools can be 
     used to explore the distribution of species and define areas of occupancy 
     and extent of occurrence of species. Description of methods and approaches 
-    implemented here can be found in:
+    implemented here can be found in.
 URL: https://github.com/marlonecobos/rangemap
 BugReports: https://github.com/marlonecobos/rangemap/issues
 Imports:
@@ -32,12 +32,14 @@ Imports:
     dplyr (>= 0.8),
     maps (>= 3.3),
     maptools (>= 0.9),
+    methods, 
     rnaturalearth (>= 0.1),
     rnaturalearthdata (>= 0.1),
     raster (>= 2.6),
     rgdal (>= 1.2),
     rgeos (>= 0.3),
     rgl (>= 0.100),
+    scales (>= 1.1),
     sf (>= 0.6),
     spatial (>= 7.3),
     sp (>= 1.2)
@@ -48,5 +50,3 @@ Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.0.0
-LinkingTo: Rcpp
-VignetteBuilder: knitr

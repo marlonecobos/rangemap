@@ -4,9 +4,10 @@
 \alias{rangemap_tsa}
 \title{Species distributional ranges based on trend surface analyses}
 \usage{
-rangemap_tsa(occurrences, region_of_interest, cell_size = 5, threshold = 0,
-             simplify_level = 0, save_shp = FALSE, save_ts_layer = FALSE,
-             name, overwrite = FALSE)
+rangemap_tsa(occurrences, region_of_interest, cell_size = 5,
+             threshold = 0, simplify = FALSE, simplify_level = 0,
+             final_projection = NULL, save_shp = FALSE,
+             save_ts_layer = FALSE, name, overwrite = FALSE)
 }
 \arguments{
 \item{occurrences}{a data.frame containing geographic coordinates of species

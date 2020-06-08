@@ -24,7 +24,8 @@
 #' @importFrom sp CRS spTransform plot SpatialPointsDataFrame
 #' @importFrom rnaturalearth ne_countries
 #' @importFrom rgeos gCentroid
-#' @importFrom graphics points text axis
+#' @importFrom graphics points text axis box
+#' @importFrom grDevices dev.new
 #'
 #' @examples
 #' # getting the data
@@ -82,11 +83,7 @@ rangemap_explore <- function(occurrences, show_countries = FALSE,
 
   ## generic plot
   if (graphic_device == TRUE) {
-    if (.Platform$OS.type == "unix") {
-      quartz()
-    } else {
-      x11()
-    }
+    dev.new()
   }
 
   par(mar = c(0, 0, 0, 0), tcl = 0.25)

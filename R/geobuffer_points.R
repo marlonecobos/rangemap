@@ -41,6 +41,7 @@
 #' @importFrom rgeos gUnaryUnion
 #' @importFrom dplyr %>%
 #' @importFrom sf st_wrap_dateline st_union as_Spatial
+#' @importFrom methods as
 #'
 #' @examples
 #' #data
@@ -50,7 +51,7 @@
 #' # buffers
 #' bufferp <- geobuffer_points(data = coords, radius = 25000)
 #'
-#' sp::plot(bufferp, axes = T)
+#' sp::plot(bufferp, axes = TRUE)
 
 
 geobuffer_points <- function(data, radius, by_point = FALSE, n_segments = 100,

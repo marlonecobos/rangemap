@@ -178,7 +178,8 @@ rangemap_boundaries <- function(occurrences = NULL, adm_areas = NULL,
                         "\nSpecies range will be created using occurrences only.",
                         sep = ""))
         }
-      }else{
+      } else {
+        data("adm_area_names", package = "rangemap", envir = environment())
         a_names <- paste("NAME", boundary_level, sep = "_")
         a_a_names <- as.vector(unique(adm_area_names[adm_area_names$ISO3 %in% country_code,
                                                      a_names]))
