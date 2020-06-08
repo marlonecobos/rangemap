@@ -209,11 +209,11 @@ rangemap_plot <- function(sp_range, polygons = NULL, add_EOO = FALSE,
       }
       if (scalebar_position == "bottomleft") {
         xscale <- xlim[1] + ((xlim[2] - xlim[1]) * 0.02)
-        yscale <- ylim[1] + ((ylim[2] - ylim[1]) * 0.04)
+        yscale <- ylim[1] + ((ylim[2] - ylim[1]) * 0.06)
       }
       if (scalebar_position == "bottomright") {
         xscale <- xlim[1] + ((xlim[2] - xlim[1]) * 0.80)
-        yscale <- ylim[1] + ((ylim[2] - ylim[1]) * 0.04)
+        yscale <- ylim[1] + ((ylim[2] - ylim[1]) * 0.06)
       }
     } else {
       xscale <- scalebar_position[1]
