@@ -4,145 +4,60 @@
 \alias{ranges_espace}
 \title{Comparison of species ranges in environmental space}
 \usage{
-ranges_espace(ranges, add_occurrences = TRUE, variables, max_background = 25000,
-    ranges_representation = "clouds", background_color = "darkolivegreen",
-    range_colors = NULL, alpha = 0.03, eye_camera = c(x = 1.95, y = 1.25, z = 1.35))
+ranges_espace(..., add_occurrences = TRUE, variables,
+              max_background = 10000, occurrence_color = "blue",
+              range_colors = NULL, alpha = 0.6, legend = TRUE)
 }
 \arguments{
-\item{ranges}{object or list of objects produced with any of the following functions:
-\code{\link{rangemap_buff}}, \code{\link{rangemap_bound}}, \code{\link{rangemap_hull}},
-\code{\link{rangemap_enm}}, and \code{\link{rangemap_tsa}}. For visualization purposes,
-using up to three ranges is recommended.}
+\item{...}{one or more objects of class \code{\link{sp_range}} produced with
+any of the following functions: \code{\link{rangemap_buffer}},
+\code{\link{rangemap_boundaries}}, \code{\link{rangemap_hull}},
+\code{\link{rangemap_enm}}, and/or \code{\link{rangemap_tsa}}. Using up to
+five ranges is allowed for more precise comparisons.}
 
-\item{add_occurrences}{(logical) if TRUE, species occurrences contained in one of
-the elements of the list \code{ranges} will be ploted in the figure. Default = TRUE.
-If the none of the ranges contains occurrences (e.g. a list of one object created
-with the \code{\link{rangemap_bound}} function in which occurrences were not used),
-this parameter will be ignored.}
+\item{add_occurrences}{(logical) if \code{TRUE}, species occurrences contained
+in one of the \code{sp_range} objects will be ploted. Default = \code{TRUE}.
+If  none of the objects contains occurrences this argument will be ignored.}
 
-\item{variables}{a RasterStack object of environmental variables that will be used
-for creating the principal components to represent the environmental space. Projection
-is assumed to be Geographic (longitude and latitude).}
+\item{variables}{a RasterStack object of at least 3 environmental variables
+that will be used to perform a principal component analisis, and use the 3
+first principal components to represent the environmental space. Projection
+is assumed to be WGS84 (EPSG:4326).}
 
-\item{max_background}{(numeric) maximum number of data from variables to be used for
-representation of the environmental space. Default = 25000. Increasing this number
-results in more detailed views of the available environment but preforming analyses
-will take longer.}
+\item{max_background}{(numeric) maximum number of data from variables to be
+used for representing the environmental space. Default = 10000.}
 
-\item{ranges_representation}{(character) form in which the environmental space
-withing the ranges will be represented. Options are "clouds" and "ellipsoids".
-Default = "clouds".}
+\item{occurrence_color}{color for ocurrence records in environmental space.}
 
-\item{background_color}{color of the background to be ploted. Default = "darkolivegreen".
-Since transparency is used for representing most of components of the plot, colors may
-look different.}
+\item{range_colors}{vector of colors for the ranges to be represented. If
+\code{NULL}, the default, a set of colors will be used. Since transparency is
+used for representing ranges in the plot, colors may look different.}
 
-\item{range_colors}{vector of colors of the ranges to be represented. If not defined,
-default = NULL and default colors will be used. Since transparency is used for
-representing most of components of the plot, colors may look different.}
+\item{alpha}{(numeric) degree of opacity for plotting species ranges.
+Default = 0.6.}
 
-\item{alpha}{(numeric) degree of opacity with which the species ranges will be
-represented in the plot. Default = 0.03.}
-
-\item{eye_camera}{(numeric) vector of values to be passed to eye in the list of
-arguments of the parameter camera in layour of \code{\link[plotly]{plotly}}. This
-values control how the figur is seen in the plot.}
+\item{legend}{(logical) if \code{TRUE}, a simple legend will be added.
+Default = \code{TRUE}.}
 }
 \value{
-A figure showing, in the environmental space, the species ranges generated with
-any of the functions: \code{\link{rangemap_buff}}, \code{\link{rangemap_bound}},
-\code{\link{rangemap_hull}}, \code{\link{rangemap_enm}}, and \code{\link{rangemap_tsa}}.
+A figure showing distributional ranges of a species represented in environmental
+space (3 principal components).
 }
 \description{
-ranges_espace generates a three dimensional comparison of a species'
-ranges created using distinct algortihms, to visualize implications of selecting
-one of them if environmental conditions are considered.
+ranges_espace generates a three dimensional comparison of
+distributional ranges for a species created using distinct functions of
+\code{\link{rangemap}}, to visualize them in environmental conditions.
 }
 \examples{
-suppressWarnings({if(!require(spocc)){
-  install.packages("spocc")
-  library(spocc)
-}})
+# example data
+data("buffer_range", package = "rangemap")
+data("cxhull_range", package = "rangemap")
 
-# getting the data from GBIF
-occs <- occ(query = "Dasypus kappleri", from = "gbif",
-            limit = 1000)$gbif$data[[1]]
-
-# keeping only georeferenced records
-occ_g <- occs[!is.na(occs$latitude) & !is.na(occs$longitude),
-              c("name", "longitude", "latitude")]
-
-
-# range based on buffers
-dist <- 500000
-
-buff <- rangemap_buff(occurrences = occ_g, buffer_distance = dist)
-
-
-# range based on concave hulls
-dist1 <- 250000
-hull1 <- "concave"
-
-concave <- rangemap_hull(occurrences = occ_g, hull_type = hull1, buffer_distance = dist1)
-
-
-# ranges comparison in environmental space
-## list of ranges
-ranges <- list(buff, concave)
-names(ranges) <- c("buff", "concave")
-
-## other data for environmental comparisson
-suppressWarnings({if(!require(raster)){
-  install.packages("raster")
-  library(raster)
-}
-if(!require(maps)){
-  install.packages("maps")
-  library(maps)
-}
-if(!require(maptools)){
-  install.packages("maptools")
-  library(maptools)
-}})
-
-vars <- getData("worldclim", var = "bio", res = 5)
-
-## mask variables to region of interest
-WGS84 <- CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
-w_map <- map(database = "world", regions = c("Ecuador", "Peru", "Bolivia", "Colombia", "Venezuela",
-                                             "Suriname", "Guyana", "French Guyana", "Brazil"),
-             fill = TRUE, plot = FALSE) # map of the world
-w_po <- sapply(strsplit(w_map$names, ":"), function(x) x[1]) # preparing data to create polygon
-reg <- map2SpatialPolygons(w_map, IDs = w_po, proj4string = WGS84) # map to polygon
-
-e <- extent(reg)
-mask <- as(e, 'SpatialPolygons')
-
-variables <- crop(vars, mask)
+vars <- raster::stack(system.file("extdata", "variables.tif",
+                                  package = "rangemap"))
+names(vars) <- c("bio5", "bio6", "bio13", "bio14")
 
 ## comparison
-occur <- TRUE
-env_comp <- ranges_espace(ranges = ranges, add_occurrences = occur, variables = variables)
-
-
-# now play around, zoom in and rotate the figure
-
-# saving this figure may be challenging, try using
-# the following lines of code and check your download directory
-
-op <- options() # save default options
-options(viewer = NULL) # Set viewer to web browser
-name <- "ranges_space" # name for figure
-
-# using web browser to save image
-env_comp \%>\% htmlwidgets::onRender(
-  paste("function(el, x)
-          {var gd = document.getElementById(el.id);
-          Plotly.downloadImage(gd, {format: 'svg', width: ", 1000, ", height: ",
-        800, ", filename: ", paste("\'", name, "\'", sep = ""), "});
-          }", sep = "")
-)
-
-Sys.sleep(2) # wait for the execution
-options(viewer = op$viewer) # restore viewer to old setting (e.g. RStudio)
+ranges_espace(buffer_range, cxhull_range, variables = vars,
+              add_occurrences = TRUE)
 }
