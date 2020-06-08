@@ -77,3 +77,19 @@
 #' data("cvehull_range", package = "rangemap")
 #' summary(cvehull_range)
 "cvehull_range"
+
+
+#' Example SpatialPolygonsDataFrame of country boundaries
+#'
+#' @description A SpatialPolygonsDataFrame of 9 countries from South America.
+#'
+#' @format SpatialPolygonsDataFrame with 9 features.
+#' \describe{
+#'   \item{features}{SpatialPolygons, 9.}
+#'   \item{data.frame}{9 rows, 11 columns.}
+#' }
+#'
+#' @examples
+#' data("adm_boundaries", package = "rangemap")
+#' adm_boundaries
+"adm_boundaries"
