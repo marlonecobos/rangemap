@@ -105,6 +105,7 @@ For more information on these clustering methods see Aggarwal and Reddy (2014),
 \href{https://goo.gl/RQ2ebd}{here}.
 }
 \examples{
+\donttest{
 # getting the data
 data("occ_d", package = "rangemap")
 
@@ -116,4 +117,5 @@ hull_range <- rangemap_hull(occurrences = occ_d, hull_type = hull,
                             buffer_distance = dist)
 
 summary(hull_range)
+}
 }

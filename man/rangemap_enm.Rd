@@ -95,6 +95,7 @@ Lambert Azimuthal Equal Area projection, centered on the centroid of occurence
 points given as imputs or, if points are not provided, the resulting range.
 }
 \examples{
+\donttest{
 # parameters
 sp_mod <- raster::raster(list.files(system.file("extdata", package = "rangemap"),
                                     pattern = "sp_model", full.names = TRUE))
@@ -108,4 +109,5 @@ enm_range <- rangemap_enm(model_output = sp_mod, occurrences = occ_train,
                           threshold_omission = thres)
 
 summary(enm_range)
+}
 }

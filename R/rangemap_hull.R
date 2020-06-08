@@ -96,6 +96,7 @@
 #' @importFrom rgdal writeOGR
 #'
 #' @examples
+#' \donttest{
 #' # getting the data
 #' data("occ_d", package = "rangemap")
 #'
@@ -107,6 +108,7 @@
 #'                             buffer_distance = dist)
 #'
 #' summary(hull_range)
+#' }
 
 rangemap_hull <- function(occurrences, hull_type = "convex", concave_distance_lim = 5000,
                           buffer_distance = 50000, split = FALSE,

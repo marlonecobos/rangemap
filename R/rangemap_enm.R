@@ -88,6 +88,7 @@
 #' @importFrom stats na.omit
 #'
 #' @examples
+#' \donttest{
 #' # parameters
 #' sp_mod <- raster::raster(list.files(system.file("extdata", package = "rangemap"),
 #'                                     pattern = "sp_model", full.names = TRUE))
@@ -101,6 +102,7 @@
 #'                           threshold_omission = thres)
 #'
 #' summary(enm_range)
+#' }
 
 rangemap_enm <- function(model_output, occurrences = NULL, threshold_value = NULL,
                          threshold_omission = NULL, min_polygon_area = 0,
