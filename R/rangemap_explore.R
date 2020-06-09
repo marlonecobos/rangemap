@@ -65,9 +65,6 @@ rangemap_explore <- function(occurrences, show_countries = FALSE,
   occ_sp <- occ_sp[polygons, ]
   polygons1 <- polygons1[occ_sp, ] # polygons with occurrences
 
-  # par settings
-  opar <- par(no.readonly = TRUE)
-  on.exit(par(opar))
 
   # plot a background map and the range
   ## limits of map
@@ -86,7 +83,6 @@ rangemap_explore <- function(occurrences, show_countries = FALSE,
     dev.new()
   }
 
-  par(mar = c(0, 0, 0, 0), tcl = 0.25)
   sp::plot(polygons, xlim = xlim, ylim = ylim, col = "grey92", xaxt = "n",
            yaxt = "n")
   points(occ_sp, pch = 21, bg = scales::alpha("yellow", 0.3), cex = 1.2)
