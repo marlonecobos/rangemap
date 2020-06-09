@@ -57,6 +57,7 @@ Lambert Azimuthal Equal Area projection, centered on the centroid of occurrence
 points given as inputs.
 }
 \examples{
+\donttest{
 # getting the data
 data("occ_p", package = "rangemap")
 
@@ -66,4 +67,5 @@ dist <- 100000
 buff_range <- rangemap_buffer(occurrences = occ_p, buffer_distance = dist)
 
 summary(buff_range)
+}
 }

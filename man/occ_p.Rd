@@ -4,12 +4,14 @@
 \name{occ_p}
 \alias{occ_p}
 \title{Occurrence records for the species Peltophryne empusa}
-\format{A data frame with 182 rows and 3 columns.
+\format{
+A data frame with 182 rows and 3 columns.
 \describe{
 \item{name}{character, species scientific name.}
 \item{longitude}{numeric, longitude values.}
 \item{latitude}{numeric, latitude values.}
-}}
+}
+}
 \source{
 \url{https://www.gbif.org/}
 }

@@ -4,13 +4,15 @@
 \name{adm_area_names}
 \alias{adm_area_names}
 \title{List of names of administrative areas form the GADM data base}
-\format{A data frame with 41535 rows and 4 columns.
+\format{
+A data frame with 41535 rows and 4 columns.
 \describe{
 \item{ISO3}{character, country code.}
 \item{NAME_0}{character, name of administrative areas at level 0.}
 \item{NAME_1}{character, name of administrative areas at level 1.}
 \item{NAME_2}{character, name of administrative areas at level 2.}
-}}
+}
+}
 \source{
 \url{https://gadm.org/}
 }

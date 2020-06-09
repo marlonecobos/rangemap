@@ -4,11 +4,13 @@
 \name{spdf_range}
 \alias{spdf_range}
 \title{Example SpatialPolygonsDataFrame of a species range}
-\format{SpatialPolygonsDataFrame with 1 feature.
+\format{
+SpatialPolygonsDataFrame with 1 feature.
 \describe{
 \item{features}{SpatialPolygons, 1.}
 \item{data.frame}{ID = 1.}
-}}
+}
+}
 \usage{
 spdf_range
 }

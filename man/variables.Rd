@@ -3,13 +3,15 @@
 \name{variables}
 \alias{variables}
 \title{A set of environmental variables for examples}
-\format{A RasterStack with 180 rows, 218 columns, 39240 cells, and 4 layers:
+\format{
+A RasterStack with 180 rows, 218 columns, 39240 cells, and 4 layers:
 \describe{
 \item{variables.1}{bio5.}
 \item{variables.2}{bio6.}
 \item{variables.3}{bio13.}
 \item{variables.4}{bio14.}
-}}
+}
+}
 \source{
 \url{https://www.worldclim.org/data/v1.4/worldclim14.html}
 }

@@ -4,12 +4,14 @@
 \name{occ_train}
 \alias{occ_train}
 \title{Occurrence records for the species Amblyomma americanum}
-\format{A data frame with 89 rows and 3 columns.
+\format{
+A data frame with 89 rows and 3 columns.
 \describe{
 \item{Species}{character, species scientific name.}
 \item{Longitude}{numeric, longitude values.}
 \item{Latitude}{numeric, latitude values.}
-}}
+}
+}
 \source{
 \url{https://www.gbif.org/}
 }

@@ -4,12 +4,14 @@
 \name{occ_f}
 \alias{occ_f}
 \title{Occurrence records for the species Peltophryne fustiger}
-\format{A data frame with 73 rows and 3 columns.
+\format{
+A data frame with 73 rows and 3 columns.
 \describe{
 \item{name}{character, species scientific name.}
 \item{longitude}{numeric, longitude values.}
 \item{latitude}{numeric, latitude values.}
-}}
+}
+}
 \source{
 \url{https://www.gbif.org/}
 }

@@ -4,11 +4,13 @@
 \name{adm_boundaries}
 \alias{adm_boundaries}
 \title{Example SpatialPolygonsDataFrame of country boundaries}
-\format{SpatialPolygonsDataFrame with 9 features.
+\format{
+SpatialPolygonsDataFrame with 9 features.
 \describe{
 \item{features}{SpatialPolygons, 9.}
 \item{data.frame}{9 rows, 11 columns.}
-}}
+}
+}
 \usage{
 adm_boundaries
 }
