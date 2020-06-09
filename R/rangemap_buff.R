@@ -54,6 +54,7 @@
 #' @importFrom rgdal writeOGR
 #'
 #' @examples
+#' \donttest{
 #' # getting the data
 #' data("occ_p", package = "rangemap")
 #'
@@ -63,6 +64,7 @@
 #' buff_range <- rangemap_buffer(occurrences = occ_p, buffer_distance = dist)
 #'
 #' summary(buff_range)
+#' }
 
 rangemap_buffer <- function(occurrences, buffer_distance = 100000, polygons = NULL,
                             final_projection = NULL, save_shp = FALSE, name,
@@ -103,10 +105,13 @@ rangemap_buffer <- function(occurrences, buffer_distance = 100000, polygons = NU
   # create a buffer based on a user-defined distance
   buff_area <- geobuffer_points(data = occ_sp@coords, radius = buffer_distance)
 
+  # getting only relevant polygons
+  polygons1 <- polygons[buff_area, ]
+
   # clip a world map based on the created buffer
-  polygons <- suppressWarnings(rgeos::gBuffer(polygons, byid = TRUE, width = 0))
-  polygons <- rgeos::gUnaryUnion(polygons)
-  clip_area <- rgeos::gIntersection(buff_area, polygons, byid = TRUE,
+  polygons1 <- suppressWarnings(rgeos::gBuffer(polygons, byid = TRUE, width = 0))
+  polygons1 <- rgeos::gUnaryUnion(polygons1)
+  clip_area <- rgeos::gIntersection(buff_area, polygons1, byid = TRUE,
                                     drop_lower_td = TRUE)
 
   # project polygons and points
@@ -125,6 +130,7 @@ rangemap_buffer <- function(occurrences, buffer_distance = 100000, polygons = NU
                                             match.ID = FALSE)
 
   ## extent of occurrence
+  polygons <- sp::spTransform(polygons, LAEA)
   eooc <- eoo(occ_sp@data, polygons)
   eocckm2 <- eooc$area
   extent_occurrence <- eooc$spolydf
