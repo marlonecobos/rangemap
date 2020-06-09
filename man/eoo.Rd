@@ -25,13 +25,13 @@ Extent of occurrence of a species based on convex hull polygons
 }
 \examples{
 # occurrences
-data("occ_p", package = "rangemap")
-occ <- unique(occ_p)
+data("occ_f", package = "rangemap")
+occ <- unique(occ_f)
 
 # polygons
-data("wrld_simpl", package = "maptools")
+poly <- simple_wmap("simple", "Cuba")
 LAEA <- LAEA_projection(occ[, 2:3])
-poly_pr <- sp::spTransform(wrld_simpl, LAEA)
+poly_pr <- sp::spTransform(poly, LAEA)
 
 # to fix topology problems
 poly_pr <- rgeos::gBuffer(poly_pr, width = 0)

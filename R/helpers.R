@@ -179,13 +179,13 @@ GADM_spoly <- function(country_code, boundary_level, keep_data = FALSE) {
 #' @importFrom rgeos gIntersection
 #' @examples
 #' # occurrences
-#' data("occ_p", package = "rangemap")
-#' occ <- unique(occ_p)
+#' data("occ_f", package = "rangemap")
+#' occ <- unique(occ_f)
 #'
 #' # polygons
-#' data("wrld_simpl", package = "maptools")
+#' poly <- simple_wmap("simple", "Cuba")
 #' LAEA <- LAEA_projection(occ[, 2:3])
-#' poly_pr <- sp::spTransform(wrld_simpl, LAEA)
+#' poly_pr <- sp::spTransform(poly, LAEA)
 #'
 #' # to fix topology problems
 #' poly_pr <- rgeos::gBuffer(poly_pr, width = 0)
@@ -208,8 +208,9 @@ eoo <- function(occurrences, polygons) {
   covexhull_polygon <- sp::SpatialPolygons(list(sp::Polygons(list(sp::Polygon(coord_pol)), ID = 1)))
   sp::proj4string(covexhull_polygon) <- WGS84 # project
   covexhull_polygon_pr <- sp::spTransform(covexhull_polygon, polygons@proj4string) # reproject
-  c_hull_extent <- rgeos::gIntersection(polygons, covexhull_polygon_pr,
-                                        byid = TRUE, drop_lower_td = TRUE) # area of interest
+  polygons <- polygons[covexhull_polygon_pr, ]
+  c_hull_extent <- rgeos::gIntersection(covexhull_polygon_pr, polygons,
+                                        byid = FALSE) # area of interest
 
   eockm2 <- raster::area(c_hull_extent) / 1000000
   eocckm2 <- sum(eockm2) # total area of the species range
