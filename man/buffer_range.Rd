@@ -4,7 +4,8 @@
 \name{buffer_range}
 \alias{buffer_range}
 \title{Example of sp_range* object based on buffers}
-\format{sp_range_iucn with 6 slots.
+\format{
+sp_range_iucn with 6 slots.
 \describe{
 \item{name}{character, name identifying the origin of the object.}
 \item{summary}{data.frame, summary of results.}
@@ -12,7 +13,8 @@
 \item{species_unique_records}{SpatialPointsDataFrame of species occurrences.}
 \item{extent_of_occurrence}{SpatialPolygonsDataFrame of species extent of occurrence.}
 \item{area_of_occupancy}{SpatialPolygonsDataFrame of species area of occupancy.}
-}}
+}
+}
 \usage{
 buffer_range
 }
