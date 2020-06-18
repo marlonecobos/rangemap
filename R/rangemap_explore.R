@@ -24,6 +24,7 @@
 #' @importFrom rgeos gCentroid
 #' @importFrom graphics points text axis box
 #' @importFrom grDevices dev.new
+#' @import rnaturalearthdata
 #'
 #' @examples
 #' # getting the data

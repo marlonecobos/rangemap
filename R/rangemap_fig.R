@@ -85,6 +85,7 @@
 #' @importFrom scales alpha
 #' @importFrom maps map.scale
 #' @importFrom graphics points box
+#' @import rnaturalearthdata
 #'
 #' @examples
 #' # example data
