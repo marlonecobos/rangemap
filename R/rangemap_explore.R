@@ -16,13 +16,11 @@
 #'
 #' @details
 #' Base map of countries of the world is a SpatialPolygonsDataFrame downloaded from
-#' the Natural Earth database using the \code{\link[rnaturalearth]{ne_countries}}
-#' function (scale = 50).
+#' the Natural Earth database (scale = 50).
 #'
 #' @export
 #'
 #' @importFrom sp CRS spTransform plot SpatialPointsDataFrame
-#' @importFrom rnaturalearth ne_countries
 #' @importFrom rgeos gCentroid
 #' @importFrom graphics points text axis box
 #' @importFrom grDevices dev.new
@@ -59,8 +57,9 @@ rangemap_explore <- function(occurrences, show_countries = FALSE,
   polygons1 <- simple_wmap(which = "simple")
 
   # keeping only records in land with better resolution polygon
-  polygons <- rnaturalearth::ne_countries(scale = 50)
-  polygons <- sp::spTransform(polygons, WGS84)
+  requireNamespace(package = "rnaturalearthdata", quietly = TRUE)
+  data("countries50", package = "rnaturalearthdata", envir = environment())
+  polygons <- sp::spTransform(countries50, WGS84)
 
   occ_sp <- occ_sp[polygons, ]
   polygons1 <- polygons1[occ_sp, ] # polygons with occurrences

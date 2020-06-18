@@ -82,7 +82,6 @@
 #' @export
 #'
 #' @importFrom sp CRS spTransform plot
-#' @importFrom rnaturalearth ne_countries
 #' @importFrom scales alpha
 #' @importFrom maps map.scale
 #' @importFrom graphics points box
@@ -120,9 +119,10 @@ rangemap_plot <- function(sp_range, polygons = NULL, add_EOO = FALSE,
 
   # bringing maps if polygons false
   if (is.null(polygons)) {
-    polygons <- rnaturalearth::ne_countries(scale = 50)
+    requireNamespace(package = "rnaturalearthdata", quietly = TRUE)
+    data("countries50", package = "rnaturalearthdata", envir = environment())
   }
-  polygons <- sp::spTransform(polygons, f_proj)
+  polygons <- sp::spTransform(countries50, f_proj)
 
 
   # getting species range
