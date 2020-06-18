@@ -23,8 +23,14 @@ Description: A collection of tools to create species range maps based on
     the species ranges. Plotting options to represent results in various 
     manners are also available. Results obtained using these tools can be 
     used to explore the distribution of species and define areas of occupancy 
-    and extent of occurrence of species. Description of methods and approaches 
-    implemented here can be found in.
+    and extent of occurrence of species. Other packages help to explore species 
+    distributions using distinct methods, but options presented in this set of 
+    tools (e.g., using TSA analysis and concave hull polygons) are exclusive. 
+    Description of methods, approaches, and comments for some of the tools 
+    implemented here can be found in: 
+    IUCN (2001) <https://portals.iucn.org/library/node/10315>,
+    Peterson et al. (2011) <https://rb.gy/lvatmz>, and
+    Graham and Hijmans (2006) <https://doi.org/10.1111/j.1466-8238.2006.00257.x>.
 URL: https://github.com/marlonecobos/rangemap
 BugReports: https://github.com/marlonecobos/rangemap/issues
 Imports:
@@ -33,7 +39,6 @@ Imports:
     maps (>= 3.3),
     maptools (>= 0.9),
     methods, 
-    rnaturalearth (>= 0.1),
     rnaturalearthdata (>= 0.1),
     raster (>= 2.6),
     rgdal (>= 1.2),
