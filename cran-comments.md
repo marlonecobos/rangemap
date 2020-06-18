@@ -1,17 +1,14 @@
 ## Test environments
 * local windows 10, R 4.0.1
-* R-hub windows-x86_64-devel (r-devel)
-* R-hub macos-highsierra-release-cran (r-release)
+* windows-x86_64-devel (on rhub) R-devel
+* macos-highsierra-release-cran (on rhub) 4.0.0
+* ubuntu 16.04.6 LTS (on travis) 4.0.0
 
 
 ## R CMD check results
 There were no ERRORs
 
-WARNINGs:
-
-There was one WARNING (macos-highsierra-release-cran):
-
- * 'rgl.init' failed, running with 'rgl.useNULL = TRUE'.
+There were no WARNINGs
 
 NOTEs:
 
