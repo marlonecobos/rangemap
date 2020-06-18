@@ -1,6 +1,10 @@
 # R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
 
 language: R
+
+env:
+  RGL_USE_NULL: TRUE
+
 sudo: required
 
 before_install:
