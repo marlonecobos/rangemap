@@ -16,7 +16,7 @@ Author: Marlon E. Cobos [aut, cre],
     Narayani Barve [aut],
     Alberto Jiménez-Valverde [aut]
 Maintainer: Marlon E. Cobos <manubio13@gmail.com>
-Date: 2020-06-07
+Date: 2020-06-18
 Description: A collection of tools to create species range maps based on 
     occurrence data, statistics, and spatial objects. Other tools in this 
     collection can be used to analyze the environmental characteristics of 
