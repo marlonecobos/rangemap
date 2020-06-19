@@ -1,3 +1,13 @@
+## First submission 0.1.12
+This is the first submission.
+
+**Comments**
+
+* A NOTE may be produced because names of countries in one of the elements in data
+are marked UTF-8 strings; however, the names are correct and we consider they 
+should stay. 
+
+
 ## Test environments
 * local windows 10, R 4.0.1
 * windows-x86_64-devel (on rhub) R-devel
@@ -12,9 +22,8 @@ There were no WARNINGs
 
 NOTEs:
 
-There were two NOTEs (windows-x86_64-devel, macos-highsierra-release-cran):
+There was one NOTE (windows-x86_64-devel, macos-highsierra):
 
-* All declared Imports should be used. (Namespace in Imports field not imported from: 'rnaturalearthdata')
 * Found 7734 marked UTF-8 strings.
 
 
