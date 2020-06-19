@@ -363,17 +363,15 @@ summary(bound_range1)
 #> x -91.66389 -29.84000
 #> y -33.74067  13.37861
 #> Is projected: FALSE 
-#> proj4string :
-#> [+init=epsg:4326 +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84
-#> +towgs84=0,0,0]
+#> proj4string : [+proj=longlat +datum=WGS84 +no_defs]
 #> Data attributes:
-#>    X.Species.    rangekm2      
-#>  Species:5    Min.   : 255493  
-#>               1st Qu.: 909405  
-#>               Median :1135524  
-#>               Mean   :2408651  
-#>               3rd Qu.:1294369  
-#>               Max.   :8448466
+#>   X.Species.           rangekm2      
+#>  Length:5           Min.   : 255493  
+#>  Class :character   1st Qu.: 909405  
+#>  Mode  :character   Median :1135524  
+#>                     Mean   :2408651  
+#>                     3rd Qu.:1294369  
+#>                     Max.   :8448466
 ```
 
 Map of the generated range.
@@ -583,8 +581,6 @@ hierarchical methods.
 hull_range3 <- rangemap_hull(occurrences = occ_d, hull_type = "concave", 
                              buffer_distance = 100000)
 #> Hull type: concave
-#> Warning in RGEOSBinTopoFunc(spgeom1, spgeom2, byid, id, drop_lower_td,
-#> unaryUnion_if_byid_false, : spgeom1 and spgeom2 have different proj4 strings
 
 summary(hull_range3)
 #> 
@@ -618,8 +614,6 @@ hull_range4 <- rangemap_hull(occurrences = occ_d, hull_type = "concave",
                              split_distance = 1500000)
 #> Clustering method: hierarchical
 #> Hull type: concave
-#> Warning in RGEOSBinTopoFunc(spgeom1, spgeom2, byid, id, drop_lower_td,
-#> unaryUnion_if_byid_false, : spgeom1 and spgeom2 have different proj4 strings
 
 summary(hull_range4)
 #> 
@@ -651,8 +645,6 @@ hull_range5 <- rangemap_hull(occurrences = occ_d, hull_type = "concave",
                              cluster_method = "k-means", n_k_means = 3)
 #> Clustering method: k-means
 #> Hull type: concave
-#> Warning in RGEOSBinTopoFunc(spgeom1, spgeom2, byid, id, drop_lower_td,
-#> unaryUnion_if_byid_false, : spgeom1 and spgeom2 have different proj4 strings
 
 summary(hull_range5)
 #> 

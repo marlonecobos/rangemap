@@ -10,7 +10,7 @@ always_allow_html: true
 
 ```{r setup, include=FALSE}
 library(knitr)
-opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>")
+opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>", warning = FALSE)
 ```
 
 <br>
