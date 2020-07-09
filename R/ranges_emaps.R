@@ -134,7 +134,7 @@ ranges_emaps <- function(..., variables, add_occurrences = FALSE,
   }
 
   ## projecting
-  variables <- raster::projectRaster(variables, crs = WGS84)
+  variables <- raster::projectRaster(variables, crs = WGS84@projargs)
 
   # x and y limits of plots
   xbox <- unlist(lapply(sp_ranges, function(x) {c(x@bbox[1, ])}))

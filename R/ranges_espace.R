@@ -109,7 +109,7 @@ ranges_espace <- function(..., add_occurrences = TRUE, variables,
   }
 
   ## projecting
-  variables <- raster::projectRaster(variables, crs = WGS84)
+  variables <- raster::projectRaster(variables, crs = WGS84@projargs)
 
   ## raster to varaibles data
   vdata <- raster::rasterToPoints(variables)
