@@ -122,8 +122,9 @@ rangemap_plot <- function(sp_range, polygons = NULL, add_EOO = FALSE,
   if (is.null(polygons)) {
     requireNamespace(package = "rnaturalearthdata", quietly = TRUE)
     data("countries50", package = "rnaturalearthdata", envir = environment())
+    polygons <- countries50
   }
-  polygons <- sp::spTransform(countries50, f_proj)
+  polygons <- sp::spTransform(polygons, f_proj)
 
 
   # getting species range
