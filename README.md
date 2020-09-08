@@ -32,6 +32,8 @@ Jimenez-Valverde
 
 [![Travis build
 status](https://travis-ci.org/marlonecobos/rangemap.svg?branch=master)](https://travis-ci.org/marlonecobos/rangemap)
+[![R build
+status](https://github.com/marlonecobos/rangemap/workflows/R-CMD-check/badge.svg)](https://github.com/marlonecobos/rangemap/actions)
 <!-- badges: end -->
 
 <hr>
@@ -219,7 +221,7 @@ summary(buff_range)
 #> Species range derived from:  Buffer 
 #> 
 #>             Species Unique_records Range_area Extent_of_occurrence
-#>  Peltophryne empusa             27   106241.2             66357.71
+#>  Peltophryne empusa             27   106241.2             65955.85
 #>  Area_of_occupancy
 #>                 92
 #> 
@@ -314,7 +316,7 @@ summary(bound_range)
 #>                        Length Class                    Mode
 #> species_range           7     SpatialPolygonsDataFrame S4  
 #> species_unique_records 55     SpatialPointsDataFrame   S4  
-#> extent_of_occurrence    9     SpatialPolygonsDataFrame S4  
+#> extent_of_occurrence    1     SpatialPolygonsDataFrame S4  
 #> area_of_occupancy      44     SpatialPolygonsDataFrame S4
 ```
 
@@ -418,7 +420,7 @@ summary(bound_range2)
 #>                        Length Class                    Mode
 #> species_range           8     SpatialPolygonsDataFrame S4  
 #> species_unique_records 55     SpatialPointsDataFrame   S4  
-#> extent_of_occurrence    9     SpatialPolygonsDataFrame S4  
+#> extent_of_occurrence    1     SpatialPolygonsDataFrame S4  
 #> area_of_occupancy      44     SpatialPolygonsDataFrame S4
 ```
 
