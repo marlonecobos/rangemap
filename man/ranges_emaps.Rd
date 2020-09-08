@@ -7,7 +7,7 @@
 ranges_emaps(..., variables, add_occurrences = FALSE,
              range_colors = NULL, color_variables = NULL,
              ranges_legend = TRUE, legend_position = "bottomright",
-             legend_cex = 0.7, zoom = 0.7)
+             legend_cex = 0.7, zoom = 0.7, verbose = TRUE)
 }
 \arguments{
 \item{...}{one or more objects of class \code{\link{sp_range}} produced with
@@ -53,6 +53,9 @@ option in \code{\link[graphics]{par}}. Default = 0.7.}
 (based on the largest range). Default = 1.3. Larger values will zoom in into
 the species range and smaller values will zoom out. A value of 0.5 will
 duplicate the area that the biggest range is covering.}
+
+\item{verbose}{(logical) whether or not to print messages about the process.
+Default = TRUE.}
 }
 \value{
 A plot showing species ranges on top of maps of environmental variables.

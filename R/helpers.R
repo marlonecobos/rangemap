@@ -283,6 +283,9 @@ aoo <- function(occ_pr, species) {
 #' This parameter is used when \code{cluster_method} = "hierarchical".
 #' @param n_k_means (numeric) number of clusters in which the species occurrences
 #' will be grouped when using the "k-means" \code{cluster_method}.
+#' @param set_seed (numeric) integer value to specify a seed. Default = 1.
+#' @param verbose (logical) whether or not to print messages about the process.
+#' Default = TRUE.
 #' @return A SpatialPointsDataFrame with an extra column in data defining clusters.
 #' @details
 #' \code{cluster_method} must be chosen based on the spatial configuration of the
@@ -303,6 +306,10 @@ aoo <- function(occ_pr, species) {
 #'
 #' For more information on these clustering methods see Aggarwal and Reddy (2014)
 #' \url{https://goo.gl/RQ2ebd}.
+#'
+#' @usage
+#' clusters(occ_pr, cluster_method = "hierarchical", split_distance,
+#'          n_k_means, set_seed = 1, verbose = TRUE)
 #'
 #' @export
 #' @importFrom sp coordinates
@@ -325,7 +332,7 @@ aoo <- function(occ_pr, species) {
 #' occ_clus <- clusters(occ_pr, cluster_method = "k-means", n_k_means = 2)
 
 clusters <- function(occ_pr, cluster_method = "hierarchical", split_distance,
-                     n_k_means) {
+                     n_k_means, set_seed = 1, verbose = TRUE) {
   if (cluster_method == "hierarchical" & missing(split_distance)) {
     stop("Argument 'split_distance' must be defined when hierarchical cluster method is used.")
   }
@@ -335,7 +342,9 @@ clusters <- function(occ_pr, cluster_method = "hierarchical", split_distance,
   if (cluster_method == "hierarchical" | cluster_method == "k-means") {
     if (cluster_method == "hierarchical") {
       ## defining a hierarchical cluster method for the occurrences
-      message("Clustering method: hierarchical")
+      if (verbose == TRUE) {
+        message("Clustering method: hierarchical")
+      }
       coor <- sp::coordinates(occ_pr)
       df <- data.frame(rownames = 1:nrow(coor), x = coor[, 1], y = coor[, 2])
       cluster_method <- hclust(dist(df), method = "complete")
@@ -343,8 +352,10 @@ clusters <- function(occ_pr, cluster_method = "hierarchical", split_distance,
       ## defining wich points are clustered based on the user-defined distance
       cluster_vector <- cutree(cluster_method, h = split_distance)
     }else {
-      message("Clustering method: k-means")
-      set.seed(1) # to get always the same answer with using the same data
+      if (verbose == TRUE) {
+        message("Clustering method: k-means")
+      }
+      set.seed(set_seed) # to get always the same answer with using the same data
       ## identifying clusters from occurrences
       cluster_method <- kmeans(as.matrix(sp::coordinates(occ_pr)), n_k_means)
 
@@ -370,8 +381,13 @@ clusters <- function(occ_pr, cluster_method = "hierarchical", split_distance,
 #' @param concave_distance_lim (numeric) distance, in meters, to be passed to the
 #' length_threshold parameter of the \code{\link[concaveman]{concaveman}} function.
 #' Default = 5000. Ignored if \code{hull_type} is not "concave".
+#' @param verbose (logical) whether or not to print messages about the process.
+#' Default = TRUE.
 #' @return A SpatialPolygons object with the hull polygon. If the number of points
 #' in occ_pr is 1 or 2 a SpatialPointsDataFrame object is returned.
+#' @usage
+#' hull_polygon(occ_pr, hull_type = "convex", concave_distance_lim = 5000,
+#'              verbose = TRUE)
 #' @export
 #' @importFrom sp CRS SpatialPointsDataFrame
 #' @importFrom sp SpatialPolygons Polygons Polygon
@@ -394,7 +410,8 @@ clusters <- function(occ_pr, cluster_method = "hierarchical", split_distance,
 #' # convex hull polygon
 #' cvx_hull <- hull_polygon(occ_pr, hull_type = "convex")
 
-hull_polygon <- function(occ_pr, hull_type = "convex", concave_distance_lim = 5000) {
+hull_polygon <- function(occ_pr, hull_type = "convex", concave_distance_lim = 5000,
+                         verbose = TRUE) {
   if (hull_type == "convex" | hull_type == "concave") {
     condition <- !is.list(occ_pr)
     if (condition) {
@@ -407,7 +424,9 @@ hull_polygon <- function(occ_pr, hull_type = "convex", concave_distance_lim = 50
       stop("'occ_pr' must be projected.")
     }
     if (hull_type == "convex") {
-      message("Hull type: convex")
+      if (verbose == TRUE) {
+        message("Hull type: convex")
+      }
 
       hulls <- lapply(1:length(occ_pr), function(i) {
         coord <- as.data.frame(sp::coordinates(occ_pr[[i]]))
@@ -422,7 +441,9 @@ hull_polygon <- function(occ_pr, hull_type = "convex", concave_distance_lim = 50
         }
       })
     } else {
-      message("Hull type: concave")
+      if (verbose == TRUE) {
+        message("Hull type: concave")
+      }
       hulls <- lapply(1:length(occ_pr), function(i) {
         coord <- as.data.frame(sp::coordinates(occ_pr[[i]]))
         if (dim(coord)[1] > 2) {

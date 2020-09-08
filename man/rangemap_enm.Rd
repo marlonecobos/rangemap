@@ -8,7 +8,7 @@ rangemap_enm(model_output, occurrences = NULL, threshold_value = NULL,
              threshold_omission = NULL, min_polygon_area = 0,
              simplify = FALSE, simplify_level = 0, polygons = NULL,
              final_projection = NULL, save_shp = FALSE, name,
-             overwrite = FALSE)
+             overwrite = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{model_output}{a RasterLayer of suitability for the species of interest
@@ -67,6 +67,9 @@ of occupancy = "_area_occ", and occurrences = "_unique_records".}
 
 \item{overwrite}{(logical) whether or not to overwrite previous results with
 the same name. Default = \code{FALSE}.}
+
+\item{verbose}{(logical) whether or not to print messages about the process.
+Default = TRUE.}
 }
 \value{
 If \code{occurrences} and \code{threshold_omission} are defined, a  sp_range

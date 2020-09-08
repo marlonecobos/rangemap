@@ -6,7 +6,8 @@
 \usage{
 ranges_espace(..., add_occurrences = TRUE, variables,
               max_background = 10000, occurrence_color = "blue",
-              range_colors = NULL, alpha = 0.6, legend = TRUE)
+              range_colors = NULL, alpha = 0.6, legend = TRUE,
+              verbose = TRUE)
 }
 \arguments{
 \item{...}{one or more objects of class \code{\link{sp_range}} produced with
@@ -38,6 +39,9 @@ Default = 0.6.}
 
 \item{legend}{(logical) if \code{TRUE}, a simple legend will be added.
 Default = \code{TRUE}.}
+
+\item{verbose}{(logical) whether or not to print messages about the process.
+Default = TRUE.}
 }
 \value{
 A figure showing distributional ranges of a species represented in environmental

@@ -26,6 +26,8 @@
 #' Default = 0.6.
 #' @param legend (logical) if \code{TRUE}, a simple legend will be added.
 #' Default = \code{TRUE}.
+#' @param verbose (logical) whether or not to print messages about the process.
+#' Default = TRUE.
 #'
 #' @return
 #' A figure showing distributional ranges of a species represented in environmental
@@ -34,7 +36,8 @@
 #' @usage
 #' ranges_espace(..., add_occurrences = TRUE, variables,
 #'               max_background = 10000, occurrence_color = "blue",
-#'               range_colors = NULL, alpha = 0.6, legend = TRUE)
+#'               range_colors = NULL, alpha = 0.6, legend = TRUE,
+#'               verbose = TRUE)
 #'
 #' @export
 #'
@@ -58,7 +61,8 @@
 
 ranges_espace <- function(..., add_occurrences = TRUE, variables,
                           max_background = 10000, occurrence_color = "blue",
-                          range_colors = NULL, alpha = 0.6, legend = TRUE) {
+                          range_colors = NULL, alpha = 0.6, legend = TRUE,
+                          verbose = TRUE) {
 
   # testing potential issues
   if (missing(...)) {
@@ -102,7 +106,9 @@ ranges_espace <- function(..., add_occurrences = TRUE, variables,
     } else {
       add_occurrences <- FALSE
       sp_records <- NULL
-      message("None of the objects contain occurrences.")
+      if (verbose == TRUE) {
+        message("None of the objects contain occurrences.")
+      }
     }
   } else {
     sp_records <- NULL
@@ -145,7 +151,9 @@ ranges_espace <- function(..., add_occurrences = TRUE, variables,
 
   # getting the species ranges from objects in ranges, and
   # getting environmental (PCs) data in ranges
-  message("Getting environmental conditions inside ranges, please wait...")
+  if (verbose == TRUE) {
+    message("Getting environmental conditions inside ranges, please wait...")
+  }
   env_ranges <- lapply(sp_ranges, function(x) {vdata[x, ]@data})
 
   # range colors
@@ -156,7 +164,9 @@ ranges_espace <- function(..., add_occurrences = TRUE, variables,
   }
 
   # plot
-  message("\nCreating interactive visualization...\n")
+  if (verbose == TRUE) {
+    message("\nCreating interactive visualization...\n")
+  }
 
   ## interactive plot
   if (add_occurrences == TRUE) {

@@ -6,7 +6,8 @@
 \usage{
 rangemap_boundaries(occurrences, adm_areas, country_code, boundary_level = 0,
                     polygons, keep_data = FALSE, dissolve = FALSE,
-                    final_projection, save_shp = FALSE, name, overwrite = FALSE)
+                    final_projection, save_shp = FALSE, name,
+                    overwrite = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{occurrences}{(optional) a data.frame containing geographic coordinates
@@ -70,6 +71,9 @@ of occupancy = "_area_occ", and occurrences = "_unique_records".}
 
 \item{overwrite}{(logical) whether or not to overwrite previous results with
 the same name. Default = \code{FALSE}.}
+
+\item{verbose}{(logical) whether or not to print messages about the process.
+Default = TRUE.}
 }
 \value{
 A sp_range object (S4) containing: (1) a data.frame with information about

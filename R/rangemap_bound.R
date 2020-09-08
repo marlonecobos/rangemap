@@ -58,6 +58,8 @@
 #' of occupancy = "_area_occ", and occurrences = "_unique_records".
 #' @param overwrite (logical) whether or not to overwrite previous results with
 #' the same name. Default = \code{FALSE}.
+#' @param verbose (logical) whether or not to print messages about the process.
+#' Default = TRUE.
 #'
 #' @return
 #' A sp_range object (S4) containing: (1) a data.frame with information about
@@ -77,7 +79,8 @@
 #' @usage
 #' rangemap_boundaries(occurrences, adm_areas, country_code, boundary_level = 0,
 #'                     polygons, keep_data = FALSE, dissolve = FALSE,
-#'                     final_projection, save_shp = FALSE, name, overwrite = FALSE)
+#'                     final_projection, save_shp = FALSE, name,
+#'                     overwrite = FALSE, verbose = TRUE)
 #'
 #' @export
 #'
@@ -118,7 +121,8 @@ rangemap_boundaries <- function(occurrences = NULL, adm_areas = NULL,
                                 country_code = NULL, boundary_level = 0,
                                 polygons = NULL, keep_data = FALSE,
                                 dissolve = FALSE, final_projection = NULL,
-                                save_shp = FALSE, name, overwrite = FALSE) {
+                                save_shp = FALSE, name, overwrite = FALSE,
+                                verbose = TRUE) {
   # testing potential issues
   if (!missing(polygons)) {
     if (class(polygons) != "SpatialPolygonsDataFrame"){
@@ -268,9 +272,9 @@ rangemap_boundaries <- function(occurrences = NULL, adm_areas = NULL,
 
   # disolve
   if (dissolve == TRUE) {
-    cat("\nDissolving polygons, please wait...\n")
-    #polygons@data$union_field <- rep("Union", length(polygons@data[, 1])) # new field for union
-    #polygons <- rgeos::gUnaryUnion(polygons, id = polygons@data$union_field) # now dissolve
+    if (verbose == TRUE) {
+      message("\nDissolving polygons, please wait...\n")
+    }
 
     boundaries@data$union_field <- rep("Union", length(boundaries@data[, 1])) # new field for union
     boundaries <- rgeos::gUnaryUnion(boundaries, id = boundaries@data$union_field) # now dissolve
@@ -299,7 +303,9 @@ rangemap_boundaries <- function(occurrences = NULL, adm_areas = NULL,
 
     # exporting
     if (save_shp == TRUE) {
-      cat("\nWriting shapefile in the working directory...\n")
+      if (verbose == TRUE) {
+        message("\nWriting shapefile in the working directory...\n")
+      }
       rgdal::writeOGR(boundaries, ".", name, driver = "ESRI Shapefile")
     }
 
@@ -344,7 +350,9 @@ rangemap_boundaries <- function(occurrences = NULL, adm_areas = NULL,
 
     # exporting
     if (save_shp == TRUE) {
-      cat("\nWriting shapefiles in the working directory...\n")
+      if (verbose == TRUE) {
+        message("\nWriting shapefiles in the working directory...\n")
+      }
       rgdal::writeOGR(boundaries, ".", name, driver = "ESRI Shapefile",
                       overwrite_layer = overwrite)
       rgdal::writeOGR(extent_occurrence, ".", paste(name, "extent_occ", sep = "_"),

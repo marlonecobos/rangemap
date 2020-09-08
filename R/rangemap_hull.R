@@ -48,6 +48,8 @@
 #' of occupancy = "_area_occ", and occurrences = "_unique_records".
 #' @param overwrite (logical) whether or not to overwrite previous results with
 #' the same name. Default = \code{FALSE}.
+#' @param verbose (logical) whether or not to print messages about the process.
+#' Default = TRUE.
 #'
 #' @return
 #' A sp_range object (S4) containing: (1) a data.frame with information about the
@@ -85,7 +87,7 @@
 #'               buffer_distance = 50000, split = FALSE,
 #'               cluster_method = "hierarchical", split_distance = NULL,
 #'               n_k_means = NULL, polygons = NULL, final_projection = NULL,
-#'               save_shp = FALSE, name, overwrite = FALSE)
+#'               save_shp = FALSE, name, overwrite = FALSE, verbose = TRUE)
 #'
 #' @export
 #'
@@ -114,7 +116,7 @@ rangemap_hull <- function(occurrences, hull_type = "convex", concave_distance_li
                           buffer_distance = 50000, split = FALSE,
                           cluster_method = "hierarchical", split_distance = NULL,
                           n_k_means = NULL, polygons = NULL, final_projection = NULL,
-                          save_shp = FALSE, name, overwrite = FALSE) {
+                          save_shp = FALSE, name, overwrite = FALSE, verbose = TRUE) {
   # testing potential issues
   if (missing(occurrences)) {
     stop("Argument 'occurrences' is necessary to perform the analysis")
@@ -234,7 +236,9 @@ rangemap_hull <- function(occurrences, hull_type = "convex", concave_distance_li
 
   # exporting
   if (save_shp == TRUE) {
-    message("Writing shapefiles in the working directory.")
+    if (verbose == TRUE) {
+      message("Writing shapefiles in the working directory.")
+    }
     rgdal::writeOGR(clip_area, ".", name, driver = "ESRI Shapefile",
                     overwrite_layer = overwrite)
     rgdal::writeOGR(extent_occurrence, ".", paste(name, "extent_occ", sep = "_"),

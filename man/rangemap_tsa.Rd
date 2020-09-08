@@ -7,7 +7,7 @@
 rangemap_tsa(occurrences, region_of_interest, cell_size = 5,
              threshold = 0, simplify = FALSE, simplify_level = 0,
              final_projection = NULL, save_shp = FALSE,
-             save_ts_layer = FALSE, name, overwrite = FALSE)
+             save_ts_layer = FALSE, name, overwrite = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{occurrences}{a data.frame containing geographic coordinates of species
@@ -57,6 +57,9 @@ if \code{save_ts_layer} = \code{TRUE}, trend surface layer "_tsa".}
 
 \item{overwrite}{(logical) whether or not to overwrite previous results with
 the same name. Default = \code{FALSE}.}
+
+\item{verbose}{(logical) whether or not to print messages about the process.
+Default = TRUE.}
 }
 \value{
 A sp_range object (S4) containing: (1) a data.frame with information about

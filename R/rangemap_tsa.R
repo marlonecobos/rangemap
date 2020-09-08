@@ -43,6 +43,8 @@
 #' if \code{save_ts_layer} = \code{TRUE}, trend surface layer "_tsa".
 #' @param overwrite (logical) whether or not to overwrite previous results with
 #' the same name. Default = \code{FALSE}.
+#' @param verbose (logical) whether or not to print messages about the process.
+#' Default = TRUE.
 #'
 #' @return
 #' A sp_range object (S4) containing: (1) a data.frame with information about
@@ -66,7 +68,7 @@
 #' rangemap_tsa(occurrences, region_of_interest, cell_size = 5,
 #'              threshold = 0, simplify = FALSE, simplify_level = 0,
 #'              final_projection = NULL, save_shp = FALSE,
-#'              save_ts_layer = FALSE, name, overwrite = FALSE)
+#'              save_ts_layer = FALSE, name, overwrite = FALSE, verbose = TRUE)
 #'
 #' @export
 #'
@@ -94,7 +96,8 @@
 rangemap_tsa <- function(occurrences, region_of_interest, cell_size = 5,
                          threshold = 0, simplify = FALSE, simplify_level = 0,
                          final_projection = NULL, save_shp = FALSE,
-                         save_ts_layer = FALSE, name, overwrite = FALSE) {
+                         save_ts_layer = FALSE, name, overwrite = FALSE,
+                         verbose = TRUE) {
 
   # testing potential issues
   if (missing(occurrences)) {
@@ -248,7 +251,9 @@ rangemap_tsa <- function(occurrences, region_of_interest, cell_size = 5,
 
   # exporting
   if (save_shp == TRUE) {
-    message("Writing shapefiles in the working directory.")
+    if (verbose == TRUE) {
+      message("Writing shapefiles in the working directory.")
+    }
     rgdal::writeOGR(clip_area, ".", name, driver = "ESRI Shapefile",
                     overwrite_layer = overwrite)
     rgdal::writeOGR(extent_occurrence, ".", paste(name, "extent_occ", sep = "_"),
@@ -259,7 +264,9 @@ rangemap_tsa <- function(occurrences, region_of_interest, cell_size = 5,
                     driver = "ESRI Shapefile", overwrite_layer = overwrite)
 
     if (save_ts_layer == TRUE) {
-      message("Writing trend surface layer in the working directory.")
+      if (verbose == TRUE) {
+        message("Writing trend surface layer in the working directory.")
+      }
       raster::writeRaster(tsa_model, paste0(name, "_ts_layer.tif"),
                           format = "GTiff", overwrite = overwrite)
     }

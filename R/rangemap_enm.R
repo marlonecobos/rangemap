@@ -53,6 +53,8 @@
 #' of occupancy = "_area_occ", and occurrences = "_unique_records".
 #' @param overwrite (logical) whether or not to overwrite previous results with
 #' the same name. Default = \code{FALSE}.
+#' @param verbose (logical) whether or not to print messages about the process.
+#' Default = TRUE.
 #'
 #' @return
 #' If \code{occurrences} and \code{threshold_omission} are defined, a  sp_range
@@ -76,7 +78,7 @@
 #'              threshold_omission = NULL, min_polygon_area = 0,
 #'              simplify = FALSE, simplify_level = 0, polygons = NULL,
 #'              final_projection = NULL, save_shp = FALSE, name,
-#'              overwrite = FALSE)
+#'              overwrite = FALSE, verbose = TRUE)
 #'
 #' @export
 #'
@@ -108,7 +110,7 @@ rangemap_enm <- function(model_output, occurrences = NULL, threshold_value = NUL
                          threshold_omission = NULL, min_polygon_area = 0,
                          simplify = FALSE, simplify_level = 0, polygons = NULL,
                          final_projection = NULL, save_shp = FALSE,
-                         name, overwrite = FALSE) {
+                         name, overwrite = FALSE, verbose = TRUE) {
 
   # check for errors
   if (is.null(model_output)) {
@@ -214,7 +216,9 @@ rangemap_enm <- function(model_output, occurrences = NULL, threshold_value = NUL
 
     # exporting
     if (save_shp == TRUE) {
-      message("Writing shapefiles in the working directory.")
+      if (verbose == TRUE) {
+        message("Writing shapefiles in the working directory.")
+      }
       rgdal::writeOGR(clip_area, ".", name, driver = "ESRI Shapefile")
     }
 
@@ -254,7 +258,9 @@ rangemap_enm <- function(model_output, occurrences = NULL, threshold_value = NUL
 
     # exporting
     if (save_shp == TRUE) {
-      message("Writing shapefiles in the working directory.")
+      if (verbose == TRUE) {
+        message("Writing shapefiles in the working directory.")
+      }
       rgdal::writeOGR(clip_area, ".", name, driver = "ESRI Shapefile",
                       overwrite_layer = overwrite)
       rgdal::writeOGR(extent_occurrence, ".", paste(name, "extent_occ", sep = "_"),

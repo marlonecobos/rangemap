@@ -8,7 +8,7 @@ rangemap_hull(occurrences, hull_type = "convex", concave_distance_lim = 5000,
               buffer_distance = 50000, split = FALSE,
               cluster_method = "hierarchical", split_distance = NULL,
               n_k_means = NULL, polygons = NULL, final_projection = NULL,
-              save_shp = FALSE, name, overwrite = FALSE)
+              save_shp = FALSE, name, overwrite = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{occurrences}{a data.frame containing geographic coordinates of species
@@ -65,6 +65,9 @@ of occupancy = "_area_occ", and occurrences = "_unique_records".}
 
 \item{overwrite}{(logical) whether or not to overwrite previous results with
 the same name. Default = \code{FALSE}.}
+
+\item{verbose}{(logical) whether or not to print messages about the process.
+Default = TRUE.}
 }
 \value{
 A sp_range object (S4) containing: (1) a data.frame with information about the

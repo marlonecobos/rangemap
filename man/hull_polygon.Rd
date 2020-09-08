@@ -4,7 +4,8 @@
 \alias{hull_polygon}
 \title{Convex or concave hull polygons from spatial points}
 \usage{
-hull_polygon(occ_pr, hull_type = "convex", concave_distance_lim = 5000)
+hull_polygon(occ_pr, hull_type = "convex", concave_distance_lim = 5000,
+             verbose = TRUE)
 }
 \arguments{
 \item{occ_pr}{SpatialPoints* object containing geographic points to be used
@@ -17,6 +18,9 @@ options are: "convex" and "concave". Default = "convex".}
 \item{concave_distance_lim}{(numeric) distance, in meters, to be passed to the
 length_threshold parameter of the \code{\link[concaveman]{concaveman}} function.
 Default = 5000. Ignored if \code{hull_type} is not "concave".}
+
+\item{verbose}{(logical) whether or not to print messages about the process.
+Default = TRUE.}
 }
 \value{
 A SpatialPolygons object with the hull polygon. If the number of points
