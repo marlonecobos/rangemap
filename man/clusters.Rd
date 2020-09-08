@@ -4,7 +4,8 @@
 \alias{clusters}
 \title{Finds clusters for SpatialPointsDataFrame based on distinct methods}
 \usage{
-clusters(occ_pr, cluster_method = "hierarchical", split_distance, n_k_means)
+clusters(occ_pr, cluster_method = "hierarchical", split_distance,
+         n_k_means, set_seed = 1, verbose = TRUE)
 }
 \arguments{
 \item{occ_pr}{SpatialPointsDataFrame of occurrence records. Projection must be
@@ -20,6 +21,11 @@ This parameter is used when \code{cluster_method} = "hierarchical".}
 
 \item{n_k_means}{(numeric) number of clusters in which the species occurrences
 will be grouped when using the "k-means" \code{cluster_method}.}
+
+\item{set_seed}{(numeric) integer value to specify a seed. Default = 1.}
+
+\item{verbose}{(logical) whether or not to print messages about the process.
+Default = TRUE.}
 }
 \value{
 A SpatialPointsDataFrame with an extra column in data defining clusters.
