@@ -36,7 +36,7 @@ status](https://travis-ci.org/marlonecobos/rangemap.svg?branch=master)](https://
 status](https://github.com/marlonecobos/rangemap/workflows/R-CMD-check/badge.svg)](https://github.com/marlonecobos/rangemap/actions)
 <!-- badges: end -->
 
-<a href='https://github.com/marlonecobos/rangemap/'><img src='README_files/rangemao100dpi.png.png' align="right" height="139" /></a>
+<img src='README_files/rangemap100dpi.png' align="right" height="139" /></a>
 
 <hr>
 
