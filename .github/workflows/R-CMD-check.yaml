@@ -62,9 +62,12 @@ jobs:
             eval sudo $cmd
           done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "20.04"))')
 
-      - name: Install system dependencies mac
+      - name: Install geos
         if: runner.os == 'macOS'
         run: brew install geos
+
+      - name: Install xquartz
+        if: runner.os == 'macOS'
         run: brew cask install xquartz
 
       - name: Install dependencies
