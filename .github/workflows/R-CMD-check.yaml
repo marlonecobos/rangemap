@@ -68,6 +68,7 @@ jobs:
           while read -r cmd
           do
             brew install geos
+          done
 
       - name: Install dependencies
         run: |
