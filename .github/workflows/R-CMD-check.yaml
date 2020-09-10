@@ -72,7 +72,7 @@ jobs:
           wget https://dl.bintray.com/xquartz/downloads/XQuartz-2.7.11.dmg
           sudo hdiutil attach XQuartz-2.7.11.dmg
           sudo installer -package /Volumes/XQuartz-2.7.11/XQuartz.pkg -target /
-https://www.xquartz.org/releases/XQuartz-2.7.11.html
+
       - name: Install dependencies
         run: |
           remotes::install_deps(dependencies = TRUE)
