@@ -108,10 +108,10 @@ rangemap_buffer <- function(occurrences, buffer_distance = 100000, polygons = NU
   buff_area <- geobuffer_points(data = occ_sp@coords, radius = buffer_distance)
 
   # getting only relevant polygons
+  polygons <- suppressWarnings(rgeos::gBuffer(polygons, byid = TRUE, width = 0))
   polygons1 <- polygons[buff_area, ]
 
   # clip a world map based on the created buffer
-  polygons1 <- suppressWarnings(rgeos::gBuffer(polygons, byid = TRUE, width = 0))
   polygons1 <- rgeos::gUnaryUnion(polygons1)
   clip_area <- rgeos::gIntersection(buff_area, polygons1, byid = TRUE,
                                     drop_lower_td = TRUE)
