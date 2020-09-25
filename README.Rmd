@@ -1,6 +1,6 @@
 ---
 title: "rangemap: Simple Tools for Defining Species Ranges"
-author: "Marlon E. Cobos, Vijay Barve, Narayani Barve, and Alberto Jimenez-Valverde"
+author: "Marlon E. Cobos, Vijay Barve, Narayani Barve, Alberto Jimenez-Valverde, and Claudia Nunez-Penichet"
 output:
   github_document:
     toc: yes

@@ -10,7 +10,10 @@ Authors@R: c(
     person("Narayani", "Barve", email = "narayani.ku@gmail.com", role = "aut",
            comment = c(ORCID = "0000-0002-7893-8774")),
     person("Alberto", "Jimenez-Valverde", email = "alberto.jimenez.valverde@gmail.com", 
-           role = "aut", comment = c(ORCID = "0000-0001-9962-2106")))
+           role = "aut", comment = c(ORCID = "0000-0001-9962-2106")),
+    person("Claudia", "Nuñez-Penichet", email = "claununez199o@gmail.com", 
+           role = "aut", comment = c(ORCID = "0000-0001-7442-8593"))
+           )
 Maintainer: Marlon E. Cobos <manubio13@gmail.com>
 Date: 2020-09-08
 Description: A collection of tools to create species range maps based on 

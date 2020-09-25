@@ -1,7 +1,7 @@
 rangemap: Simple Tools for Defining Species Ranges
 ================
-Marlon E. Cobos, Vijay Barve, Narayani Barve, and Alberto
-Jimenez-Valverde
+Marlon E. Cobos, Vijay Barve, Narayani Barve, Alberto Jimenez-Valverde,
+and Claudia Nunez-Penichet
 
   - [Project description](#project-description)
       - [Status of the project](#status-of-the-project)
