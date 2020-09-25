@@ -23,7 +23,7 @@ If you haven't seen the rangemap [short tutorial I](rangemap_short_tutorial_I.ht
 
 In this example we will explore three functions of this package that allow the users to create species range maps using the outputs of the functions *rangemap_boundaries*, *rangemap_buffer*, *rangemap_enm*, *rangemap_hull*, and *rangemap_tsa*.
 
-### Species distribution ranges usign three disticnt algorithms
+### Species distribution ranges using three distinct algorithms
 
 **Species range based on buffers**
 
@@ -56,7 +56,7 @@ hull_range <- rangemap_hull(occurrences = occ_d, hull_type = hull,
 
 **Species range based on concave hulls**
 
-The function *rangemap_hull* generates a distributional range for a given species based on provided occurrences and two distinct type of hulls, covex and concave. See the function's help for more details.
+The function *rangemap_hull* generates a distributional range for a given species based on provided occurrences and two distinct type of hulls, convex and concave. See the function's help for more details.
 
 ```{r}
 # Defining parameters

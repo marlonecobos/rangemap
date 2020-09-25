@@ -24,7 +24,7 @@ If you haven't seen the rangemap [short tutorial I](rangemap_short_tutorial_I.ht
 In this example we will explore two functions of this package that allow the users to crate species ranges based on trend surface analyses and ecological niche models.
 
 
-### Species distribution range usign a trend surface analysis
+### Species distribution range using a trend surface analysis
 
 With the *rangemap_tsa* generates a distributional range for a given species using a trend surface analysis. See the function's help for more details.
 
