@@ -30,8 +30,6 @@ and Claudia Nunez-Penichet
 
 <!-- badges: start -->
 
-[![Travis build
-status](https://travis-ci.org/marlonecobos/rangemap.svg?branch=master)](https://travis-ci.org/marlonecobos/rangemap)
 [![R build
 status](https://github.com/marlonecobos/rangemap/workflows/R-CMD-check/badge.svg)](https://github.com/marlonecobos/rangemap/actions)
 <!-- badges: end -->

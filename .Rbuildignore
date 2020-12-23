@@ -4,7 +4,6 @@
 ^README.Rmd
 ^README_files
 ^cran-comments.md$
-^\.travis\.yml$
 ^CRAN-RELEASE$
 ^cran-comments\.md$
 ^\.github$
