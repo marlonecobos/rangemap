@@ -15,7 +15,7 @@ Authors@R: c(
            role = "aut", comment = c(ORCID = "0000-0001-7442-8593"))
            )
 Maintainer: Marlon E. Cobos <manubio13@gmail.com>
-Date: 2021-01-22
+Date: 2021-01-25
 Description: A collection of tools to create species range maps based on 
     occurrence data, statistics, and spatial objects. Other tools in this 
     collection can be used to analyze the environmental characteristics of 
@@ -28,8 +28,8 @@ Description: A collection of tools to create species range maps based on
     exclusive. Description of methods, approaches, and comments for some of the 
     tools implemented here can be found in: 
     IUCN (2001) <https://portals.iucn.org/library/node/10315>,
-    Peterson et al. (2011) <https://rb.gy/lvatmz>, and
-    Graham and Hijmans (2006) <doi:10.1111/j.1466-8238.2006.00257.x>.
+    Peterson et al. (2011) <https://www.degruyter.com/princetonup/view/title/506966>, 
+    and Graham and Hijmans (2006) <doi:10.1111/j.1466-8238.2006.00257.x>.
 URL: https://github.com/marlonecobos/rangemap
 BugReports: https://github.com/marlonecobos/rangemap/issues
 Imports:
