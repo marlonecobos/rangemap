@@ -20,5 +20,5 @@ A SpatialPolygonsDataFrame from the GADM database at the level selected.
 Get SpatialPolygons of countries at distinct administrative levels
 }
 \examples{
-map_gadm <- GADM_spoly(country_code = "EC", boundary_level = 1)
+map_gadm <- GADM_spoly(country_code = "UY", boundary_level = 0)
 }

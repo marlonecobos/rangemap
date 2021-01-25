@@ -129,7 +129,7 @@ AED_projection <- function(occurrences = NULL, spatial_object = NULL) {
 #' @importFrom maptools map2SpatialPolygons
 #' @importFrom sp CRS spTransform
 #' @examples
-#' map_gadm <- GADM_spoly(country_code = "EC", boundary_level = 1)
+#' map_gadm <- GADM_spoly(country_code = "UY", boundary_level = 0)
 
 GADM_spoly <- function(country_code, boundary_level, keep_data = FALSE) {
   if (missing(country_code)) {
