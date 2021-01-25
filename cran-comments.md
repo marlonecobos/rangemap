@@ -15,6 +15,7 @@ the function to allow explicit control on such seed.
 are marked UTF-8 strings; however, the names are correct and we consider they should stay.
 * Another NOTE appears because some of the words in the Description
 field in DESCRIPTION are considered mis-spelled. However, the words are correct.
+* All links work, despite a note related to some of such links.
 
 
 ## Test environments
