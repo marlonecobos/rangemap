@@ -10,7 +10,7 @@
 #'   \item{ISO_ALPHA.3_Code}{character, country code.}
 #'   \item{ISO_Numeric_Code_UN_M49_Numerical_Code}{numeric, country numeric codes.}
 #' }
-#' @source \url{http://www.nationsonline.org/oneworld/country_code_list.htm}
+#' @source \url{https://www.nationsonline.org/oneworld/country_code_list.htm}
 #'
 #' @examples
 #' data("country_codes", package = "rangemap")

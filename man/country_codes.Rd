@@ -14,7 +14,7 @@ A data frame with 247 rows and 4 columns.
 }
 }
 \source{
-\url{http://www.nationsonline.org/oneworld/country_code_list.htm}
+\url{https://www.nationsonline.org/oneworld/country_code_list.htm}
 }
 \usage{
 country_codes
