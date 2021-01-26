@@ -10,11 +10,7 @@ vignette: >
 ---
 
 ```{r setup, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
-library(rangemap)
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", echo = FALSE)
 ```
 
 ## Species distribution ranges based on distinct algorithms
@@ -27,11 +23,11 @@ In this short example we will explore three of the functions of this package tha
 
 The function *rangemap_buffer* generates a distributional range for a given species by buffering provided occurrences using a defined distance. See the function's help for more details.
 
-```{r, eval=FALSE}
+```{r, eval=FALSE, echo=TRUE}
 help(rangemap_buffer)
 ```
 
-```{r, cache=TRUE}
+```{r, eval=FALSE, echo=TRUE}
 # getting the data
 data("occ_p", package = "rangemap")
 
@@ -40,15 +36,13 @@ dist <- 100000 # buffer distance in meters
 
 # Now we can create the species range based on buffers
 buff_range <- rangemap_buffer(occurrences = occ_p, buffer_distance = dist)
-summary(buff_range)
-
 ```
 
 ### Species range based on administrative areas
 
 With the *rangemap_boundaries * function we can generate a distributional range for a given species by buffering provided occurrences using a defined distance. See the function's help for more details.
 
-```{r, cache=TRUE}
+```{r, eval=FALSE, echo=TRUE}
 # getting the data
 data("occ_d", package = "rangemap")
 
@@ -60,17 +54,14 @@ countries <- c("PER", "BRA", "COL", "VEN", "ECU", "GUF", "GUY", "SUR", "BOL")
 # Now we can create the species range based on administrative areas using occurrence data
 b_range <- rangemap_boundaries(occurrences = occ_d, adm_areas = adm, 
                                country_code = countries, boundary_level = level)
-summary(b_range)
 ```
 
 
-```{r, cache=TRUE}
+```{r, eval=FALSE, echo=TRUE}
 # Now let's see the species range based on administrative areas using only names of areas
 adm1 <- c("Brazil", "Ecuador", "Peru", "Bolivia", "Colombia", "Venezuela")
 b_range1 <- rangemap_boundaries(adm_areas = adm1, country_code = countries,
                                 boundary_level = level)
-
-summary(b_range1)
 ```
 
 
@@ -78,7 +69,7 @@ summary(b_range1)
 
 The function *rangemap_hull* generates a distributional range for a given species based on provided occurrences and two distinct type of hulls, convex and concave. See the function's help for more details.
 
-```{r, cache=TRUE}
+```{r, eval=FALSE, echo=TRUE}
 # Defining parameters
 dist <- 100000
 hull <- "concave"
@@ -92,13 +83,18 @@ hull_range <- rangemap_hull(occurrences = occ_d, hull_type = hull,
 
 The function *rangemap_plot* will allow you to produce a nice figure for each of the species ranges. Lets put all the figures together and compare them. 
 
-```{r, fig.show='hold', warning=FALSE}
+```{r, eval=FALSE, echo=TRUE}
 par(mar = rep(0, 4)) # optional, reduces the margins of the figure
 rangemap_plot(buff_range, add_occurrences = TRUE, northarrow = TRUE,
-             range_color = "transparent")
+             range_color = NA)
 rangemap_plot(buff_range)
 rangemap_plot(b_range)
 rangemap_plot(hull_range, legend = TRUE, legend_position = "bottomleft")
+```
+
+```{r}
+knitr::include_graphics(c("vignette_img/VII_records.png", "vignette_img/VII_pe.png",
+                          "vignette_img/VII_dc.png", "vignette_img/VII_dcv.png"))
 ```
 
 ## Note

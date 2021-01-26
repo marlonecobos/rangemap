@@ -10,11 +10,7 @@ vignette: >
 ---
 
 ```{r setup, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
-library(rangemap)
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", echo = FALSE)
 ```
 
 
@@ -61,7 +57,7 @@ The data included in this package are:
 
 Let's read the species records and check how the are geographically distributed using the *rangemap_explore* function.
 
-```{r, fig.show='hold', warning=FALSE, cache=TRUE}
+```{r, eval=FALSE, echo=TRUE}
 # Getting the data
 data("occ_f", package = "rangemap")
 
@@ -71,17 +67,21 @@ rangemap_explore(occurrences = occ_f)
 rangemap_explore(occurrences = occ_f, show_countries = TRUE)
 ```
 
+```{r}
+knitr::include_graphics(c("vignette_img/VI_cu1.png", "vignette_img/VI_cu2.png"))
+```
+
 ### Species range based on administrative areas
 
 Let's check the *rangemap_boundaries* function's help to be aware of all the parameters.
 
-```{r, eval=FALSE}
+```{r, eval=FALSE, echo=TRUE}
 help(rangemap_boundaries)
 ```
 
 Defining parameters and reading the data
 
-```{r}
+```{r, eval=FALSE, echo=TRUE}
 # Getting the data
 data("occ_d", package = "rangemap")
 
@@ -94,17 +94,15 @@ countries <- c("PER", "BRA", "COL", "VEN", "ECU", "GUF", "GUY", "SUR", "BOL") # 
 
 Now we can create the species range based on administrative areas
 
-```{r, cache=TRUE}
+```{r, eval=FALSE, echo=TRUE}
 b_range <- rangemap_boundaries(occurrences = occ_d, adm_areas = adm,
                                country_code = countries, boundary_level = level)
-
-summary(b_range)
 
 ```
 
 If you want to save the results of this analysis as shapefiles try using the parameters save_shp and name.
 
-```{r, eval=FALSE}
+```{r, eval=FALSE, echo=TRUE}
 save <- TRUE # to save the results
 name <- "test" # name of the results
 
@@ -119,13 +117,13 @@ The function *rangemap_plot* will allow you to produce a nice figure of your res
 
 Check the function's help to be aware of all the parameters.
 
-```{r, eval=FALSE}
+```{r, eval=FALSE, echo=TRUE}
 help(rangemap_plot)
 ```
 
 Now the figures. One with the species range only.  
 
-```{r, warning=FALSE}
+```{r, eval=FALSE, echo=TRUE}
 # arguments for the species range figure
 extent <- TRUE
 occ <- TRUE
@@ -137,9 +135,13 @@ rangemap_plot(b_range, add_EOO = extent, add_occurrences = occ,
               legend = legend)
 ```
 
+```{r}
+knitr::include_graphics("vignette_img/VI_dc1.png")
+```
+
 The other one with the potential extent of occurrence, the species occurrences and other map details. But let's first define the characteristics we want in the figure.
 
-```{r}
+```{r, eval=FALSE, echo=TRUE}
 extent <- TRUE # adds the extent of occurrence of the species to the figure
 occ <- TRUE # adds the occurrence records of the species to the figure
 legend <- TRUE # adds a legend to the figure
@@ -148,10 +150,14 @@ north <- TRUE # adds a north arrow to the figure
 n_pos <- "bottomleft" # position of the north arrow
 ```
 
-```{r, warning=FALSE}
+```{r, eval=FALSE, echo=TRUE}
 par(mar = rep(0, 4), cex = 0.8)
 rangemap_plot(b_range, add_EOO = extent, add_occurrences = occ, 
              legend = legend, legend_position = leg_pos, 
              northarrow = north, northarrow_position = n_pos)
+```
+
+```{r}
+knitr::include_graphics("vignette_img/VI_dc2.png")
 ```
 

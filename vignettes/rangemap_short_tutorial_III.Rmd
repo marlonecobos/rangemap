@@ -10,11 +10,7 @@ vignette: >
 ---
 
 ```{r setup, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
-library(rangemap)
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", echo = FALSE)
 ```
 
 ## Species distribution ranges based on statistical models
@@ -28,7 +24,7 @@ In this example we will explore two functions of this package that allow the use
 
 With the *rangemap_tsa* generates a distributional range for a given species using a trend surface analysis. See the function's help for more details.
 
-```{r, cache=TRUE, warning=FALSE}
+```{r, eval=FALSE, echo=TRUE}
 # Data
 data("occ_f", package = "rangemap")
 
@@ -46,12 +42,16 @@ tsa_range <- rangemap_tsa(occurrences = occ_f, region_of_interest = CU,
 
 The other one with the potential extent of occurrence, the species occurrences and other map details. But let's first define the characteristics we want in the figure.
 
-```{r, fig.show='hold', warning=FALSE}
+```{r, eval=FALSE, echo=TRUE}
 par(mar = rep(0, 4)) # optional, reduces the margins of the figure
 rangemap_plot(tsa_range, add_occurrences = TRUE, polygons = CU, 
-             range_color = "transparent")
+             range_color = NA)
 rangemap_plot(tsa_range, northarrow = TRUE,  polygons = CU,
              legend = TRUE, legend_position = "bottomright")
+```
+
+```{r}
+knitr::include_graphics(c("vignette_img/VIII_pf1.png", "vignette_img/VIII_pf2.png"))
 ```
 
 
@@ -59,7 +59,7 @@ rangemap_plot(tsa_range, northarrow = TRUE,  polygons = CU,
 
 The function *rangemap_enm* generates a distributional range for a given species using a continuous raster layer produced with an ecological niche modeling algorithm. See the function's help for more details.
 
-```{r, cache=TRUE}
+```{r, eval=FALSE, echo=TRUE}
 # parameters
 sp_mod <- raster::raster(list.files(system.file("extdata", package = "rangemap"),
                                     pattern = "sp_model", full.names = TRUE))
@@ -85,10 +85,15 @@ enm_range2 <- rangemap_enm(occurrences = occ_train, model_output  = sp_mod,
 Using the *rangemap_plot* function we can produce a nice figure for each of the species ranges. Lets put all the figures together and compare them. 
 
 
-```{r, fig.show='hold', warning=FALSE}
+```{r, eval=FALSE, echo=TRUE}
 par(mar = rep(0, 4)) 
-rangemap_plot(enm_range, add_occurrences = TRUE, range_color = "transparent")
+rangemap_plot(enm_range, add_occurrences = TRUE, range_color = NA)
 rangemap_plot(enm_range)
 rangemap_plot(enm_range1)
-rangemap_plot(enm_range2, legend = TRUE,legend_position = c(-6800000, 3500000))
+rangemap_plot(enm_range2)
+```
+
+```{r}
+knitr::include_graphics(c("vignette_img/VIII_aa1.png", "vignette_img/VIII_aa2.png",
+                          "vignette_img/VIII_aa3.png", "vignette_img/VIII_aa4.png"))
 ```
