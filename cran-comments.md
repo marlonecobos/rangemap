@@ -1,3 +1,41 @@
+## Resubmission 0.1.16
+This is a resubmission. In this version I have made the following changes based 
+on CRAN reviewer suggestions:
+
+* Changed a link that appear invalid in the documentation of country_codes.
+* Made changes in vignettes to reduce overall checktime to less than 10 minutes.
+
+**Comments on NOTEs**
+
+* A NOTE may be produced because names of countries in one of the elements in data 
+are marked UTF-8 strings; however, the names are correct and we consider they should stay.
+* Another NOTE appears because some of the words in the Description
+field in DESCRIPTION are considered mis-spelled. However, the words are correct.
+
+
+## Test environments
+* local Windows 10, R 4.0.3
+* Microsoft Windows Server 2019 10.0.17763 (on GitHub actions) R-release
+* Mac OS 10.13.6 (on R-hub) R-release
+* ubuntu-20.04 LTS (on GitHub actions) R-release
+* ubuntu-20.04 LTS (on GitHub actions) R-devel
+
+
+## R CMD check results
+There were no ERRORs
+
+There were no WARNINGs
+
+There were no NOTEs
+
+
+## Downstream dependencies
+There are currently no downstream dependencies for this package. 
+
+
+<br>
+<hr>
+
 ## Resubmission 0.1.15
 This is a resubmission. In this version I have made the following changes based 
 on CRAN reviewer suggestions:
