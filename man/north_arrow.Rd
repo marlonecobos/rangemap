@@ -17,6 +17,10 @@ plotting area. Default = \code{NULL}.}
 \item{ylim}{(numeric) vector of two numbers indicating the y limits of the
 plotting area. Default = \code{NULL}.}
 }
+\value{
+Plot of a simple North arrow located in the \code{position} of the plot
+specified.
+}
 \description{
 north_arrow plots a North arrow in user defined places in a map.
 }

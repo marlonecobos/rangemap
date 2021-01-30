@@ -15,6 +15,10 @@ A RasterStack with 180 rows, 218 columns, 39240 cells, and 4 layers:
 \source{
 \url{https://www.worldclim.org/data/v1.4/worldclim14.html}
 }
+\value{
+No return value, used with function \code{\link[raster]{stack}} to
+bring an example of a set of environmental variables.
+}
 \description{
 A RasterStack containing four bioclimatic variables downloaded from the
 WorldClim database 1.4.

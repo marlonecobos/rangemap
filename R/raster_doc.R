@@ -12,6 +12,9 @@
 #'
 #' @name sp_model
 #'
+#' @return No return value, used with function \code{\link[raster]{raster}} to
+#' bring an example of ecological niche modeling output.
+#'
 #' @examples
 #' model <- raster::raster(system.file("extdata", "sp_model.tif",
 #'                                     package = "rangemap"))
@@ -36,6 +39,9 @@ NULL
 #' @source \url{https://www.worldclim.org/data/v1.4/worldclim14.html}
 #'
 #' @name variables
+#'
+#' @return No return value, used with function \code{\link[raster]{stack}} to
+#' bring an example of a set of environmental variables.
 #'
 #' @examples
 #' vars <- raster::stack(system.file("extdata", "variables.tif",

@@ -104,6 +104,10 @@ plot_ranges <- function(sp_ranges, sp_records = NULL, variable, range_colors = N
 #' @param ylim (numeric) vector of two numbers indicating the y limits of the
 #' plotting area. Default = \code{NULL}.
 #'
+#' @return
+#' Plot of a simple North arrow located in the \code{position} of the plot
+#' specified.
+#'
 #' @export
 #' @importFrom graphics polygon
 #' @examples

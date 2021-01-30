@@ -12,6 +12,10 @@ A RasterLayer with 150 rows, 249 columns, and 37350 cells:
 \source{
 \url{https://kuscholarworks.ku.edu/handle/1808/26376}
 }
+\value{
+No return value, used with function \code{\link[raster]{raster}} to
+bring an example of ecological niche modeling output.
+}
 \description{
 A RasterLayer containing an ecological niche model for the a tick
 (\emph{Amblyomma americanum}).
