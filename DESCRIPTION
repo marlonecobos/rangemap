@@ -15,7 +15,7 @@ Authors@R: c(
            role = "aut", comment = c(ORCID = "0000-0001-7442-8593"))
            )
 Maintainer: Marlon E. Cobos <manubio13@gmail.com>
-Date: 2021-01-25
+Date: 2021-01-29
 Description: A collection of tools to create species range maps based on 
     occurrence data, statistics, and spatial objects. Other tools in this 
     collection can be used to analyze the environmental characteristics of 
