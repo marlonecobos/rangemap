@@ -13,6 +13,7 @@ vignette: >
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>", echo = FALSE)
 ```
 
+<img src='vignette_img/rangemap100dpi.png' align="right" height="139" /></a>
 
 ## Package description
 

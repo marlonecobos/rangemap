@@ -13,6 +13,8 @@ vignette: >
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>", echo = FALSE)
 ```
 
+<img src='vignette_img/rangemap100dpi.png' align="right" height="139" /></a>
+
 ## Figures with rangemap
 
 If you haven't seen the rangemap [short tutorial I](rangemap_short_tutorial_I.html), [short tutorial II](rangemap_short_tutorial_II.html), and [short tutorial III](rangemap_short_tutorial_III.html), take a look at them for more background on the **rangemap** R package. 

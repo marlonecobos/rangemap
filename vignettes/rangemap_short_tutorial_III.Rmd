@@ -13,6 +13,8 @@ vignette: >
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>", echo = FALSE)
 ```
 
+<img src='vignette_img/rangemap100dpi.png' align="right" height="139" /></a>
+
 ## Species distribution ranges based on statistical models
 
 If you haven't seen the rangemap [short tutorial I](rangemap_short_tutorial_I.html) and [short tutorial II](rangemap_short_tutorial_II.html), take a look at them for more background on the **rangemap** R package. 
