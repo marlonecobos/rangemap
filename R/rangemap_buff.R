@@ -132,7 +132,6 @@ rangemap_buffer <- function(occurrences, buffer_distance = 100000, polygons = NU
                                             match.ID = FALSE)
 
   ## extent of occurrence
-  polygons <- sp::spTransform(polygons, LAEA)
   eooc <- eoo(occ_sp@data, polygons)
   eocckm2 <- eooc$area
   extent_occurrence <- eooc$spolydf

@@ -138,6 +138,7 @@ rangemap_tsa <- function(occurrences, region_of_interest, cell_size = 5,
   occ_pr <- sp::spTransform(occ_sp, LAEA)
 
   # region of interest projected
+  region <- region_of_interest
   region_of_interest <- sp::spTransform(region_of_interest, LAEA)
 
   # preparing variables
@@ -228,7 +229,7 @@ rangemap_tsa <- function(occurrences, region_of_interest, cell_size = 5,
                                             match.ID = FALSE)
 
   # extent of occurrence
-  eooc <- eoo(occ_sp@data, region_of_interest)
+  eooc <- eoo(occ_sp@data, region)
   eocckm2 <- eooc$area
   extent_occurrence <- eooc$spolydf
 

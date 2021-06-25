@@ -153,11 +153,13 @@ rangemap_hull <- function(occurrences, hull_type = "convex", concave_distance_li
 
   # world map or user map fro creating species range
   if (is.null(polygons)) {
-    polygons <- simple_wmap(which = "simple")
+    poly <- simple_wmap(which = "simple")
+  } else {
+    poly <- polygons
   }
 
   # keeping only records in land
-  occ_sp <- occ_sp[polygons, ]
+  occ_sp <- occ_sp[poly, ]
 
   # project the points
   AEQD <- AED_projection(spatial_object = occ_sp)
@@ -165,7 +167,7 @@ rangemap_hull <- function(occurrences, hull_type = "convex", concave_distance_li
 
   # project polygons
   LAEA <- LAEA_projection(spatial_object = occ_sp)
-  polygons <- sp::spTransform(polygons, LAEA)
+  polygons <- sp::spTransform(poly, LAEA)
 
   # clustering
   if (split == TRUE) {
@@ -213,7 +215,7 @@ rangemap_hull <- function(occurrences, hull_type = "convex", concave_distance_li
                                             match.ID = FALSE)
 
   ## extent of occurrence
-  eooc <- eoo(occ_sp@data, polygons)
+  eooc <- eoo(occ_sp@data, poly)
   eocckm2 <- eooc$area
   extent_occurrence <- eooc$spolydf
 

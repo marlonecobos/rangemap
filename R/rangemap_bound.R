@@ -218,7 +218,7 @@ rangemap_boundaries <- function(occurrences = NULL, adm_areas = NULL,
   if (is.null(polygons)) {
     #polygons <- GADM_spoly(country_code, boundary_level, keep_data)
 
-    polygons <- tryCatch(
+    poly <- tryCatch(
       GADM_spoly(country_code, boundary_level, keep_data),
       error = function(e) {
         message("An error occurred:\n", e,
@@ -226,12 +226,12 @@ rangemap_boundaries <- function(occurrences = NULL, adm_areas = NULL,
       }
     )
 
-    if (is.null(polygons)) {
+    if (is.null(poly)) {
       return(NULL)
     }
   } else {
     # project polygons
-    polygons <- sp::spTransform(polygons, WGS84)
+    poly <- sp::spTransform(polygons, WGS84)
   }
 
   # anlysis
@@ -245,7 +245,7 @@ rangemap_boundaries <- function(occurrences = NULL, adm_areas = NULL,
                                          proj4string = WGS84)
 
     # keeping only records in land
-    occ_sp <- occ_sp[polygons, ]
+    occ_sp <- occ_sp[poly, ]
 
     # centriods of points as reference
     LAEA <- LAEA_projection(spatial_object = occ_sp)
@@ -253,11 +253,11 @@ rangemap_boundaries <- function(occurrences = NULL, adm_areas = NULL,
     # reproject occurrences
     occ_pr <- sp::spTransform(occ_sp, LAEA)
   } else {
-    LAEA <- LAEA_projection(spatial_object = polygons)
+    LAEA <- LAEA_projection(spatial_object = poly)
   }
 
   # reproject polygons
-  polygons <- sp::spTransform(polygons, LAEA)
+  polygons <- sp::spTransform(poly, LAEA)
 
   #selecting polygons
   if (!is.null(occurrences) | !is.null(adm_areas)) {
@@ -339,7 +339,7 @@ rangemap_boundaries <- function(occurrences = NULL, adm_areas = NULL,
                                                match.ID = FALSE)
 
     # extent of occurrence
-    eooc <- eoo(occ_sp@data, polygons)
+    eooc <- eoo(occ_sp@data, poly)
     eocckm2 <- eooc$area
     extent_occurrence <- eooc$spolydf
 

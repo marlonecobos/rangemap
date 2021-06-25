@@ -190,10 +190,9 @@ rangemap_enm <- function(model_output, occurrences = NULL, threshold_value = NUL
   }
 
   enm_range_pr <- sp::spTransform(enm_range, LAEA)
-  polygons <- sp::spTransform(polygons, LAEA)
 
-  polygons <- suppressWarnings(rgeos::gBuffer(polygons, byid = TRUE, width = 0))
-  polygons <- rgeos::gUnaryUnion(polygons)
+  #polygons <- suppressWarnings(rgeos::gBuffer(polygons, byid = TRUE, width = 0))
+  #polygons <- rgeos::gUnaryUnion(polygons)
 
   # calculate areas in km2
   area <- raster::area(enm_range_pr) / 1000000
