@@ -56,6 +56,12 @@
 
 geobuffer_points <- function(data, radius, by_point = FALSE, n_segments = 100,
                              wrap_antimeridian = FALSE) {
+  if (missing(data)) {
+    stop("Argument 'data' is necessary to perform the analysis")
+  }
+  if (missing(radius)) {
+    stop("Argument 'radius' is necessary to perform the analysis")
+  }
   # data as needed
   data <- t(data)[2:1, ]
 
