@@ -15,6 +15,8 @@ GADM_spoly(country_code, boundary_level, keep_data = FALSE)
 }
 \value{
 A SpatialPolygonsDataFrame from the GADM database at the level selected.
+If an error occurs when downloading any of the spatial objects based on
+\code{country_code}, the result is NULL.
 }
 \description{
 Get SpatialPolygons of countries at distinct administrative levels

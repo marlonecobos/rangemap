@@ -216,15 +216,7 @@ rangemap_boundaries <- function(occurrences = NULL, adm_areas = NULL,
 
   # world map or user map fro creating species range
   if (is.null(polygons)) {
-    #polygons <- GADM_spoly(country_code, boundary_level, keep_data)
-
-    poly <- tryCatch(
-      GADM_spoly(country_code, boundary_level, keep_data),
-      error = function(e) {
-        message("An error occurred:\n", e,
-                "\nCheck internet conection, 'country_code', and 'boundary_level'\n")
-      }
-    )
+    poly <- GADM_spoly(country_code, boundary_level, keep_data)
 
     if (is.null(poly)) {
       return(NULL)

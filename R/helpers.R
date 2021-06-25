@@ -123,6 +123,8 @@ AED_projection <- function(occurrences = NULL, spatial_object = NULL) {
 #' @param boundary_level (numeric) level of administrative division to be considered.
 #' @param keep_data (logical) whether or not to keep downloaded files. Default = \code{FALSE}.
 #' @return A SpatialPolygonsDataFrame from the GADM database at the level selected.
+#' If an error occurs when downloading any of the spatial objects based on
+#' \code{country_code}, the result is NULL.
 #' @export
 #' @importFrom raster getData
 #' @importFrom maps map
@@ -140,8 +142,17 @@ GADM_spoly <- function(country_code, boundary_level, keep_data = FALSE) {
   }
   WGS84 <- sp::CRS("+init=epsg:4326")
   polygon <- lapply(country_code, function(x) {
-    raster::getData(name = "GADM", country = x, level = boundary_level)
+    tryCatch(
+      raster::getData(name = "GADM", country = x, level = boundary_level),
+      error = function(e) {
+        message("An error occurred:\n", e,
+                "\nCheck internet conection, 'country_code', and 'boundary_level'\n")
+      }
+    )
   })
+  if (any(vapply(polygon, is.null, TRUE))) {
+    return(NULL)
+  }
 
   polygon <- do.call(rbind, polygon)
   polygon@data$GID_0 <- 1:length(polygon@data$GID_0)
