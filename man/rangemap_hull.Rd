@@ -87,6 +87,11 @@ All resulting Spatial objects in the results will be projected to the
 Lambert Azimuthal Equal Area projection, centered on the centroid of occurrence
 points given as inputs.
 
+If \code{split} = \code{TRUE}, some point clusters may end up having less than
+three points, in which cases creating hull polygons is not possible. Such
+point clusters will be discarded if \code{buffer_distance} = 0. To keep them
+as part of the final result, use a \code{buffer_distance} > 0.
+
 The \code{cluster_method} must be chosen based on the spatial configuration of
 the species occurrences. Both methods make distinct assumptions and one of
 them may perform better than the other depending on the spatial pattern of the

@@ -62,6 +62,11 @@
 #' Lambert Azimuthal Equal Area projection, centered on the centroid of occurrence
 #' points given as inputs.
 #'
+#' If \code{split} = \code{TRUE}, some point clusters may end up having less than
+#' three points, in which cases creating hull polygons is not possible. Such
+#' point clusters will be discarded if \code{buffer_distance} = 0. To keep them
+#' as part of the final result, use a \code{buffer_distance} > 0.
+#'
 #' The \code{cluster_method} must be chosen based on the spatial configuration of
 #' the species occurrences. Both methods make distinct assumptions and one of
 #' them may perform better than the other depending on the spatial pattern of the
@@ -190,11 +195,27 @@ rangemap_hull <- function(occurrences, hull_type = "convex", concave_distance_li
   hulls <- hull_polygon(occ_prs, hull_type, concave_distance_lim)
 
   # create a buffer based on a user-defined distance
-  hulls_buffer <- lapply(hulls, rgeos::gBuffer, width = buffer_distance)
+  if (buffer_distance > 0) {
+    hulls_buffer <- lapply(hulls, rgeos::gBuffer, width = buffer_distance)
 
-  # union buffered polygons
-  hulls_buff_un <- do.call(sp::rbind.SpatialPolygons,
-                           c(hulls_buffer, list(makeUniqueIDs = TRUE)))
+    # union buffered polygons
+    hulls_buff_un <- do.call(sp::rbind.SpatialPolygons,
+                             c(hulls_buffer, list(makeUniqueIDs = TRUE)))
+  } else {
+    classes <- vapply(hulls, FUN.VALUE = character(1), function(x) {class(x)[1]})
+
+    pols <- classes == "SpatialPolygons"
+    if (sum(pols) != length(hulls)) {
+      message("Certain clusters don't have enough points to create hull polygons\n",
+              "Some point clusters will be discarded. If needed use a value > 0\n",
+              "for 'buffer_distance' to create polygons from such points and keep them.")
+    }
+
+    hulls <- hulls[pols]
+
+    hulls_buff_un <- do.call(sp::rbind.SpatialPolygons,
+                             c(hulls, list(makeUniqueIDs = TRUE)))
+  }
 
   # Clipping with the world
   polygons <- suppressWarnings(rgeos::gBuffer(polygons, byid = TRUE, width = 0))
