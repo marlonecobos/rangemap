@@ -7,6 +7,7 @@
 rangemap_enm(model_output, occurrences = NULL, threshold_value = NULL,
              threshold_omission = NULL, min_polygon_area = 0,
              simplify = FALSE, simplify_level = 0, polygons = NULL,
+             extent_of_occurrence = TRUE, area_of_occupancy = TRUE,
              final_projection = NULL, save_shp = FALSE, name,
              overwrite = FALSE, verbose = TRUE)
 }
@@ -51,6 +52,13 @@ needed, try numbers 0-1 first. Ignored if \code{simplify} = \code{FALSE}.}
 adjust extent of occurrence to these limits. Projection must be WGS84
 (EPSG:4326). If \code{NULL}, the default, a simplified world map will be used.}
 
+\item{extent_of_occurrence}{(logical) whether to obtain the extent of occurrence
+of the species based on a simple convex hull polygon; default = \code{TRUE}.}
+
+\item{area_of_occupancy}{(logical) whether to obtain the area of occupancy
+of the species based on a simple grid of 4 km^2 resolution;
+default = \code{TRUE}.}
+
 \item{final_projection}{(character) string of projection arguments for
 resulting Spatial objects. Arguments must be as in the PROJ.4 documentation.
 See \code{\link[sp]{CRS-class}} for details. If \code{NULL}, the default,
@@ -81,15 +89,20 @@ If instead of \code{occurrences} and \code{threshold_omission},
 \code{threshold_value} is provided, the result will be a sp_range object
 (S4) of two elements: (1) a data.frame with information about the species
 range, and (2) a SpatialPolygons object of the species range.
+
+If \code{extent_of_occurrence} and/or \code{area_of_occupancy} = \code{FALSE},
+the corresponding spatial objects in the resulting sp_range object will be
+empty, an areas will have a value of 0.
 }
 \description{
 rangemap_enm generates a distributional range for a given species
 using a continuous raster layer produced using ecological niche modeling or
 species distribution modeling tools. This function binarizes the model in
 suitable and unsuitable areas using a user specified level of omission or a
-given threshold value. An approach to the species extent of occurrence (using
-convex hulls) and the area of occupancy according to the IUCN criteria is
-also generated. Shapefiles can be saved in the working directory if it is needed.
+given threshold value. Optionally, representations of the species extent of
+occurrence (using convex hulls) and the area of occupancy according to the
+IUCN criteria can also be generated. Shapefiles can be saved in the working
+directory if it is needed.
 }
 \details{
 All resulting Spatial objects in the list of results will be projected to the

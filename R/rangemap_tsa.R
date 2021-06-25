@@ -26,6 +26,11 @@
 #' created using the trend surface model. Lower values will produce polygons more
 #' similar to the original geometry. Default = 0. If simplifying is needed, try
 #' numbers between 0 and 1 first.
+#' @param extent_of_occurrence (logical) whether to obtain the extent of occurrence
+#' of the species based on a simple convex hull polygon; default = \code{TRUE}.
+#' @param area_of_occupancy (logical) whether to obtain the area of occupancy
+#' of the species based on a simple grid of 4 km^2 resolution;
+#' default = \code{TRUE}.
 #' @param final_projection (character) string of projection arguments for resulting
 #' Spatial objects. Arguments must be as in the PROJ.4 documentation. See
 #' \code{\link[sp]{CRS-class}} for details. If \code{NULL}, the default, projection
@@ -52,6 +57,10 @@
 #' (3) species range, (4) extent of occurrence, and (5) area of occupancy.
 #' If \code{save_ts_layer} = TRUE, a (6) TSA layer will be included as well.
 #'
+#' If \code{extent_of_occurrence} and/or \code{area_of_occupancy} = \code{FALSE},
+#' the corresponding spatial objects in the resulting sp_range object will be
+#' empty, an areas will have a value of 0.
+#'
 #' @details
 #' All resulting Spatial objects in the results will be projected to the
 #' \code{final_projection}. Areas are calculated in square kilometers using the
@@ -67,6 +76,7 @@
 #' @usage
 #' rangemap_tsa(occurrences, region_of_interest, cell_size = 5,
 #'              threshold = 0, simplify = FALSE, simplify_level = 0,
+#'              extent_of_occurrence = TRUE, area_of_occupancy = TRUE,
 #'              final_projection = NULL, save_shp = FALSE,
 #'              save_ts_layer = FALSE, name, overwrite = FALSE, verbose = TRUE)
 #'
@@ -95,6 +105,7 @@
 
 rangemap_tsa <- function(occurrences, region_of_interest, cell_size = 5,
                          threshold = 0, simplify = FALSE, simplify_level = 0,
+                         extent_of_occurrence = TRUE, area_of_occupancy = TRUE,
                          final_projection = NULL, save_shp = FALSE,
                          save_ts_layer = FALSE, name, overwrite = FALSE,
                          verbose = TRUE) {
@@ -121,12 +132,21 @@ rangemap_tsa <- function(occurrences, region_of_interest, cell_size = 5,
     }
   }
 
+  # initial projection
+  WGS84 <- sp::CRS("+init=epsg:4326")
+
+  # final projection
+  if (is.null(final_projection)) {
+    final_projection <- WGS84
+  } else {
+    final_projection <- sp::CRS(final_projection) # character to projection
+  }
+
   # erase duplicate records
   occ <- as.data.frame(unique(occurrences))[, 1:3]
   colnames(occ) <- c("Species", "Longitude", "Latitude")
 
   # making spatial points
-  WGS84 <- sp::CRS("+init=epsg:4326")
   occ_sp <- sp::SpatialPointsDataFrame(coords = occ[, 2:3], data = occ,
                                        proj4string = WGS84)
 
@@ -229,25 +249,29 @@ rangemap_tsa <- function(occurrences, region_of_interest, cell_size = 5,
                                             match.ID = FALSE)
 
   # extent of occurrence
-  eooc <- eoo(occ_sp@data, region)
-  eocckm2 <- eooc$area
-  extent_occurrence <- eooc$spolydf
-
-  # area of occupancy
-  aooc <- aoo(occ_pr, species)
-  aocckm2 <- aooc$area
-  area_occupancy <- aooc$spolydf
-
-  # reprojection
-  if (is.null(final_projection)) {
-    final_projection <- WGS84
+  if (extent_of_occurrence == TRUE) {
+    eooc <- eoo(occ_sp@data, region)
+    eocckm2 <- eooc$area
+    extent_occurrence <- eooc$spolydf
+    extent_occurrence <- sp::spTransform(extent_occurrence, final_projection)
   } else {
-    final_projection <- sp::CRS(final_projection) # character to projection
+    eocckm2 <- 0
+    extent_occurrence <- new("SpatialPolygonsDataFrame")
   }
 
+  # area of occupancy
+  if (area_of_occupancy == TRUE) {
+    aooc <- aoo(occ_pr, species)
+    aocckm2 <- aooc$area
+    area_occupancy <- aooc$spolydf
+    area_occupancy <- sp::spTransform(area_occupancy, final_projection)
+  } else {
+    aocckm2 <- 0
+    area_occupancy <- new("SpatialPolygonsDataFrame")
+  }
+
+  # reprojection
   clip_area <- sp::spTransform(clip_area, final_projection)
-  extent_occurrence <- sp::spTransform(extent_occurrence, final_projection)
-  area_occupancy <- sp::spTransform(area_occupancy, final_projection)
   occ_pr <- sp::spTransform(occ_pr, final_projection)
 
   # exporting
@@ -257,12 +281,16 @@ rangemap_tsa <- function(occurrences, region_of_interest, cell_size = 5,
     }
     rgdal::writeOGR(clip_area, ".", name, driver = "ESRI Shapefile",
                     overwrite_layer = overwrite)
-    rgdal::writeOGR(extent_occurrence, ".", paste(name, "extent_occ", sep = "_"),
-                    driver = "ESRI Shapefile", overwrite_layer = overwrite)
-    rgdal::writeOGR(area_occupancy, ".", paste(name, "area_occ", sep = "_"),
-                    driver = "ESRI Shapefile", overwrite_layer = overwrite)
     rgdal::writeOGR(occ_pr, ".", paste(name, "unique_records", sep = "_"),
                     driver = "ESRI Shapefile", overwrite_layer = overwrite)
+    if (extent_of_occurrence == TRUE) {
+      rgdal::writeOGR(extent_occurrence, ".", paste(name, "extent_occ", sep = "_"),
+                      driver = "ESRI Shapefile", overwrite_layer = overwrite)
+    }
+    if (area_of_occupancy == TRUE) {
+      rgdal::writeOGR(area_occupancy, ".", paste(name, "area_occ", sep = "_"),
+                      driver = "ESRI Shapefile", overwrite_layer = overwrite)
+    }
 
     if (save_ts_layer == TRUE) {
       if (verbose == TRUE) {

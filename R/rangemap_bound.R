@@ -2,10 +2,10 @@
 #'
 #' @description rangemap_boundaries generates a distributional range for a given
 #' species by considering all the polygons of administrative entities in which
-#' the species has been detected. An approach to the species extent of occurrence
-#' (using convex hulls) and the area of occupancy according to the IUCN criteria
-#' is also generated. Shapefiles can be saved in the working directory if it is
-#' needed.
+#' the species has been detected. Optionally, representations of the species
+#' extent of occurrence (using convex hulls) and the area of occupancy according
+#' to the IUCN criteria can also be generated. Shapefiles can be saved in the
+#' working directory if it is needed.
 #'
 #' @param occurrences (optional) a data.frame containing geographic coordinates
 #' of species occurrences, columns must be: Species, Longitude, and Latitude.
@@ -35,6 +35,11 @@
 #' data, a field (column) named "adm_names" for selecting extra areas based on
 #' names. If \code{polygons} is defined, arguments \code{country_code} and
 #' \code{boundary_level} will be ignored.
+#' @param extent_of_occurrence (logical) whether to obtain the extent of occurrence
+#' of the species based on a simple convex hull polygon; default = \code{TRUE}.
+#' @param area_of_occupancy (logical) whether to obtain the area of occupancy
+#' of the species based on a simple grid of 4 km^2 resolution;
+#' default = \code{TRUE}.
 #' @param keep_data (logical) if \code{TRUE} and \code{polygons} is not defined, data
 #' downloaded from the GADM data base will be kept in the working directory. Useful
 #' if all or part of the downloaded files will be used in posterior analyses since
@@ -70,6 +75,10 @@
 #' (S4) with two elements: (1) a data.frame with information about the species
 #' range, and (2) a SpatialPolygons object of the species range.
 #'
+#' If \code{extent_of_occurrence} and/or \code{area_of_occupancy} = \code{FALSE},
+#' the corresponding spatial objects in the resulting sp_range object will be
+#' empty, an areas will have a value of 0.
+#'
 #' If downloading data based on \code{country_code} fails, the result is
 #' \code{NULL}.
 #'
@@ -81,9 +90,10 @@
 #'
 #' @usage
 #' rangemap_boundaries(occurrences, adm_areas, country_code, boundary_level = 0,
-#'                     polygons, keep_data = FALSE, dissolve = FALSE,
-#'                     final_projection, save_shp = FALSE, name,
-#'                     overwrite = FALSE, verbose = TRUE)
+#'                     polygons, extent_of_occurrence = TRUE,
+#'                     area_of_occupancy = TRUE, keep_data = FALSE,
+#'                     dissolve = FALSE, final_projection, save_shp = FALSE,
+#'                     name, overwrite = FALSE, verbose = TRUE)
 #'
 #' @export
 #'
@@ -122,7 +132,8 @@
 
 rangemap_boundaries <- function(occurrences = NULL, adm_areas = NULL,
                                 country_code = NULL, boundary_level = 0,
-                                polygons = NULL, keep_data = FALSE,
+                                polygons = NULL, extent_of_occurrence = TRUE,
+                                area_of_occupancy = TRUE, keep_data = FALSE,
                                 dissolve = FALSE, final_projection = NULL,
                                 save_shp = FALSE, name, overwrite = FALSE,
                                 verbose = TRUE) {
@@ -213,6 +224,13 @@ rangemap_boundaries <- function(occurrences = NULL, adm_areas = NULL,
 
   # initial projection
   WGS84 <- sp::CRS("+init=epsg:4326")
+
+  # final projection
+  if (is.null(final_projection)) {
+    final_projection <- WGS84
+  } else {
+    final_projection <- sp::CRS(final_projection) # character to projection
+  }
 
   # world map or user map fro creating species range
   if (is.null(polygons)) {
@@ -331,25 +349,29 @@ rangemap_boundaries <- function(occurrences = NULL, adm_areas = NULL,
                                                match.ID = FALSE)
 
     # extent of occurrence
-    eooc <- eoo(occ_sp@data, poly)
-    eocckm2 <- eooc$area
-    extent_occurrence <- eooc$spolydf
-
-    # area of occupancy
-    aooc <- aoo(occ_pr, species)
-    aocckm2 <- aooc$area
-    area_occupancy <- aooc$spolydf
-
-    # reprojection
-    if (is.null(final_projection)) {
-      final_projection <- WGS84
+    if (extent_of_occurrence == TRUE) {
+      eooc <- eoo(occ_sp@data, poly)
+      eocckm2 <- eooc$area
+      extent_occurrence <- eooc$spolydf
+      extent_occurrence <- sp::spTransform(extent_occurrence, final_projection)
     } else {
-      final_projection <- sp::CRS(final_projection) # character to projection
+      eocckm2 <- 0
+      extent_occurrence <- new("SpatialPolygonsDataFrame")
     }
 
+    # area of occupancy
+    if (area_of_occupancy == TRUE) {
+      aooc <- aoo(occ_pr, species)
+      aocckm2 <- aooc$area
+      area_occupancy <- aooc$spolydf
+      area_occupancy <- sp::spTransform(area_occupancy, final_projection)
+    } else {
+      aocckm2 <- 0
+      area_occupancy <- new("SpatialPolygonsDataFrame")
+    }
+
+    # reprojection
     boundaries <- sp::spTransform(boundaries, final_projection)
-    extent_occurrence <- sp::spTransform(extent_occurrence, final_projection)
-    area_occupancy <- sp::spTransform(area_occupancy, final_projection)
     occ_pr <- sp::spTransform(occ_pr, final_projection)
 
     # exporting
@@ -359,12 +381,16 @@ rangemap_boundaries <- function(occurrences = NULL, adm_areas = NULL,
       }
       rgdal::writeOGR(boundaries, ".", name, driver = "ESRI Shapefile",
                       overwrite_layer = overwrite)
-      rgdal::writeOGR(extent_occurrence, ".", paste(name, "extent_occ", sep = "_"),
-                      driver = "ESRI Shapefile", overwrite_layer = overwrite)
-      rgdal::writeOGR(area_occupancy, ".", paste(name, "area_occ", sep = "_"),
-                      driver = "ESRI Shapefile", overwrite_layer = overwrite)
       rgdal::writeOGR(occ_pr, ".", paste(name, "unique_records", sep = "_"),
                       driver = "ESRI Shapefile", overwrite_layer = overwrite)
+      if (extent_of_occurrence == TRUE) {
+        rgdal::writeOGR(extent_occurrence, ".", paste(name, "extent_occ", sep = "_"),
+                        driver = "ESRI Shapefile", overwrite_layer = overwrite)
+      }
+      if (area_of_occupancy == TRUE) {
+        rgdal::writeOGR(area_occupancy, ".", paste(name, "area_occ", sep = "_"),
+                        driver = "ESRI Shapefile", overwrite_layer = overwrite)
+      }
     }
 
     # return results (list or a different object?)

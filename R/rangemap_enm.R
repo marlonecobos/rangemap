@@ -4,9 +4,10 @@
 #' using a continuous raster layer produced using ecological niche modeling or
 #' species distribution modeling tools. This function binarizes the model in
 #' suitable and unsuitable areas using a user specified level of omission or a
-#' given threshold value. An approach to the species extent of occurrence (using
-#' convex hulls) and the area of occupancy according to the IUCN criteria is
-#' also generated. Shapefiles can be saved in the working directory if it is needed.
+#' given threshold value. Optionally, representations of the species extent of
+#' occurrence (using convex hulls) and the area of occupancy according to the
+#' IUCN criteria can also be generated. Shapefiles can be saved in the working
+#' directory if it is needed.
 #'
 #' @param model_output a RasterLayer of suitability for the species of interest
 #' generated using a ENM or SDM algorithm, that will be binarized using the a
@@ -40,6 +41,11 @@
 #' @param polygons (optional) a SpatialPolygons* object to clip polygons and
 #' adjust extent of occurrence to these limits. Projection must be WGS84
 #' (EPSG:4326). If \code{NULL}, the default, a simplified world map will be used.
+#' @param extent_of_occurrence (logical) whether to obtain the extent of occurrence
+#' of the species based on a simple convex hull polygon; default = \code{TRUE}.
+#' @param area_of_occupancy (logical) whether to obtain the area of occupancy
+#' of the species based on a simple grid of 4 km^2 resolution;
+#' default = \code{TRUE}.
 #' @param final_projection (character) string of projection arguments for
 #' resulting Spatial objects. Arguments must be as in the PROJ.4 documentation.
 #' See \code{\link[sp]{CRS-class}} for details. If \code{NULL}, the default,
@@ -67,6 +73,10 @@
 #' (S4) of two elements: (1) a data.frame with information about the species
 #' range, and (2) a SpatialPolygons object of the species range.
 #'
+#' If \code{extent_of_occurrence} and/or \code{area_of_occupancy} = \code{FALSE},
+#' the corresponding spatial objects in the resulting sp_range object will be
+#' empty, an areas will have a value of 0.
+#'
 #' @details
 #' All resulting Spatial objects in the list of results will be projected to the
 #' \code{final_projection}. Areas are calculated in square kilometers using the
@@ -77,6 +87,7 @@
 #' rangemap_enm(model_output, occurrences = NULL, threshold_value = NULL,
 #'              threshold_omission = NULL, min_polygon_area = 0,
 #'              simplify = FALSE, simplify_level = 0, polygons = NULL,
+#'              extent_of_occurrence = TRUE, area_of_occupancy = TRUE,
 #'              final_projection = NULL, save_shp = FALSE, name,
 #'              overwrite = FALSE, verbose = TRUE)
 #'
@@ -109,6 +120,7 @@
 rangemap_enm <- function(model_output, occurrences = NULL, threshold_value = NULL,
                          threshold_omission = NULL, min_polygon_area = 0,
                          simplify = FALSE, simplify_level = 0, polygons = NULL,
+                         extent_of_occurrence = TRUE, area_of_occupancy = TRUE,
                          final_projection = NULL, save_shp = FALSE,
                          name, overwrite = FALSE, verbose = TRUE) {
 
@@ -125,6 +137,17 @@ rangemap_enm <- function(model_output, occurrences = NULL, threshold_value = NUL
     }
   }
 
+  # initial projection
+  WGS84 <- sp::CRS("+init=epsg:4326")
+
+  # final projection
+  if (is.null(final_projection)) {
+    final_projection <- WGS84
+  } else {
+    final_projection <- sp::CRS(final_projection) # character to projection
+  }
+
+  # finding threshold value
   if (!is.null(threshold_value) | !is.null(threshold_omission) |
       !is.null(occurrences)) {
     if (!is.null(threshold_value)) {
@@ -158,7 +181,6 @@ rangemap_enm <- function(model_output, occurrences = NULL, threshold_value = NUL
   }
 
   # convert raster to polygons
-  WGS84 <- sp::CRS("+init=epsg:4326")
   if (is.na(model_output@crs)) {
     raster::crs(binary) <- WGS84@projargs
   }
@@ -228,15 +250,27 @@ rangemap_enm <- function(model_output, occurrences = NULL, threshold_value = NUL
 
   } else {
     # extent of occurrence
-    eooc <- eoo(occ_sp@data, polygons)
-    eocckm2 <- eooc$area
-    extent_occurrence <- eooc$spolydf
+    if (extent_of_occurrence == TRUE) {
+      eooc <- eoo(occ_sp@data, polygons)
+      eocckm2 <- eooc$area
+      extent_occurrence <- eooc$spolydf
+      extent_occurrence <- sp::spTransform(extent_occurrence, final_projection)
+    } else {
+      eocckm2 <- 0
+      extent_occurrence <- new("SpatialPolygonsDataFrame")
+    }
 
     # area of occupancy
     species <- as.character(occurrences[1, 1])
-    aooc <- aoo(occ_pr, species)
-    aocckm2 <- aooc$area
-    area_occupancy <- aooc$spolydf
+    if (area_of_occupancy == TRUE) {
+      aooc <- aoo(occ_pr, species)
+      aocckm2 <- aooc$area
+      area_occupancy <- aooc$spolydf
+      area_occupancy <- sp::spTransform(area_occupancy, final_projection)
+    } else {
+      aocckm2 <- 0
+      area_occupancy <- new("SpatialPolygonsDataFrame")
+    }
 
     # adding characteristics to spatial polygons
     clip_area <- sp::SpatialPolygonsDataFrame(enm_range_pr, # species range
@@ -244,15 +278,7 @@ rangemap_enm <- function(model_output, occurrences = NULL, threshold_value = NUL
                                               match.ID = FALSE)
 
     # reprojection
-    if (missing(final_projection)) {
-      final_projection <- WGS84
-    } else {
-      final_projection <- sp::CRS(final_projection) # character to projection
-    }
-
     clip_area <- sp::spTransform(clip_area, final_projection)
-    extent_occurrence <- sp::spTransform(extent_occurrence, final_projection)
-    area_occupancy <- sp::spTransform(area_occupancy, final_projection)
     occ_pr <- sp::spTransform(occ_pr, final_projection)
 
     # exporting
@@ -262,12 +288,18 @@ rangemap_enm <- function(model_output, occurrences = NULL, threshold_value = NUL
       }
       rgdal::writeOGR(clip_area, ".", name, driver = "ESRI Shapefile",
                       overwrite_layer = overwrite)
-      rgdal::writeOGR(extent_occurrence, ".", paste(name, "extent_occ", sep = "_"),
-                      driver = "ESRI Shapefile", overwrite_layer = overwrite)
-      rgdal::writeOGR(area_occupancy, ".", paste(name, "area_occ", sep = "_"),
-                      driver = "ESRI Shapefile", overwrite_layer = overwrite)
       rgdal::writeOGR(occ_pr, ".", paste(name, "unique_records", sep = "_"),
                       driver = "ESRI Shapefile", overwrite_layer = overwrite)
+      if (!is.null(occurrences)) {
+        if (extent_of_occurrence == TRUE) {
+          rgdal::writeOGR(extent_occurrence, ".", paste(name, "extent_occ", sep = "_"),
+                          driver = "ESRI Shapefile", overwrite_layer = overwrite)
+        }
+        if (area_of_occupancy == TRUE) {
+          rgdal::writeOGR(area_occupancy, ".", paste(name, "area_occ", sep = "_"),
+                          driver = "ESRI Shapefile", overwrite_layer = overwrite)
+        }
+      }
     }
 
     # return results

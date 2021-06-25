@@ -114,6 +114,17 @@ rangemap_plot <- function(sp_range, polygons = NULL, add_EOO = FALSE,
   if (missing(sp_range)) {
     stop("'sp_range' must be defined. Check the function's help for more details.")
   }
+  if (add_EOO == TRUE) {
+    if (class(sp_range)[1] == "sp_range") {
+      message("extent of occurrence not found in 'sp_range', setting 'add_EOO' = FALSE")
+      add_EOO <- FALSE
+    } else {
+      if (length(sp_range@extent_of_occurrence) == 0) {
+        message("extent of occurrence not found in 'sp_range', setting 'add_EOO' = FALSE")
+        add_EOO <- FALSE
+      }
+    }
+  }
 
   # projection
   f_proj <- sp_range@species_range@proj4string

@@ -2,9 +2,9 @@
 #'
 #' @description rangemap_hull generates a distributional range for a given species
 #' by creating convex or concave hull polygons based on occurrence data.
-#' An approach to the species extent of occurrence (using convex hulls) and the
-#' area of occupancy according to the IUCN criteria is also generated. Shapefiles
-#' can be saved in the working directory if it is needed.
+#' Optionally, representations of the species extent of occurrence (using convex
+#' hulls) and the area of occupancy according to the IUCN criteria can also be
+#' generated. Shapefiles can be saved in the working directory if it is needed.
 #'
 #' @param occurrences a data.frame containing geographic coordinates of species
 #' occurrences, columns must be: Species, Longitude, and Latitude. Geographic
@@ -35,6 +35,11 @@
 #' adjust the species range and other polygons to these limits. Projection must
 #' be WGS84 (EPSG:4326). If \code{NULL}, the default, a simplified world map will
 #' be used.
+#' @param extent_of_occurrence (logical) whether to obtain the extent of occurrence
+#' of the species based on a simple convex hull polygon; default = \code{TRUE}.
+#' @param area_of_occupancy (logical) whether to obtain the area of occupancy
+#' of the species based on a simple grid of 4 km^2 resolution;
+#' default = \code{TRUE}.
 #' @param final_projection (character) string of projection arguments for resulting
 #' Spatial objects. Arguments must be as in the PROJ.4 documentation. See
 #' \code{\link[sp]{CRS-class}} for details. If \code{NULL}, the default, projection
@@ -55,6 +60,10 @@
 #' A sp_range object (S4) containing: (1) a data.frame with information about the
 #' species range, and Spatial objects of (2) unique occurrences, (3) species range,
 #' (4) extent of occurrence, and (5) area of occupancy.
+#'
+#' If \code{extent_of_occurrence} and/or \code{area_of_occupancy} = \code{FALSE},
+#' the corresponding spatial objects in the resulting sp_range object will be
+#' empty, an areas will have a value of 0.
 #'
 #' @details
 #' All resulting Spatial objects in the results will be projected to the
@@ -91,7 +100,8 @@
 #' rangemap_hull(occurrences, hull_type = "convex", concave_distance_lim = 5000,
 #'               buffer_distance = 50000, split = FALSE,
 #'               cluster_method = "hierarchical", split_distance = NULL,
-#'               n_k_means = NULL, polygons = NULL, final_projection = NULL,
+#'               n_k_means = NULL, polygons = NULL, extent_of_occurrence = TRUE,
+#'               area_of_occupancy = TRUE, final_projection = NULL,
 #'               save_shp = FALSE, name, overwrite = FALSE, verbose = TRUE)
 #'
 #' @export
@@ -120,8 +130,10 @@
 rangemap_hull <- function(occurrences, hull_type = "convex", concave_distance_lim = 5000,
                           buffer_distance = 50000, split = FALSE,
                           cluster_method = "hierarchical", split_distance = NULL,
-                          n_k_means = NULL, polygons = NULL, final_projection = NULL,
-                          save_shp = FALSE, name, overwrite = FALSE, verbose = TRUE) {
+                          n_k_means = NULL, polygons = NULL,
+                          extent_of_occurrence = TRUE, area_of_occupancy = TRUE,
+                          final_projection = NULL, save_shp = FALSE,
+                          name, overwrite = FALSE, verbose = TRUE) {
   # testing potential issues
   if (missing(occurrences)) {
     stop("Argument 'occurrences' is necessary to perform the analysis")
@@ -147,12 +159,21 @@ rangemap_hull <- function(occurrences, hull_type = "convex", concave_distance_li
     }
   }
 
+  # initial projection
+  WGS84 <- sp::CRS("+init=epsg:4326")
+
+  # final projection
+  if (is.null(final_projection)) {
+    final_projection <- WGS84
+  } else {
+    final_projection <- sp::CRS(final_projection) # character to projection
+  }
+
   # erase duplicate records
   occ <- as.data.frame(unique(occurrences))[, 1:3]
   colnames(occ) <- c("Species", "Longitude", "Latitude")
 
   # make a spatial object from coordinates
-  WGS84 <- sp::CRS("+init=epsg:4326")
   occ_sp <- sp::SpatialPointsDataFrame(coords = occ[, 2:3], data = occ,
                                        proj4string = WGS84)
 
@@ -235,26 +256,30 @@ rangemap_hull <- function(occurrences, hull_type = "convex", concave_distance_li
                                             data = data.frame(species, areakm2),
                                             match.ID = FALSE)
 
-  ## extent of occurrence
-  eooc <- eoo(occ_sp@data, poly)
-  eocckm2 <- eooc$area
-  extent_occurrence <- eooc$spolydf
-
-  ## area of occupancy
-  aooc <- aoo(occ_pr, species)
-  aocckm2 <- aooc$area
-  area_occupancy <- aooc$spolydf
-
-  # reprojection
-  if (is.null(final_projection)) {
-    final_projection <- WGS84
+  # extent of occurrence
+  if (extent_of_occurrence == TRUE) {
+    eooc <- eoo(occ_sp@data, poly)
+    eocckm2 <- eooc$area
+    extent_occurrence <- eooc$spolydf
+    extent_occurrence <- sp::spTransform(extent_occurrence, final_projection)
   } else {
-    final_projection <- sp::CRS(final_projection) # character to projection
+    eocckm2 <- 0
+    extent_occurrence <- new("SpatialPolygonsDataFrame")
   }
 
+  # area of occupancy
+  if (area_of_occupancy == TRUE) {
+    aooc <- aoo(occ_pr, species)
+    aocckm2 <- aooc$area
+    area_occupancy <- aooc$spolydf
+    area_occupancy <- sp::spTransform(area_occupancy, final_projection)
+  } else {
+    aocckm2 <- 0
+    area_occupancy <- new("SpatialPolygonsDataFrame")
+  }
+
+  # reprojection
   clip_area <- sp::spTransform(clip_area, final_projection)
-  extent_occurrence <- sp::spTransform(extent_occurrence, final_projection)
-  area_occupancy <- sp::spTransform(area_occupancy, final_projection)
   occ_pr <- sp::spTransform(occ_pr, final_projection)
 
   # exporting
@@ -264,12 +289,16 @@ rangemap_hull <- function(occurrences, hull_type = "convex", concave_distance_li
     }
     rgdal::writeOGR(clip_area, ".", name, driver = "ESRI Shapefile",
                     overwrite_layer = overwrite)
-    rgdal::writeOGR(extent_occurrence, ".", paste(name, "extent_occ", sep = "_"),
-                    driver = "ESRI Shapefile", overwrite_layer = overwrite)
-    rgdal::writeOGR(area_occupancy, ".", paste(name, "area_occ", sep = "_"),
-                    driver = "ESRI Shapefile", overwrite_layer = overwrite)
     rgdal::writeOGR(occ_pr, ".", paste(name, "unique_records", sep = "_"),
                     driver = "ESRI Shapefile", overwrite_layer = overwrite)
+    if (extent_of_occurrence == TRUE) {
+      rgdal::writeOGR(extent_occurrence, ".", paste(name, "extent_occ", sep = "_"),
+                      driver = "ESRI Shapefile", overwrite_layer = overwrite)
+    }
+    if (area_of_occupancy == TRUE) {
+      rgdal::writeOGR(area_occupancy, ".", paste(name, "area_occ", sep = "_"),
+                      driver = "ESRI Shapefile", overwrite_layer = overwrite)
+    }
   }
 
   # return results

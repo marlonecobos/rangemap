@@ -6,6 +6,7 @@
 \usage{
 rangemap_tsa(occurrences, region_of_interest, cell_size = 5,
              threshold = 0, simplify = FALSE, simplify_level = 0,
+             extent_of_occurrence = TRUE, area_of_occupancy = TRUE,
              final_projection = NULL, save_shp = FALSE,
              save_ts_layer = FALSE, name, overwrite = FALSE, verbose = TRUE)
 }
@@ -35,6 +36,13 @@ simplified at a tolerance defined in \code{simplify_level}. Default =
 created using the trend surface model. Lower values will produce polygons more
 similar to the original geometry. Default = 0. If simplifying is needed, try
 numbers between 0 and 1 first.}
+
+\item{extent_of_occurrence}{(logical) whether to obtain the extent of occurrence
+of the species based on a simple convex hull polygon; default = \code{TRUE}.}
+
+\item{area_of_occupancy}{(logical) whether to obtain the area of occupancy
+of the species based on a simple grid of 4 km^2 resolution;
+default = \code{TRUE}.}
 
 \item{final_projection}{(character) string of projection arguments for resulting
 Spatial objects. Arguments must be as in the PROJ.4 documentation. See
@@ -66,6 +74,10 @@ A sp_range object (S4) containing: (1) a data.frame with information about
 the species range, and SpatialPolygons objects of (2) unique occurrences,
 (3) species range, (4) extent of occurrence, and (5) area of occupancy.
 If \code{save_ts_layer} = TRUE, a (6) TSA layer will be included as well.
+
+If \code{extent_of_occurrence} and/or \code{area_of_occupancy} = \code{FALSE},
+the corresponding spatial objects in the resulting sp_range object will be
+empty, an areas will have a value of 0.
 }
 \description{
 rangemap_tsa generates a distributional range for a given species

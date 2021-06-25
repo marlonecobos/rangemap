@@ -7,7 +7,8 @@
 rangemap_hull(occurrences, hull_type = "convex", concave_distance_lim = 5000,
               buffer_distance = 50000, split = FALSE,
               cluster_method = "hierarchical", split_distance = NULL,
-              n_k_means = NULL, polygons = NULL, final_projection = NULL,
+              n_k_means = NULL, polygons = NULL, extent_of_occurrence = TRUE,
+              area_of_occupancy = TRUE, final_projection = NULL,
               save_shp = FALSE, name, overwrite = FALSE, verbose = TRUE)
 }
 \arguments{
@@ -49,6 +50,13 @@ adjust the species range and other polygons to these limits. Projection must
 be WGS84 (EPSG:4326). If \code{NULL}, the default, a simplified world map will
 be used.}
 
+\item{extent_of_occurrence}{(logical) whether to obtain the extent of occurrence
+of the species based on a simple convex hull polygon; default = \code{TRUE}.}
+
+\item{area_of_occupancy}{(logical) whether to obtain the area of occupancy
+of the species based on a simple grid of 4 km^2 resolution;
+default = \code{TRUE}.}
+
 \item{final_projection}{(character) string of projection arguments for resulting
 Spatial objects. Arguments must be as in the PROJ.4 documentation. See
 \code{\link[sp]{CRS-class}} for details. If \code{NULL}, the default, projection
@@ -73,13 +81,17 @@ Default = TRUE.}
 A sp_range object (S4) containing: (1) a data.frame with information about the
 species range, and Spatial objects of (2) unique occurrences, (3) species range,
 (4) extent of occurrence, and (5) area of occupancy.
+
+If \code{extent_of_occurrence} and/or \code{area_of_occupancy} = \code{FALSE},
+the corresponding spatial objects in the resulting sp_range object will be
+empty, an areas will have a value of 0.
 }
 \description{
 rangemap_hull generates a distributional range for a given species
 by creating convex or concave hull polygons based on occurrence data.
-An approach to the species extent of occurrence (using convex hulls) and the
-area of occupancy according to the IUCN criteria is also generated. Shapefiles
-can be saved in the working directory if it is needed.
+Optionally, representations of the species extent of occurrence (using convex
+hulls) and the area of occupancy according to the IUCN criteria can also be
+generated. Shapefiles can be saved in the working directory if it is needed.
 }
 \details{
 All resulting Spatial objects in the results will be projected to the
