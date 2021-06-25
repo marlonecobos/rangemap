@@ -14,12 +14,12 @@
 #' species range.
 #' @param adm_areas (optional, character) a vector of names of administrative
 #' areas known to be occupied by the species, names depend on the
-#' \code{boundary_level} selected. Check the \code{\link{adm_area_names}}
-#' documentation for an idea of how to define names in this parameter. If not
+#' \code{boundary_level} selected. Check \code{\link{adm_area_names}}
+#' for an idea of how to define names in this parameter. If not
 #' defined, \code{occurrences} must exist.
 #' @param country_code (optional, character) vector of country codes that will be
 #' considered when creating the species range. Including neighbor countries may
-#' be necessary for obtaining better results. Use \code{\link{rangemap_explore}}
+#' be necessary to obtain better results. Use \code{\link{rangemap_explore}}
 #' for a preview of all potential countries involved in the analysis. Codes
 #' follow the ISO-3166-1 norm as in function \code{\link[raster]{getData}}.
 #' If not defined, \code{polygons} must be included. Ignored if \code{polygons}
@@ -66,14 +66,17 @@
 #' the species range, and SpatialPolygons objects of (2) unique occurrences,
 #' (3) species range, (4) extent of occurrence, and (5) area of occupancy.
 #'
-#' If only \code{adm_areas}, the result will be a sp_range object (S4) with two
-#' elements: (1) a data.frame with information about the species range, and
-#' (2) a SpatialPolygons object of the species range.
+#' If only \code{adm_areas} are defined, the result will be a sp_range object
+#' (S4) with two elements: (1) a data.frame with information about the species
+#' range, and (2) a SpatialPolygons object of the species range.
+#'
+#' If downloading data based on \code{country_code} fails, the result is
+#' \code{NULL}.
 #'
 #' @details
 #' Data for countries defined in \code{country_code} are downloaded and loaded
-#' using the function \code{\link[raster]{getData}}. Information about country codes
-#' and names of administrative areas, at distinct levels, can be consulted
+#' using the function \code{\link[raster]{getData}}. Information about country
+#' codes and names of administrative areas, at distinct levels, can be consulted
 #' using: \code{\link{country_codes}} and \code{\link{adm_area_names}}.
 #'
 #' @usage
@@ -124,7 +127,7 @@ rangemap_boundaries <- function(occurrences = NULL, adm_areas = NULL,
                                 save_shp = FALSE, name, overwrite = FALSE,
                                 verbose = TRUE) {
   # testing potential issues
-  if (!missing(polygons)) {
+  if (!is.null(polygons)) {
     if (class(polygons) != "SpatialPolygonsDataFrame"){
       stop("If defined, 'polygons' must be a SpatialPolygonsDataFrame object. If 'adm_areas'",
            "\nis defined, one of the fields (columns) of polygons data must be named 'adm_areas'",
@@ -132,30 +135,30 @@ rangemap_boundaries <- function(occurrences = NULL, adm_areas = NULL,
     }
   }
 
-  if (missing(occurrences) & missing(adm_areas)) {
+  if (is.null(occurrences) & is.null(adm_areas)) {
     stop("'occurrences' and/or 'adm_areas' must exist to perform the analysis.")
-  }else {
-    if (!missing(occurrences) & missing(adm_areas)) {
+  } else {
+    if (!is.null(occurrences) & is.null(adm_areas)) {
       if (dim(occurrences)[2] != 3) {
         stop("'occurrences' must have the following columns: \nSpecies, Longitude, Latitude.")
       }
     }
-    if (!missing(occurrences) & !missing(adm_areas)) {
+    if (!is.null(occurrences) & !is.null(adm_areas)) {
       if (dim(occurrences)[2] != 3) {
-        rm("occurrences")
-        warning(paste0("'occurrences' does not have the arrangment required:",
-                       "\nSpecies, Longitude, Latitude.", " Species range will be",
-                       "\ncreated using 'adm_areas' only."))
+        occurrences <- NULL
+        warning("'occurrences' does not have the arrangment required:",
+                "\nSpecies, Longitude, Latitude.", " Species range will be",
+                "\ncreated using 'adm_areas' only.")
       }
-      if (!missing(polygons)) {
+      if (!is.null(polygons)) {
         if(sum("adm_names" %in% names(polygons@data)) == 0) {
           stop("Data of 'polygons' does not contain a field (column) named 'adm_names', see help.")
         }
       }
     }
 
-    if (!missing(adm_areas)) {
-      if (!missing(polygons)) {
+    if (!is.null(adm_areas)) {
+      if (!is.null(polygons)) {
         if(sum("adm_names" %in% names(polygons@data)) == 0) {
           stop("Data of 'polygons' does not contain a field (column) named 'adm_names', see help.")
         }
@@ -164,23 +167,21 @@ rangemap_boundaries <- function(occurrences = NULL, adm_areas = NULL,
         a_a_names <- as.vector(unique(polynam[, "adm_names"]))
 
         if (sum(adm_areas %in% a_a_names) != length(adm_areas)) {
-          warning(paste("Not all of the administrative areas defined in 'adm_names' coincide",
-                        "\nwith the available names for administrative areas in 'polygons',",
-                        "\nonly those that coincide will be used.", sep = ""))
+          warning("Not all of the administrative areas defined in 'adm_names' coincide",
+                  "\nwith the names available for administrative areas in 'polygons',",
+                  "\nonly those that coincide will be used.")
         }
 
-        if (sum(adm_areas %in% a_a_names) == 0 & missing(occurrences)) {
-          stop(paste("None of the administrative areas defined in 'adm_names' coincides",
-                     "\nwith the available names for administrative areas in 'polygons'.",
-                     sep = ""))
+        if (sum(adm_areas %in% a_a_names) == 0 & is.null(occurrences)) {
+          stop("None of the administrative areas defined in 'adm_names' coincides",
+               "\nwith the names available for administrative areas in 'polygons'.")
         }
 
-        if (sum(adm_areas %in% a_a_names) == 0 & !missing(occurrences)) {
-          rm("adm_areas")
-          warning(paste("None of the administrative areas defined in 'adm_names' coincides",
-                        "\nwith the available names for administrative areas in 'polygons'.",
-                        "\nSpecies range will be created using occurrences only.",
-                        sep = ""))
+        if (sum(adm_areas %in% a_a_names) == 0 & !is.null(occurrences)) {
+          adm_areas <- NULL
+          warning("None of the administrative areas defined in 'adm_names' coincides",
+                  "\nwith the names available for administrative areas in 'polygons'.",
+                  "\nSpecies range will be created using occurrences only.")
         }
       } else {
         data("adm_area_names", package = "rangemap", envir = environment())
@@ -189,23 +190,22 @@ rangemap_boundaries <- function(occurrences = NULL, adm_areas = NULL,
                                                      a_names]))
 
         if (sum(adm_areas %in% a_a_names) != length(adm_areas)) {
-          warning(paste("Not all of the administrative areas defined in 'adm_names' coincide",
-                        "\nwith the available names for that level in the countries listed",
-                        "\nin 'country_code'.", sep = ""))
+          warning("Not all of the administrative areas defined in 'adm_names' coincide",
+                  "\nwith the names available for that level in the countries listed",
+                  "\nin 'country_code'.")
         }
 
-        if (sum(adm_areas %in% a_a_names) == 0 & missing(occurrences)) {
-          stop(paste("None of the administrative areas defined in 'adm_names' coincides",
-                     "\nwith the available names for that level in the countries listed",
-                     "\nin 'country_code'.", sep = ""))
+        if (sum(adm_areas %in% a_a_names) == 0 & is.null(occurrences)) {
+          stop("None of the administrative areas defined in 'adm_names' coincides",
+               "\nwith the names available for that level in the countries listed",
+               "\nin 'country_code'.")
         }
 
-        if (sum(adm_areas %in% a_a_names) == 0 & !missing(occurrences)) {
-          rm("adm_areas")
-          warning(paste("None of the administrative areas defined in 'adm_names' coincides",
-                        "\nwith the available names for that level in the countries listed",
-                        "\nin 'country_code'. Species range will be created using occurrences only.",
-                        sep = ""))
+        if (sum(adm_areas %in% a_a_names) == 0 & !is.null(occurrences)) {
+          adm_areas <- NULL
+          warning("None of the administrative areas defined in 'adm_names' coincides",
+                  "\nwith the names available for that level in the countries listed",
+                  "\nin 'country_code'. Species range will be created using occurrences only.")
         }
       }
     }
@@ -215,15 +215,27 @@ rangemap_boundaries <- function(occurrences = NULL, adm_areas = NULL,
   WGS84 <- sp::CRS("+init=epsg:4326")
 
   # world map or user map fro creating species range
-  if (missing(polygons)) {
-    polygons <- GADM_spoly(country_code, boundary_level, keep_data)
+  if (is.null(polygons)) {
+    #polygons <- GADM_spoly(country_code, boundary_level, keep_data)
+
+    polygons <- tryCatch(
+      GADM_spoly(country_code, boundary_level, keep_data),
+      error = function(e) {
+        message("An error occurred:\n", e,
+                "\nCheck internet conection, 'country_code', and 'boundary_level'\n")
+      }
+    )
+
+    if (is.null(polygons)) {
+      return(NULL)
+    }
   } else {
     # project polygons
     polygons <- sp::spTransform(polygons, WGS84)
   }
 
   # anlysis
-  if (!missing(occurrences)) {
+  if (!is.null(occurrences)) {
     # erase duplicate records
     occ <- as.data.frame(unique(occurrences))[, 1:3]
     colnames(occ) <- c("Species", "Longitude", "Latitude")
@@ -248,8 +260,8 @@ rangemap_boundaries <- function(occurrences = NULL, adm_areas = NULL,
   polygons <- sp::spTransform(polygons, LAEA)
 
   #selecting polygons
-  if (!missing(occurrences) | !missing(adm_areas)) {
-    if (!missing(occurrences) & !missing(adm_areas)) {
+  if (!is.null(occurrences) | !is.null(adm_areas)) {
+    if (!is.null(occurrences) & !is.null(adm_areas)) {
       # select polygons that overlap with points
       boundaries <- polygons[occ_pr, ]
 
@@ -259,12 +271,12 @@ rangemap_boundaries <- function(occurrences = NULL, adm_areas = NULL,
       # combining boundaries
       boundaries <- sp::rbind.SpatialPolygonsDataFrame(boundaries, boundaries1)
     }
-    if (!missing(occurrences) & missing(adm_areas)) {
+    if (!is.null(occurrences) & is.null(adm_areas)) {
       # select polygons that overlap with points
       boundaries <- polygons[occ_pr, ]
     }
 
-    if (!missing(adm_areas) & missing(occurrences)) {
+    if (!is.null(adm_areas) & is.null(occurrences)) {
       # select polygons by names
       boundaries <- polygons[polygons@data$adm_names %in% adm_areas, ]
     }
@@ -282,7 +294,7 @@ rangemap_boundaries <- function(occurrences = NULL, adm_areas = NULL,
   }
 
   # final part
-  if (missing(occurrences)) {
+  if (is.null(occurrences)) {
     # calculate areas in km2
     rangekm2 <- raster::area(boundaries) / 1000000
     areakm2 <- sum(rangekm2) # total area of the species range
@@ -293,7 +305,7 @@ rangemap_boundaries <- function(occurrences = NULL, adm_areas = NULL,
                                                match.ID = FALSE)
 
     # reprojection
-    if (missing(final_projection)) {
+    if (is.null(final_projection)) {
       final_projection <- WGS84
     } else {
       final_projection <- sp::CRS(final_projection) # character to projection
@@ -337,7 +349,7 @@ rangemap_boundaries <- function(occurrences = NULL, adm_areas = NULL,
     area_occupancy <- aooc$spolydf
 
     # reprojection
-    if (missing(final_projection)) {
+    if (is.null(final_projection)) {
       final_projection <- WGS84
     } else {
       final_projection <- sp::CRS(final_projection) # character to projection
