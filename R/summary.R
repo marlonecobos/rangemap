@@ -59,7 +59,7 @@ setMethod("summary", signature(object = "sp_range_iucn"),
               slot(object, nameess[x])
             })
             names(l) <- nameess
-            cat("\n\n\nOther contents\n\n")
+            cat("\n\n\nOther contents:\n\n")
             summary(l)
           }
 )
@@ -89,7 +89,7 @@ setMethod("summary", signature(object = "sp_range_iucnextra"),
               slot(object, nameess[x])
             })
             names(l) <- nameess
-            cat("\n\n\nOther contents\n\n")
+            cat("\n\n\nOther contents:\n\n")
             summary(l)
           }
 )
