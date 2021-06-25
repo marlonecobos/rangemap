@@ -315,12 +315,6 @@ rangemap_boundaries <- function(occurrences = NULL, adm_areas = NULL,
                                                match.ID = FALSE)
 
     # reprojection
-    if (is.null(final_projection)) {
-      final_projection <- WGS84
-    } else {
-      final_projection <- sp::CRS(final_projection) # character to projection
-    }
-
     boundaries <- sp::spTransform(boundaries, final_projection)
 
     # exporting
