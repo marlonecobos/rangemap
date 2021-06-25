@@ -3,27 +3,28 @@ rangemap: Simple Tools for Defining Species Ranges
 Marlon E. Cobos, Vijay Barve, Narayani Barve, Alberto Jimenez-Valverde,
 and Claudia Nunez-Penichet
 
-  - [Project description](#project-description)
-      - [Status of the project](#status-of-the-project)
-  - [Package description](#package-description)
-  - [Installing the package](#installing-the-package)
-  - [Using the package functions](#using-the-package-functions)
-      - [Preparing R](#preparing-r)
-      - [Simple graphical exploration of your
-        data.](#simple-graphical-exploration-of-your-data.)
-      - [Species ranges from buffered
+-   [Project description](#project-description)
+    -   [Status of the project](#status-of-the-project)
+-   [Package description](#package-description)
+    -   [News](#news)
+-   [Installing the package](#installing-the-package)
+-   [Using the package functions](#using-the-package-functions)
+    -   [Preparing R](#preparing-r)
+    -   [Simple graphical exploration of your
+        data.](#simple-graphical-exploration-of-your-data)
+    -   [Species ranges from buffered
         occurrences](#species-ranges-from-buffered-occurrences)
-      - [Species ranges from
+    -   [Species ranges from
         boundaries](#species-ranges-from-boundaries)
-      - [Species ranges from hull
+    -   [Species ranges from hull
         polygons](#species-ranges-from-hull-polygons)
-      - [Species ranges from ecological niche models
-        results](#species-ranges-from-ecological-niche-models-results)
-      - [Species ranges using trend surface
+    -   [Species ranges from ecological niche model
+        outputs](#species-ranges-from-ecological-niche-model-outputs)
+    -   [Species ranges using trend surface
         analyses](#species-ranges-using-trend-surface-analyses)
-      - [Nice figures of species
+    -   [Nice figures of species
         ranges](#nice-figures-of-species-ranges)
-      - [Species ranges and environmental
+    -   [Species ranges and environmental
         factors](#species-ranges-and-environmental-factors)
 
 <br>
@@ -67,18 +68,15 @@ which studies of species distributions are developed.
 
 ### Status of the project
 
-At the moment we have completed all the proposed tasks. Some of the
-planned functions were not developed since other packages have similar
-functionalities. Instead, we created other functions not considered
-initially but that complement this package with useful options for
-visualization. Next steps include massive testing of this package
-functions and submitting it to CRAN.
+A version of the package **rangemap** (the result of the project) is in 
+CRAN and can be found
+<a href="https://cran.r-project.org/web/packages/rangemap/index.html" target="_blank">here</a>.
 
 All commits made can be seen at the
 <a href="https://github.com/marlonecobos/rangemap/commits/master" target="_blank">complete
 list of commits</a>.
 
-Following you can find a brief description of the produced R package, as
+Following you can find a brief description of the R package **rangemap**, as
 well as some examples of its use.
 
 <br>
@@ -92,10 +90,21 @@ range maps based on occurrence data, statistics, and SpatialPolygons
 objects. Other tools of this package can be used to analyze
 environmental characteristics of the species ranges and to create high
 quality figures of these maps. All the functions that create species
-ranges also generate an approach to the species extent of occurrence
-(using convex hulls) and the area of occupancy according to the IUCN
-criteria. Shapefiles of the resultant polygons can be saved in the
+ranges can also generate representations of species extents of
+occurrence (using convex hulls) and areas of occupancy according to the
+IUCN criteria. Shapefiles of the resulting polygons can be saved in the
 working directory if it is needed.
+
+<br>
+
+### News
+
+Starting with v 0.1.17, **rangemap** allows optional calculations of
+extents of occurrence and areas of occupancy in all main functions (see
+below). To avoid performing analysies related with these areas, set
+arguments `extent_of_occurrence` and `area_of_occupancy` to `FALSE`.
+This change can save time, specially if a large number of occurrences is
+used.
 
 <br>
 
@@ -103,19 +112,21 @@ working directory if it is needed.
 
 ## Installing the package
 
-**rangemap** is in a GitHub repository and can be installed and/or
-loaded using the following code (make sure to have Internet connection).
+A stable version of **rangemap** can be installed from CRAN as follows:
 
 ``` r
-# Installing and loading packages
-if(!require(devtools)){
-    install.packages("devtools")
+install.packages("rangemap")
+```
+
+**rangemap** can also be installed from its GitHub repository using the
+following code:
+
+``` r
+if(!require(remotes)){
+    install.packages("remotes")
 }
 
-if(!require(rangemap)){
-    devtools::install_github("marlonecobos/rangemap")
-}
-library(rangemap)
+remotes::install_github("marlonecobos/rangemap")
 ```
 
 <br>
@@ -126,25 +137,22 @@ library(rangemap)
 
 ### Preparing R
 
-The following code chunk installs (if needed) and loads the R packages
-that will be used to get and prepare some data for performing the
-example analyses with the **rangemap** package.
+The following code chunk loads the pacakges needed to perform some
+example-analyses with **rangemap**.
 
 ``` r
-# pacakges from CRAN
-pcakages <- c("maps", "maptools", "raster")
-req_packages <- pcakages[!(pcakages %in% installed.packages()[, "Package"])]
-if (length(req_packages) > 0) {
-  install.packages(req_packages, dependencies = TRUE)
-}
-sapply(pcakages, require, character.only = TRUE)
+# packages to be used
+library(raster)
+library(maps)
+library(maptools)
+library(rangemap)
 ```
 
 The working directory will also be defined in this part.
 
 ``` r
 # working directory
-setwd("YOUR/WORKING/DIRECTORY") # YOUR/WORKING/DIRECTORY
+setwd("YOUR/WORKING/DIRECTORY") 
 ```
 
 <br>
@@ -177,7 +185,7 @@ data("occ_d", package = "rangemap")
 rangemap_explore(occurrences = occ_d)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
 Same figure with country codes.
 
@@ -186,7 +194,7 @@ Same figure with country codes.
 rangemap_explore(occurrences = occ_d, show_countries = TRUE)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 <br>
 
@@ -204,7 +212,7 @@ The function’s help can be consulted using the following line of code:
 help(rangemap_buffer)
 ```
 
-An example of the use of this function is written below.
+An example of how to use this function is written below.
 
 ``` r
 # getting the data 
@@ -240,16 +248,15 @@ range maps using the objects produced by other function of this package.
 Let’s see how the generated range looks like.
 
 ``` r
-# creating the species range figure
 rangemap_plot(buff_range)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
-For further details see the function help.
+For further details see the function documentation.
 
 ``` r
-help(rangemap_fig)
+help(rangemap_plot)
 ```
 
 <br>
@@ -288,10 +295,9 @@ distributional range.
 rangemap_explore(occurrences = occ_d, show_countries = TRUE)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
 
 ``` r
-
 # getting an example of SpatialPolygonsDataFrame to be used as polygons
 data("adm_boundaries", package = "rangemap")
 
@@ -323,11 +329,10 @@ summary(bound_range)
 Figure of the generated range.
 
 ``` r
-# creating the species range figure
 rangemap_plot(bound_range)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
 
 <br>
 
@@ -379,11 +384,10 @@ summary(bound_range1)
 Map of the generated range.
 
 ``` r
-# creating the species range figure
 rangemap_plot(bound_range1)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
 <br>
 
@@ -424,14 +428,13 @@ summary(bound_range2)
 #> area_of_occupancy      44     SpatialPolygonsDataFrame S4
 ```
 
-Map of the species range.
+Now the plot.
 
 ``` r
-# creating the species range figure
 rangemap_plot(bound_range2)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
 
 <br>
 
@@ -560,11 +563,10 @@ summary(hull_range2)
 Now the figure of the species range.
 
 ``` r
-# creating the species range figure
 rangemap_plot(hull_range) # try hull_range1 and hull_range2 as well
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
 
 <br>
 
@@ -673,17 +675,16 @@ summary(hull_range5)
 Checking the figure.
 
 ``` r
-# creating the species range figure
-rangemap_plot(hull_range5) # try hull_range4 and hull_range5 as well
+rangemap_plot(hull_range5) # try hull_range4 and hull_range3 as well
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
 
 <br>
 
 <hr>
 
-### Species ranges from ecological niche models results
+### Species ranges from ecological niche model outputs
 
 The *rangemap\_enm* function generates a distributional range for a
 given species using a continuous raster layer produced with an
@@ -734,11 +735,10 @@ summary(enm_range)
 Let’s see how this range looks like.
 
 ``` r
-# creating the species range figure
 rangemap_plot(enm_range)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-25-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
 
 <br>
 
@@ -795,11 +795,10 @@ summary(tsa_r)
 Let’s take a look at the results.
 
 ``` r
-# creating the species range figure with a polygon defined by the user
 rangemap_plot(tsa_r, polygons = CU, zoom = 0.5)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-28-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-29-1.png)<!-- -->
 
 <br>
 
@@ -810,7 +809,7 @@ rangemap_plot(tsa_r, polygons = CU, zoom = 0.5)
 The *rangemap\_plot* function can be used to plot not only the generated
 species ranges but also the extent of occurrence and the species records
 in the same map. The species range will be plot on a simplified world
-map, but users can use a SpatialPolygons object of their choice.
+map, but other SpatialPolygons objects can be used.
 
 The function’s help can be consulted using the following line of code:
 
@@ -823,46 +822,42 @@ Examples of the use of this function are written below.
 #### Including extent of occurrence
 
 ``` r
-# creating the species range figure (hull_range5 was gnerated in a previous example)
 rangemap_plot(hull_range5, add_EOO = TRUE)
-```
-
-![](README_files/figure-gfm/unnamed-chunk-30-1.png)<!-- -->
-
-<br>
-
-#### Including occurrences
-
-``` r
-# creating the species range figure (hull_range5 was gnerated in a previous example)
-rangemap_plot(hull_range5, add_occurrences = TRUE)
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-31-1.png)<!-- -->
 
 <br>
 
-#### Including extent of occurrence and species records
+#### Including occurrences
 
 ``` r
-# creating the species range figure (hull_range5 was gnerated in a previous example)
-rangemap_plot(hull_range5, add_EOO = TRUE, add_occurrences = TRUE)
+rangemap_plot(hull_range5, add_occurrences = TRUE)
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-32-1.png)<!-- -->
 
 <br>
 
+#### Including extent of occurrence and species records
+
+``` r
+rangemap_plot(hull_range5, add_EOO = TRUE, add_occurrences = TRUE)
+```
+
+![](README_files/figure-gfm/unnamed-chunk-33-1.png)<!-- -->
+
+<br>
+
 #### Using other parameters
 
 ``` r
-# creating the species range figure (hull_range5 was gnerated in a previous example)
 rangemap_plot(hull_range5, add_EOO = TRUE, add_occurrences = TRUE,
               legend = TRUE, scalebar = TRUE, scalebar_length = 500, 
               zoom = 0.5, northarrow = TRUE)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-33-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-34-1.png)<!-- -->
 
 <br>
 
@@ -870,13 +865,13 @@ rangemap_plot(hull_range5, add_EOO = TRUE, add_occurrences = TRUE,
 
 ### Species ranges and environmental factors
 
-#### Species ranges on environmental factor maps
+#### Species ranges on layers of environmental variables
 
 The *ranges\_emaps* function represents one or more ranges of the same
 species on various maps of environmental factors (e.g. climatic
-variables) to detect implications of using one or other type of range
-regarding the environmental conditions in the area. Figures can be saved
-using some of the function arguments.
+variables) to detect implications of using distinct types of ranges when
+looking at environmental conditions in the area. Figures can be saved
+using some of the function’s arguments.
 
 The function’s help can be consulted using the following line of code:
 
@@ -900,11 +895,11 @@ names(vars) <- c("bio5", "bio6", "bio13", "bio14")
 ranges_emaps(buffer_range, cxhull_range, cvehull_range, variables = vars)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-35-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-36-1.png)<!-- -->
 
 <br>
 
-#### Species ranges in the environmental space
+#### Species ranges in environmental space
 
 The *ranges\_espace* function generates a three dimensional comparison
 of a species’ ranges created using distinct algorithms, to visualize
