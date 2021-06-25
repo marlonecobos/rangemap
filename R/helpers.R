@@ -165,18 +165,21 @@ GADM_spoly <- function(country_code, boundary_level, keep_data = FALSE) {
 #' occurrences, columns must be: Species, Longitude, and Latitude. Geographic
 #' coordinates must be in decimal degrees (WGS84).
 #' @param polygons SpatialPolygons object to clip convex hulls to these limits.
-#' Projection of this object defines projection of the extent of occurrence. This
-#' projection must be one that allows safe calculation of areas (e.g., Lambert
-#' Azimuthal Equal Area).
+#' Projection must be WGS84 (EPSG:4326).
 #' @return
 #' A list containing a SpatialPolygonsDataFrame of the extent of occurrence, and
-#' a vector with the areas in km2 of the spatial polygons resulted.
+#' a vector with the areas in km2 of the spatial polygons resulted. Projection
+#' of resulting spatial object is Lambert Azimuthal Equal Area.
 #' @export
 #' @importFrom sp CRS SpatialPolygons Polygons Polygon proj4string over spTransform
 #' @importFrom sp SpatialPolygonsDataFrame
 #' @importFrom grDevices chull
 #' @importFrom raster area
 #' @importFrom rgeos gIntersection
+#' @details
+#' Areas are calculated in square kilometers using the Lambert Azimuthal Equal
+#' Area projection, centered on the centroid of occurrence points given as
+#' inputs.
 #' @examples
 #' # occurrences
 #' data("occ_f", package = "rangemap")
@@ -205,12 +208,17 @@ eoo <- function(occurrences, polygons) {
   coord <- as.data.frame(occurrences[, 2:3])
   covexhull <- chull(coord) # convex hull from points
   coord_pol <- coord[c(covexhull, covexhull[1]), ] # defining coordinates
-  covexhull_polygon <- sp::SpatialPolygons(list(sp::Polygons(list(sp::Polygon(coord_pol)), ID = 1)))
-  sp::proj4string(covexhull_polygon) <- WGS84 # project
-  covexhull_polygon_pr <- sp::spTransform(covexhull_polygon, polygons@proj4string) # reproject
-  polygons <- polygons[covexhull_polygon_pr, ]
-  c_hull_extent <- rgeos::gIntersection(covexhull_polygon_pr, polygons,
-                                        byid = FALSE) # area of interest
+  covexhull_polygon <- sp::SpatialPolygons(
+    list(sp::Polygons(list(sp::Polygon(coord_pol)), ID = 1)), proj4string = WGS84
+  )
+  LAEA <- LAEA_projection(spatial_object = covexhull_polygon)
+  suppressWarnings(
+    suppressMessages(
+      c_hull_extent <- rgeos::gIntersection(covexhull_polygon, polygons,
+                                            byid = FALSE) # area of interest
+    )
+  )
+  covexhull_polygon_pr <- sp::spTransform(covexhull_polygon, LAEA) # reproject
 
   eockm2 <- raster::area(c_hull_extent) / 1000000
   eocckm2 <- sum(eockm2) # total area of the species range
