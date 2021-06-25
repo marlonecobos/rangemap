@@ -18,6 +18,9 @@
 #' Base map of countries of the world is a SpatialPolygonsDataFrame downloaded from
 #' the Natural Earth database (scale = 50).
 #'
+#' @usage
+#' rangemap_explore(occurrences, show_countries = FALSE, graphic_device = FALSE)
+#'
 #' @export
 #'
 #' @importFrom sp CRS spTransform plot SpatialPointsDataFrame
