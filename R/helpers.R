@@ -333,6 +333,9 @@ aoo <- function(occ_pr, species) {
 
 clusters <- function(occ_pr, cluster_method = "hierarchical", split_distance,
                      n_k_means, set_seed = 1, verbose = TRUE) {
+  if (missing(occ_pr)) {
+    stop("Argument 'occ_pr' is necessary to perform the analysis")
+  }
   if (cluster_method == "hierarchical" & missing(split_distance)) {
     stop("Argument 'split_distance' must be defined when hierarchical cluster method is used.")
   }
@@ -412,6 +415,9 @@ clusters <- function(occ_pr, cluster_method = "hierarchical", split_distance,
 
 hull_polygon <- function(occ_pr, hull_type = "convex", concave_distance_lim = 5000,
                          verbose = TRUE) {
+  if (missing(occ_pr)) {
+    stop("Argument 'occ_pr' is necessary to perform the analysis")
+  }
   if (hull_type == "convex" | hull_type == "concave") {
     condition <- !is.list(occ_pr)
     if (condition) {
@@ -421,7 +427,7 @@ hull_polygon <- function(occ_pr, hull_type = "convex", concave_distance_lim = 50
       proje <- occ_pr[[1]]@proj4string
     }
     if (is.na(proje)) {
-      stop("'occ_pr' must be projected.")
+      stop("'occ_pr' must be projected")
     }
     if (hull_type == "convex") {
       if (verbose == TRUE) {
