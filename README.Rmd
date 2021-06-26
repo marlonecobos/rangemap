@@ -35,7 +35,7 @@ The species range maps project is motivated by the importance of information abo
 
 ### Status of the project
 
-A version of the package **rangemap** (the result of the project) is in CRAN and can be found <a href="https://cran.r-project.org/web/packages/rangemap/index.html" target="_blank">here</a>.
+A version of the package **rangemap** (the result of the project) is in CRAN and can be found <a href=" https://CRAN.R-project.org/package=rangemap" target="_blank">here</a>.
 
 All commits made can be seen at the <a href="https://github.com/marlonecobos/rangemap/commits/master" target="_blank">complete list of commits</a>.
 

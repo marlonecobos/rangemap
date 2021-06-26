@@ -70,7 +70,7 @@ which studies of species distributions are developed.
 
 A version of the package **rangemap** (the result of the project) is in 
 CRAN and can be found
-<a href="https://cran.r-project.org/web/packages/rangemap/index.html" target="_blank">here</a>.
+<a href="https://CRAN.R-project.org/package=rangemap" target="_blank">here</a>.
 
 All commits made can be seen at the
 <a href="https://github.com/marlonecobos/rangemap/commits/master" target="_blank">complete
