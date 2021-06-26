@@ -1,3 +1,43 @@
+## Submission 0.1.17
+This is the first submission of version 0.1.17. In this version I have made the 
+following changes based on CRAN suggestions and issues detected:
+
+* Modify function rangemap_boundaries and helper to make them fail gracefully if
+any of the download processes fail.
+* Fixed issue in function eoo when points where widespread.
+* Added arguments in main functions to make the obtention of extent of 
+occurrence and area of occupancy optional.
+
+**Comments on NOTEs**
+
+* A NOTE may be produced because names of countries in one of the elements in data 
+are marked UTF-8 strings; however, the names are correct and we consider they should stay.
+* Another NOTE appears because some of the words in the Description
+field in DESCRIPTION are considered mis-spelled. However, the words are correct.
+
+
+## Test environments
+* Microsoft Windows Server 2019 10.0.17763 (on GitHub actions) R-release
+* ubuntu-20.04 LTS (local) R-release
+* ubuntu-20.04 LTS (on GitHub actions) R-release
+* ubuntu-20.04 LTS (on GitHub actions) R-devel
+
+
+## R CMD check results
+There were no ERRORs
+
+There were no WARNINGs
+
+There were no NOTEs
+
+
+## Downstream dependencies
+There are currently no downstream dependencies for this package. 
+
+
+<br>
+<hr>
+
 ## Resubmission 0.1.16
 This is a resubmission. In this version I have made the following changes based 
 on CRAN reviewer suggestions:
