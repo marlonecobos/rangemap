@@ -3,8 +3,6 @@ rangemap: Simple Tools for Defining Species Ranges
 Marlon E. Cobos, Vijay Barve, Narayani Barve, Alberto Jimenez-Valverde,
 and Claudia Nunez-Penichet
 
--   [Project description](#project-description)
-    -   [Status of the project](#status-of-the-project)
 -   [Package description](#package-description)
     -   [News](#news)
 -   [Installing the package](#installing-the-package)
@@ -26,6 +24,8 @@ and Claudia Nunez-Penichet
         ranges](#nice-figures-of-species-ranges)
     -   [Species ranges and environmental
         factors](#species-ranges-and-environmental-factors)
+-   [Project description](#project-description)
+    -   [Status of the project](#status-of-the-project)
 
 <br>
 
@@ -41,47 +41,6 @@ status](https://github.com/marlonecobos/rangemap/workflows/R-CMD-check/badge.svg
 
 **This repository is for the GSoC 2018 project “Species range maps in
 R”.**
-
-## Project description
-
-Student: *Marlon E. Cobos*
-
-Mentors: *Narayani Barve, Vijay Barve, and Alberto Jimenez Valverde*
-
-The species range maps project is motivated by the importance of
-information about species distribution for processes of conservation
-planning and the study of spatial patterns of biodiversity. In the face
-of multiple threats related to Global Change, protection and mitigation
-actions are crucial for maintaining the health of the planet, and
-knowing where species are located constitutes in primary information for
-starting these efforts. Currently, generation of species ranges maps may
-take several steps and the use of specialized software. Thanks to the
-recent development of specialized packages, R is rapidly becoming an
-excellent alternative for analyzing the spatial patterns of
-biodiversity. Taking advantage of these packages and the versatility of
-R, the aim of this project was offering handily and robust open source
-tools to obtain reliable proposals of species distribution ranges and to
-analyze their geographical patterns. A large community of students,
-researchers, and conservation managers can be benefited by this project
-since these tools will be freely available and will improve the way in
-which studies of species distributions are developed.
-
-### Status of the project
-
-A version of the package **rangemap** (the result of the project) is in 
-CRAN and can be found
-<a href="https://CRAN.R-project.org/package=rangemap" target="_blank">here</a>.
-
-All commits made can be seen at the
-<a href="https://github.com/marlonecobos/rangemap/commits/master" target="_blank">complete
-list of commits</a>.
-
-Following you can find a brief description of the R package **rangemap**, as
-well as some examples of its use.
-
-<br>
-
-<hr>
 
 ## Package description
 
@@ -229,13 +188,13 @@ summary(buff_range)
 #> Species range derived from:  Buffer 
 #> 
 #>             Species Unique_records Range_area Extent_of_occurrence
-#>  Peltophryne empusa             27   106241.2             65955.85
+#>  Peltophryne empusa             27   106241.2             66357.71
 #>  Area_of_occupancy
 #>                 92
 #> 
 #> 
 #> 
-#> Other contents
+#> Other contents:
 #>                        Length Class                    Mode
 #> species_range           1     SpatialPolygonsDataFrame S4  
 #> species_unique_records 27     SpatialPointsDataFrame   S4  
@@ -312,13 +271,13 @@ summary(bound_range)
 #> Species range derived from:  Boundaries 
 #> 
 #>           Species Unique_records Range_area Extent_of_occurrence
-#>  Dasypus kappleri             55   12217732              4060381
+#>  Dasypus kappleri             55   12217732              4076154
 #>  Area_of_occupancy
 #>                176
 #> 
 #> 
 #> 
-#> Other contents
+#> Other contents:
 #>                        Length Class                    Mode
 #> species_range           7     SpatialPolygonsDataFrame S4  
 #> species_unique_records 55     SpatialPointsDataFrame   S4  
@@ -414,13 +373,13 @@ summary(bound_range2)
 #> Species range derived from:  Boundaries 
 #> 
 #>           Species Unique_records Range_area Extent_of_occurrence
-#>  Dasypus kappleri             55   12473215              4060381
+#>  Dasypus kappleri             55   12473215              4076154
 #>  Area_of_occupancy
 #>                176
 #> 
 #> 
 #> 
-#> Other contents
+#> Other contents:
 #>                        Length Class                    Mode
 #> species_range           8     SpatialPolygonsDataFrame S4  
 #> species_unique_records 55     SpatialPointsDataFrame   S4  
@@ -482,13 +441,13 @@ summary(hull_range)
 #> Species range derived from:  Convex_hull 
 #> 
 #>           Species Unique_records Range_area Extent_of_occurrence
-#>  Dasypus kappleri             56    4860934              4063262
+#>  Dasypus kappleri             56    4860934              4095146
 #>  Area_of_occupancy
 #>                184
 #> 
 #> 
 #> 
-#> Other contents
+#> Other contents:
 #>                        Length Class                    Mode
 #> species_range           6     SpatialPolygonsDataFrame S4  
 #> species_unique_records 56     SpatialPointsDataFrame   S4  
@@ -515,13 +474,13 @@ summary(hull_range1)
 #> Species range derived from:  Convex_hull_split 
 #> 
 #>           Species Unique_records Range_area Extent_of_occurrence
-#>  Dasypus kappleri             56    2115826              4063262
+#>  Dasypus kappleri             56    2115826              4095146
 #>  Area_of_occupancy
 #>                184
 #> 
 #> 
 #> 
-#> Other contents
+#> Other contents:
 #>                        Length Class                    Mode
 #> species_range           7     SpatialPolygonsDataFrame S4  
 #> species_unique_records 56     SpatialPointsDataFrame   S4  
@@ -546,13 +505,13 @@ summary(hull_range2)
 #> Species range derived from:  Convex_hull_split 
 #> 
 #>           Species Unique_records Range_area Extent_of_occurrence
-#>  Dasypus kappleri             56    2115826              4063262
+#>  Dasypus kappleri             56    2115826              4095146
 #>  Area_of_occupancy
 #>                184
 #> 
 #> 
 #> 
-#> Other contents
+#> Other contents:
 #>                        Length Class                    Mode
 #> species_range           7     SpatialPolygonsDataFrame S4  
 #> species_unique_records 56     SpatialPointsDataFrame   S4  
@@ -594,13 +553,13 @@ summary(hull_range3)
 #> Species range derived from:  Concave_hull 
 #> 
 #>           Species Unique_records Range_area Extent_of_occurrence
-#>  Dasypus kappleri             56    4327930              4063262
+#>  Dasypus kappleri             56    4327930              4095146
 #>  Area_of_occupancy
 #>                184
 #> 
 #> 
 #> 
-#> Other contents
+#> Other contents:
 #>                        Length Class                    Mode
 #> species_range           4     SpatialPolygonsDataFrame S4  
 #> species_unique_records 56     SpatialPointsDataFrame   S4  
@@ -627,13 +586,13 @@ summary(hull_range4)
 #> Species range derived from:  Concave_hull_split 
 #> 
 #>           Species Unique_records Range_area Extent_of_occurrence
-#>  Dasypus kappleri             56    1878355              4063262
+#>  Dasypus kappleri             56    1878355              4095146
 #>  Area_of_occupancy
 #>                184
 #> 
 #> 
 #> 
-#> Other contents
+#> Other contents:
 #>                        Length Class                    Mode
 #> species_range           6     SpatialPolygonsDataFrame S4  
 #> species_unique_records 56     SpatialPointsDataFrame   S4  
@@ -658,13 +617,13 @@ summary(hull_range5)
 #> Species range derived from:  Concave_hull_split 
 #> 
 #>           Species Unique_records Range_area Extent_of_occurrence
-#>  Dasypus kappleri             56    1878355              4063262
+#>  Dasypus kappleri             56    1878355              4095146
 #>  Area_of_occupancy
 #>                184
 #> 
 #> 
 #> 
-#> Other contents
+#> Other contents:
 #>                        Length Class                    Mode
 #> species_range           6     SpatialPolygonsDataFrame S4  
 #> species_unique_records 56     SpatialPointsDataFrame   S4  
@@ -718,13 +677,13 @@ summary(enm_range)
 #> Species range derived from:  ENM 
 #> 
 #>               Species Unique_records Range_area Extent_of_occurrence
-#>  Amblyomma_americanum             89    2824883              3517287
+#>  Amblyomma_americanum             89    2824883              3535078
 #>  Area_of_occupancy
 #>                356
 #> 
 #> 
 #> 
-#> Other contents
+#> Other contents:
 #>                        Length Class                    Mode
 #> species_range          11     SpatialPolygonsDataFrame S4  
 #> species_unique_records 89     SpatialPointsDataFrame   S4  
@@ -784,7 +743,7 @@ summary(tsa_r)
 #> 
 #> 
 #> 
-#> Other contents
+#> Other contents:
 #>                        Length Class                    Mode
 #> species_range           1     SpatialPolygonsDataFrame S4  
 #> species_unique_records 18     SpatialPointsDataFrame   S4  
@@ -932,3 +891,41 @@ ranges_espace(buffer_range, cxhull_range, variables = vars,
 
 Saving this figures for publication can be done using functions from the
 package `rgl` (e.g., `rgl.postscript()` and `rgl.snapshot()`) .
+
+<br>
+
+<hr>
+
+## Project description
+
+Student: *Marlon E. Cobos*
+
+Mentors: *Narayani Barve, Vijay Barve, and Alberto Jimenez Valverde*
+
+The species range maps project is motivated by the importance of
+information about species distribution for processes of conservation
+planning and the study of spatial patterns of biodiversity. In the face
+of multiple threats related to Global Change, protection and mitigation
+actions are crucial for maintaining the health of the planet, and
+knowing where species are located constitutes in primary information for
+starting these efforts. Currently, generation of species ranges maps may
+take several steps and the use of specialized software. Thanks to the
+recent development of specialized packages, R is rapidly becoming an
+excellent alternative for analyzing the spatial patterns of
+biodiversity. Taking advantage of these packages and the versatility of
+R, the aim of this project was offering handily and robust open source
+tools to obtain reliable proposals of species distribution ranges and to
+analyze their geographical patterns. A large community of students,
+researchers, and conservation managers can be benefited by this project
+since these tools will be freely available and will improve the way in
+which studies of species distributions are developed.
+
+### Status of the project
+
+A version of the package **rangemap** (the result of the project) is in
+CRAN and can be found
+<a href=" https://CRAN.R-project.org/package=rangemap" target="_blank">here</a>.
+
+All commits made can be seen at the
+<a href="https://github.com/marlonecobos/rangemap/commits/master" target="_blank">complete
+list of commits</a>.

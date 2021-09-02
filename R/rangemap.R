@@ -1,4 +1,4 @@
-#' rangemap: An R package for construction of simple species distributional ranges.
+#' rangemap: Simple Tools for Defining Species Ranges
 #'
 #' rangemap contains a collection of tools to create species range maps based on
 #' occurrence data, statistics, and spatial objects. Other tools in this
