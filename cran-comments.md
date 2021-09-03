@@ -1,3 +1,45 @@
+## Submission 0.1.18
+This is the first submission of version 0.1.18. In this version I have made the 
+following changes based on issues detected:
+
+* Modified function rangemap_explore to allow changing x and y limits of plot.
+* Fixed issue in legend of rangemap_plot when extents of occurrence were not 
+plotted.
+* Added an argument in ranges_espace to allow plotting with raw variables and 
+not only PCs; "do_pca = FALSE".
+* Improved the way ranges were plotted in ranges_espace when occurrences were
+not added. Axes and labels added.
+
+**Comments on NOTEs**
+
+* A NOTE may be produced because names of countries in one of the elements in data 
+are marked UTF-8 strings; however, the names are correct and we consider they should stay.
+* Another NOTE appears because some of the words in the Description
+field in DESCRIPTION are considered mis-spelled. However, the words are correct.
+
+
+## Test environments
+* Microsoft Windows Server 2019 10.0.17763 (on GitHub actions) R-release
+* ubuntu-20.04 LTS (local) R-release
+* ubuntu-20.04 LTS (on GitHub actions) R-release
+* ubuntu-20.04 LTS (on GitHub actions) R-devel
+
+
+## R CMD check results
+There were no ERRORs
+
+There were no WARNINGs
+
+There were no NOTEs
+
+
+## Downstream dependencies
+There are currently no downstream dependencies for this package. 
+
+
+<br>
+<hr>
+
 ## Resubmission 0.1.17
 Resubmission of version 0.1.17. In this version I have made the 
 following changes based on CRAN suggestions and issues detected:
