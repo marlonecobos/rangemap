@@ -1,3 +1,9 @@
+# rangemap 0.1.18
+* ranges_espace allows to use raw variables as well
+* rangemap_explore allows to modify x and y limits
+* Bug in legend of rangemap_plot fixed when EOO is not plotted
+* pkgdown website implemented
+
 # rangemap 0.1.17
 * Improved initial testing in function rangemap_boundaries
 * Failing gracefully in online data cannot be downloaded in rangemap_boundaries
