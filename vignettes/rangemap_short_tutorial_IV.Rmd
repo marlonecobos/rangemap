@@ -111,7 +111,8 @@ The function *ranges_espace* generates a three dimensional comparison of a speci
 ```{r, eval=FALSE, echo=TRUE}
 # For avoiding too much complexity we will use only two of the previous ranges
 # comparison
-ranges_espace(buff_range, hull_range, variables = vars, add_occurrences = TRUE)
+ranges_espace(buff_range, hull_range, variables = vars, do_pca = TRUE, 
+              add_occurrences = TRUE)
 
 ```
 
@@ -122,7 +123,7 @@ knitr::include_graphics("vignette_img/VIV_ranges_e1.png")
 Now let's create the same figure but with the three ranges and distinct colors.
 
 ```{r, eval=FALSE, echo=TRUE}
-ranges_espace(buff_range, hull_range, hull_range1, variables = vars, 
+ranges_espace(buff_range, hull_range, hull_range1, variables = vars, do_pca = TRUE,
               range_colors = c("gray1", "blue", "red"), alpha = 0.4)
 ```
 
