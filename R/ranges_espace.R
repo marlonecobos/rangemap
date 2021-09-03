@@ -13,9 +13,12 @@
 #' in one of the \code{sp_range} objects will be plotted. Default = \code{TRUE}.
 #' If  none of the objects contains occurrences this argument will be ignored.
 #' @param variables a RasterStack object of at least 3 environmental variables
-#' that will be used to perform a principal component analysis, and use the 3
-#' first principal components to represent the environmental space. Projection
+#' that will be used to represent the environmental space. If more than 3
+#' variables are provided, the first ones will be used, unless \code{do_pca} =
+#' TRUE, in which case the 3 first principal components will be used. Projection
 #' is assumed to be WGS84 (EPSG:4326).
+#' @param do_pca (logical) whether to summarize all variables using a principal
+#' component analysis. Default = FALSE.
 #' @param max_background (numeric) maximum number of data from variables to be
 #' used for representing the environmental space. Default = 10000.
 #' @param occurrence_color color for occurrence records in environmental space.
@@ -31,10 +34,10 @@
 #'
 #' @return
 #' A figure showing distributional ranges of a species represented in environmental
-#' space (3 principal components).
+#' space (3 dimensions).
 #'
 #' @usage
-#' ranges_espace(..., add_occurrences = TRUE, variables,
+#' ranges_espace(..., add_occurrences = TRUE, variables, do_pca = FALSE,
 #'               max_background = 10000, occurrence_color = "blue",
 #'               range_colors = NULL, alpha = 0.6, legend = TRUE,
 #'               verbose = TRUE)
@@ -59,14 +62,14 @@
 #' ranges_espace(buffer_range, cxhull_range, variables = vars,
 #'               add_occurrences = TRUE)
 
-ranges_espace <- function(..., add_occurrences = TRUE, variables,
+ranges_espace <- function(..., add_occurrences = TRUE, variables, do_pca = FALSE,
                           max_background = 10000, occurrence_color = "blue",
                           range_colors = NULL, alpha = 0.6, legend = TRUE,
                           verbose = TRUE) {
 
   # testing potential issues
   if (missing(...)) {
-    stop("Argument '...' is necessary to perform the analysis")
+    stop("Argument '...' is necessary to perform the analysis.")
   } else {
     ranges <- list(...)
     if (length(ranges) < 1) {
@@ -82,6 +85,10 @@ ranges_espace <- function(..., add_occurrences = TRUE, variables,
   }
   if (missing(variables)) {
     stop("Argument 'variables' must be defined. See function's help for details.")
+  } else {
+    if (raster::nlayers(variables) < 3) {
+      stop("At least three 'variables' are required.")
+    }
   }
 
   # preparing data
@@ -123,34 +130,45 @@ ranges_espace <- function(..., add_occurrences = TRUE, variables,
   if (nrow(vdata) > max_background) {
     vdata <- vdata[sample(nrow(vdata), max_background), ]
   }
-  colnames(vdata)[1:2] <- colnames(pdata)[1:2]
 
   nr <- nrow(vdata)
   nc <- ncol(vdata)
 
   if (add_occurrences == TRUE) {
     ## combining these data
+    colnames(vdata)[1:2] <- colnames(pdata)[1:2]
+
     vdata <- rbind(vdata, pdata)
-  }else {
+  } else {
     vdata <- vdata
   }
 
   # pca
-  ## pca with vdata
-  vdata <- data.frame(vdata[, 1:2], prcomp(vdata[, 3:nc], center = TRUE,
-                                           scale = TRUE)$x[, 1:3])
-
+  if (do_pca == TRUE) {
+    ## pca with vdata
+    vdata <- data.frame(vdata[, 1:2], prcomp(vdata[, 3:nc], center = TRUE,
+                                             scale = TRUE)$x[, 1:3])
+    vnam <- c("PC 1", "PC 2", "PC 3")
+  } else {
+    if (verbose == TRUE) {
+      if ((nc - 2) > 3) {
+        message("Using only the three first variables\n")
+      }
+    }
+    vnam <- gsub("_", " ", colnames(vdata)[3:5])
+  }
   nc <- 5
 
   if (add_occurrences == TRUE) {
     pc_occ <- vdata[(nr - nrow(pdata) + 1):nrow(vdata), 3:nc]
   }
 
-  vdata <- sp::SpatialPointsDataFrame(coords = vdata[, 1:2], data = vdata[, 1:nc],
+  vdata <- sp::SpatialPointsDataFrame(coords = vdata[, 1:2],
+                                      data = as.data.frame(vdata[, 1:nc]),
                                       proj4string = WGS84)
 
   # getting the species ranges from objects in ranges, and
-  # getting environmental (PCs) data in ranges
+  # getting environmental data in ranges
   if (verbose == TRUE) {
     message("Getting environmental conditions inside ranges, please wait...")
   }
@@ -170,8 +188,8 @@ ranges_espace <- function(..., add_occurrences = TRUE, variables,
 
   ## interactive plot
   if (add_occurrences == TRUE) {
-    rgl::plot3d(pc_occ[, 1:3], col = occurrence_color, size = 6, xlab = "PC 1",
-                ylab = "PC 2", zlab = "PC 3")
+    rgl::plot3d(pc_occ[, 1:3], col = occurrence_color, size = 6, xlab = vnam[1],
+                ylab = vnam[2], zlab = vnam[3])
     ad <- TRUE
   }else {
     ad <- FALSE
@@ -184,8 +202,12 @@ ranges_espace <- function(..., add_occurrences = TRUE, variables,
     ell <- rgl::ellipse3d(cov_mat, centre = centroid, level = 0.99)
 
     adt <- ifelse(x == 1, ad, TRUE)
-    rgl::wire3d(ell, col = colors[x], alpha = alpha, xlab = "PC 1",
-                ylab = "PC 2", zlab = "PC 3", add = adt)
+    rgl::wire3d(ell, col = colors[x], alpha = alpha, xlab = vnam[1],
+                ylab = vnam[2], zlab = vnam[3], add = adt)
+    if (x == 1 & add_occurrences == FALSE) {
+      rgl::axes3d(box = T)
+      rgl::title3d(xlab = vnam[1], ylab = vnam[2], zlab = vnam[3])
+    }
   })
 
   ## legend

@@ -4,7 +4,7 @@
 \alias{ranges_espace}
 \title{Comparison of species ranges in environmental space}
 \usage{
-ranges_espace(..., add_occurrences = TRUE, variables,
+ranges_espace(..., add_occurrences = TRUE, variables, do_pca = FALSE,
               max_background = 10000, occurrence_color = "blue",
               range_colors = NULL, alpha = 0.6, legend = TRUE,
               verbose = TRUE)
@@ -21,9 +21,13 @@ in one of the \code{sp_range} objects will be plotted. Default = \code{TRUE}.
 If  none of the objects contains occurrences this argument will be ignored.}
 
 \item{variables}{a RasterStack object of at least 3 environmental variables
-that will be used to perform a principal component analysis, and use the 3
-first principal components to represent the environmental space. Projection
+that will be used to represent the environmental space. If more than 3
+variables are provided, the first ones will be used, unless \code{do_pca} =
+TRUE, in which case the 3 first principal components will be used. Projection
 is assumed to be WGS84 (EPSG:4326).}
+
+\item{do_pca}{(logical) whether to summarize all variables using a principal
+component analysis. Default = FALSE.}
 
 \item{max_background}{(numeric) maximum number of data from variables to be
 used for representing the environmental space. Default = 10000.}
@@ -45,7 +49,7 @@ Default = TRUE.}
 }
 \value{
 A figure showing distributional ranges of a species represented in environmental
-space (3 principal components).
+space (3 dimensions).
 }
 \description{
 ranges_espace generates a three dimensional comparison of
