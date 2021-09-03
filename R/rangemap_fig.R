@@ -267,7 +267,7 @@ rangemap_plot <- function(sp_range, polygons = NULL, add_EOO = FALSE,
                pt.cex = c(2, 2), cex = 0.8)
       }
       if (add_EOO == FALSE & add_occurrences == TRUE) {
-        legend(legend_position, legend=c("Species range", "Ocurrences"),
+        legend(legend_position, legend=c("Ocurrences", "Species range"),
                bty="n", inset = 0.07, pch = c(21, 22),
                col = c("black", scales::alpha(range_color, 0.75)),
                pt.bg = c(scales::alpha(occurrences_color, 0.8),
@@ -304,7 +304,7 @@ rangemap_plot <- function(sp_range, polygons = NULL, add_EOO = FALSE,
                pt.cex = c(2, 2), cex = 0.8)
       }
       if (add_EOO == FALSE & add_occurrences == TRUE) {
-        legend(x = xleg, y = yleg, legend=c("Species range", "Ocurrences"),
+        legend(x = xleg, y = yleg, legend=c( "Ocurrences", "Species range"),
                bty="n", inset = 0.07, pch = c(21, 22),
                col = c("black", scales::alpha(range_color, 0.75)),
                pt.bg = c(scales::alpha(occurrences_color, 0.8),
