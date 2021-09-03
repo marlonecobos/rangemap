@@ -74,7 +74,7 @@ rangemap, to visualize them in environmental conditions." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rangemap</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.17</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.18</span>
       </span>
     </div>
 
@@ -145,7 +145,7 @@ distributional ranges for a species created using distinct functions of
 <code><a href='rangemap.html'>rangemap</a></code>, to visualize them in environmental conditions.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>ranges_espace</span><span class='op'>(</span><span class='va'>...</span>, add_occurrences <span class='op'>=</span> <span class='cn'>TRUE</span>, <span class='va'>variables</span>,
+    <pre class="usage"><span class='fu'>ranges_espace</span><span class='op'>(</span><span class='va'>...</span>, add_occurrences <span class='op'>=</span> <span class='cn'>TRUE</span>, <span class='va'>variables</span>, do_pca <span class='op'>=</span> <span class='cn'>FALSE</span>,
               max_background <span class='op'>=</span> <span class='fl'>10000</span>, occurrence_color <span class='op'>=</span> <span class='st'>"blue"</span>,
               range_colors <span class='op'>=</span> <span class='cn'>NULL</span>, alpha <span class='op'>=</span> <span class='fl'>0.6</span>, legend <span class='op'>=</span> <span class='cn'>TRUE</span>,
               verbose <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></pre>
@@ -170,9 +170,15 @@ If  none of the objects contains occurrences this argument will be ignored.</p><
     <tr>
       <th>variables</th>
       <td><p>a RasterStack object of at least 3 environmental variables
-that will be used to perform a principal component analysis, and use the 3
-first principal components to represent the environmental space. Projection
+that will be used to represent the environmental space. If more than 3
+variables are provided, the first ones will be used, unless <code>do_pca</code> =
+TRUE, in which case the 3 first principal components will be used. Projection
 is assumed to be WGS84 (EPSG:4326).</p></td>
+    </tr>
+    <tr>
+      <th>do_pca</th>
+      <td><p>(logical) whether to summarize all variables using a principal
+component analysis. Default = FALSE.</p></td>
     </tr>
     <tr>
       <th>max_background</th>
@@ -209,7 +215,7 @@ Default = TRUE.</p></td>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A figure showing distributional ranges of a species represented in environmental
-space (3 principal components).</p>
+space (3 dimensions).</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># example data</span>
@@ -224,7 +230,7 @@ space (3 principal components).</p>
 <span class='fu'>ranges_espace</span><span class='op'>(</span><span class='va'>buffer_range</span>, <span class='va'>cxhull_range</span>, variables <span class='op'>=</span> <span class='va'>vars</span>,
               add_occurrences <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='warning'>Warning: Discarded datum WGS_1984 in Proj4 definition,</span>
-#&gt; <span class='warning'> but +towgs84= values preserved</span></div><div class='output co'>#&gt; <span class='message'>Getting environmental conditions inside ranges, please wait...</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Discarded datum WGS_1984 in Proj4 definition,</span>
+#&gt; <span class='warning'> but +towgs84= values preserved</span></div><div class='output co'>#&gt; <span class='message'>Using only the three first variables</span></div><div class='output co'>#&gt; <span class='message'>Getting environmental conditions inside ranges, please wait...</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Discarded datum WGS_1984 in Proj4 definition,</span>
 #&gt; <span class='warning'> but +towgs84= values preserved</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Discarded datum WGS_1984 in Proj4 definition,</span>
 #&gt; <span class='warning'> but +towgs84= values preserved</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Discarded datum WGS_1984 in Proj4 definition,</span>
 #&gt; <span class='warning'> but +towgs84= values preserved</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Discarded datum WGS_1984 in Proj4 definition,</span>
