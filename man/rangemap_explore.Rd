@@ -4,7 +4,8 @@
 \alias{rangemap_explore}
 \title{Exploring occurrences before creating range maps}
 \usage{
-rangemap_explore(occurrences, show_countries = FALSE, graphic_device = FALSE)
+rangemap_explore(occurrences, show_countries = FALSE, graphic_device = FALSE,
+                 xlim = NULL, ylim = NULL)
 }
 \arguments{
 \item{occurrences}{a data.frame containing geographic coordinates of species
@@ -16,6 +17,14 @@ country polygons. Default = \code{FALSE}.}
 
 \item{graphic_device}{(logical) if \code{TRUE}, a new graphic device is opened
 to plot the figure. Default = \code{FALSE}.}
+
+\item{xlim}{(numeric) vector of length = 2 with the limits in longitude for
+the plot. The default, NULL, uses the limits of countries with
+\code{occurrences}.}
+
+\item{ylim}{(numeric) vector of length = 2 with the limits in latitude for
+the plot. The default, NULL, uses the limits of countries with
+\code{occurrences}.}
 }
 \value{
 A simple figure of species occurrences in a geographical context.

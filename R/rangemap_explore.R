@@ -10,6 +10,12 @@
 #' country polygons. Default = \code{FALSE}.
 #' @param graphic_device (logical) if \code{TRUE}, a new graphic device is opened
 #' to plot the figure. Default = \code{FALSE}.
+#' @param xlim (numeric) vector of length = 2 with the limits in longitude for
+#' the plot. The default, NULL, uses the limits of countries with
+#' \code{occurrences}.
+#' @param ylim (numeric) vector of length = 2 with the limits in latitude for
+#' the plot. The default, NULL, uses the limits of countries with
+#' \code{occurrences}.
 #'
 #' @return
 #' A simple figure of species occurrences in a geographical context.
@@ -19,7 +25,8 @@
 #' the Natural Earth database (scale = 50).
 #'
 #' @usage
-#' rangemap_explore(occurrences, show_countries = FALSE, graphic_device = FALSE)
+#' rangemap_explore(occurrences, show_countries = FALSE, graphic_device = FALSE,
+#'                  xlim = NULL, ylim = NULL)
 #'
 #' @export
 #'
@@ -37,7 +44,7 @@
 #' rangemap_explore(occurrences = occ_f, show_countries = TRUE)
 
 rangemap_explore <- function(occurrences, show_countries = FALSE,
-                             graphic_device = FALSE) {
+                             graphic_device = FALSE, xlim = NULL, ylim = NULL) {
 
   # testing potential issues
   if (missing(occurrences)) {
@@ -71,8 +78,12 @@ rangemap_explore <- function(occurrences, show_countries = FALSE,
 
   # plot a background map and the range
   ## limits of map
-  xlim <- as.numeric(c(polygons1@bbox[1, 1:2]))
-  ylim <- as.numeric(c(polygons1@bbox[2, 1:2]))
+  if (is.null(xlim)) {
+    xlim <- as.numeric(c(polygons1@bbox[1, 1:2]))
+  }
+  if (is.null(ylim)) {
+    ylim <- as.numeric(c(polygons1@bbox[2, 1:2]))
+  }
 
   ## labels
   if (show_countries == TRUE) {
