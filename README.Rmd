@@ -19,11 +19,11 @@ opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>", warning = FALSE)
 [![R build status](https://github.com/marlonecobos/rangemap/workflows/R-CMD-check/badge.svg)](https://github.com/marlonecobos/rangemap/actions)
 <!-- badges: end -->
 
-<img src='README_files/rangemap100dpi.png' align="right" height="139" /></a>
+<img src='man/figures/rangemap100dpi.png' align="right" height="139" /></a>
 
 <hr>
 
-**This repository is for the GSoC 2018 project "Species range maps in R".** 
+**This repository is for the GSoC 2018 project "Species range maps in R" (details at the end).** 
 
 ## Package description
 
@@ -43,13 +43,13 @@ Starting with v 0.1.17, **rangemap** allows optional calculations of extents of 
 
 A stable version of **rangemap** can be installed from CRAN as follows:
 
-```{r, include=TRUE, message=FALSE, warning=FALSE}
+```{r, include=TRUE, eval=FALSE}
 install.packages("rangemap")
 ```
 
 **rangemap** can also be installed from its GitHub repository using the following code: 
 
-```{r, include=TRUE, message=FALSE, warning=FALSE, eval=FALSE}
+```{r, include=TRUE, eval=FALSE}
 if(!require(remotes)){
     install.packages("remotes")
 }
@@ -67,7 +67,7 @@ remotes::install_github("marlonecobos/rangemap")
 
 The following code chunk loads the pacakges needed to perform some example-analyses with **rangemap**. 
 
-```{r, include=TRUE, message=FALSE, warning=FALSE, results=FALSE}
+```{r, include=TRUE, eval=FALSE}
 # packages to be used
 library(raster)
 library(maps)
@@ -98,7 +98,7 @@ help(rangemap_explore)
 
 An example of the use of this function is written below.
 
-```{r, include=TRUE}
+```{r, include=TRUE, eval=FALSE}
 # getting the data 
 data("occ_d", package = "rangemap")
 
@@ -106,11 +106,20 @@ data("occ_d", package = "rangemap")
 rangemap_explore(occurrences = occ_d)
 ```
 
+```{r, echo=FALSE}
+knitr::include_graphics("man/figures/unnamed-chunk-6-1.png")
+```
+
+
 Same figure with country codes.
 
-```{r, include=TRUE}
+```{r, include=TRUE, eval=FALSE}
 # simple figure of the species occurrence data
 rangemap_explore(occurrences = occ_d, show_countries = TRUE)
+```
+
+```{r, echo=FALSE}
+knitr::include_graphics("man/figures/unnamed-chunk-7-1.png")
 ```
 
 <br>
@@ -129,7 +138,7 @@ help(rangemap_buffer)
 
 An example of how to use this function is written below.
 
-```{r, include=TRUE}
+```{r, include=TRUE, eval=FALSE}
 # getting the data 
 data("occ_p", package = "rangemap")
 
@@ -137,13 +146,36 @@ data("occ_p", package = "rangemap")
 buff_range <- rangemap_buffer(occurrences = occ_p, buffer_distance = 100000)
 
 summary(buff_range)
+#> 
+#>                       Summary of sp_range_iucn object
+#> ---------------------------------------------------------------------------
+#> 
+#> Species range derived from:  Buffer 
+#> 
+#>             Species Unique_records Range_area Extent_of_occurrence
+#>  Peltophryne empusa             27   106241.2             66357.71
+#>  Area_of_occupancy
+#>                 92
+#> 
+#> 
+#> 
+#> Other contents:
+#>                        Length Class                    Mode
+#> species_range           1     SpatialPolygonsDataFrame S4  
+#> species_unique_records 27     SpatialPointsDataFrame   S4  
+#> extent_of_occurrence    1     SpatialPolygonsDataFrame S4  
+#> area_of_occupancy      23     SpatialPolygonsDataFrame S4
 ```
 
 
 The function *rangemap_plot* generates customizable figures of species range maps using the objects produced by other function of this package. Let's see how the generated range looks like.
 
-```{r, include=TRUE}
+```{r, include=TRUE, eval=FALSE}
 rangemap_plot(buff_range)
+```
+
+```{r, echo=FALSE}
+knitr::include_graphics("man/figures/unnamed-chunk-10-1.png")
 ```
 
 For further details see the function documentation. 
@@ -174,13 +206,19 @@ Examples of the use of this function with most of its variants are written below
   
 Following there is an example in which administrative areas will be selected using only occurrences. The *rangemap_explore* function will be used for obtaining a first visualization of the species distributional range.
 
-```{r, include=TRUE}
+```{r, include=TRUE, eval=FALSE}
 # occurrence data was obtained in the first example using
 # data("occ_d", package = "rangemap")
 
 # checking which countries may be involved in the analysis
 rangemap_explore(occurrences = occ_d, show_countries = TRUE)
+```
 
+```{r, echo=FALSE}
+knitr::include_graphics("man/figures/unnamed-chunk-13-1.png")
+```
+
+```{r, include=TRUE, eval=FALSE}
 # getting an example of SpatialPolygonsDataFrame to be used as polygons
 data("adm_boundaries", package = "rangemap")
 
@@ -188,12 +226,35 @@ data("adm_boundaries", package = "rangemap")
 bound_range <- rangemap_boundaries(occurrences = occ_d, polygons = adm_boundaries)
 
 summary(bound_range)
+#> 
+#>                       Summary of sp_range_iucn object
+#> ---------------------------------------------------------------------------
+#> 
+#> Species range derived from:  Boundaries 
+#> 
+#>           Species Unique_records Range_area Extent_of_occurrence
+#>  Dasypus kappleri             55   12217732              4076154
+#>  Area_of_occupancy
+#>                176
+#> 
+#> 
+#> 
+#> Other contents:
+#>                        Length Class                    Mode
+#> species_range           7     SpatialPolygonsDataFrame S4  
+#> species_unique_records 55     SpatialPointsDataFrame   S4  
+#> extent_of_occurrence    1     SpatialPolygonsDataFrame S4  
+#> area_of_occupancy      44     SpatialPolygonsDataFrame S4
 ```
 
 Figure of the generated range.
 
-```{r, include=TRUE}
+```{r, include=TRUE, eval=FALSE}
 rangemap_plot(bound_range)
+```
+
+```{r, echo=FALSE}
+knitr::include_graphics("man/figures/unnamed-chunk-14-1.png")
 ```
 
 <br>
@@ -202,7 +263,7 @@ rangemap_plot(bound_range)
   
 Following there is an example in which administrative areas will be selected using only the names of the administrative entities known to be occupied by the species. This approach may be useful in circumstances where geographic coordinates or accurate locality descriptions do not exist.
 
-```{r, include=TRUE}
+```{r, include=TRUE, eval=FALSE}
 # administrative areas invloved
 adm <- c("Ecuador", "Peru", "Venezuela", "Colombia", "Brazil") 
 
@@ -210,12 +271,43 @@ adm <- c("Ecuador", "Peru", "Venezuela", "Colombia", "Brazil")
 bound_range1 <- rangemap_boundaries(adm_areas = adm, polygons = adm_boundaries)
 
 summary(bound_range1)
+#> 
+#>                          Summary of sp_range object
+#> ---------------------------------------------------------------------------
+#> 
+#> Species range derived from:  Boundaries 
+#> 
+#>  Species Range_area
+#>  Species   12043257
+#> 
+#> 
+#> 
+#> Species range
+#> Object of class SpatialPolygonsDataFrame
+#> Coordinates:
+#>         min       max
+#> x -91.66389 -29.84000
+#> y -33.74067  13.37861
+#> Is projected: FALSE 
+#> proj4string : [+proj=longlat +datum=WGS84 +no_defs]
+#> Data attributes:
+#>   X.Species.           rangekm2      
+#>  Length:5           Min.   : 255493  
+#>  Class :character   1st Qu.: 909405  
+#>  Mode  :character   Median :1135524  
+#>                     Mean   :2408651  
+#>                     3rd Qu.:1294369  
+#>                     Max.   :8448466
 ```
 
 Map of the generated range.
 
-```{r, include=TRUE}
+```{r, include=TRUE, eval=FALSE}
 rangemap_plot(bound_range1)
+```
+
+```{r, echo=FALSE}
+knitr::include_graphics("man/figures/unnamed-chunk-16-1.png")
 ```
 
 <br>
@@ -224,7 +316,7 @@ rangemap_plot(bound_range1)
   
 An example of using both occurrences and administrative areas for creating species ranges with the function *rangemap_boundaries* is presented below. This option may be useful when these two types of information complement the knowledge of the species distribution.
 
-```{r, include=TRUE}
+```{r, include=TRUE, eval=FALSE}
 # other parameters
 adm <- "Ecuador" # Athough no record is on this country, we know it is in Ecuador
 
@@ -233,12 +325,35 @@ bound_range2 <- rangemap_boundaries(occurrences = occ_d, adm_areas = adm,
                                     polygons = adm_boundaries)
 
 summary(bound_range2)
+#> 
+#>                       Summary of sp_range_iucn object
+#> ---------------------------------------------------------------------------
+#> 
+#> Species range derived from:  Boundaries 
+#> 
+#>           Species Unique_records Range_area Extent_of_occurrence
+#>  Dasypus kappleri             55   12473215              4076154
+#>  Area_of_occupancy
+#>                176
+#> 
+#> 
+#> 
+#> Other contents:
+#>                        Length Class                    Mode
+#> species_range           8     SpatialPolygonsDataFrame S4  
+#> species_unique_records 55     SpatialPointsDataFrame   S4  
+#> extent_of_occurrence    1     SpatialPolygonsDataFrame S4  
+#> area_of_occupancy      44     SpatialPolygonsDataFrame S4
 ```
 
 Now the plot.
 
-```{r, include=TRUE}
+```{r, include=TRUE, eval=FALSE}
 rangemap_plot(bound_range2)
+```
+
+```{r, echo=FALSE}
+knitr::include_graphics("man/figures/unnamed-chunk-18-1.png")
 ```
 
 <br>
@@ -263,15 +378,35 @@ Examples of the use of this function with most of its variants are written below
 
 With the example provided below, a species range will be constructed using convex hulls. After that this range will be split based on two distinct algorithms of clustering: hierarchical and k-means. Convex hull polygons are commonly used to represent species ranges, however in circumstances where biogeographic barriers for the species dispersal exist, concave hulls may be a better option.
 
-```{r, include=TRUE}
+```{r, include=TRUE, eval=FALSE}
 # occurrences were obtained in prvious examples using
 # data("occ_d", package = "rangemap")
 
 # species range
 hull_range <- rangemap_hull(occurrences = occ_d, hull_type = "convex", 
                             buffer_distance = 100000)
+#> Hull type: convex
 
 summary(hull_range)
+#> 
+#>                       Summary of sp_range_iucn object
+#> ---------------------------------------------------------------------------
+#> 
+#> Species range derived from:  Convex_hull 
+#> 
+#>           Species Unique_records Range_area Extent_of_occurrence
+#>  Dasypus kappleri             56    4860934              4095146
+#>  Area_of_occupancy
+#>                184
+#> 
+#> 
+#> 
+#> Other contents:
+#>                        Length Class                    Mode
+#> species_range           6     SpatialPolygonsDataFrame S4  
+#> species_unique_records 56     SpatialPointsDataFrame   S4  
+#> extent_of_occurrence    1     SpatialPolygonsDataFrame S4  
+#> area_of_occupancy      46     SpatialPolygonsDataFrame S4
 
 
 # disjunct distributions
@@ -282,8 +417,29 @@ hull_range1 <- rangemap_hull(occurrences = occ_d, hull_type = "convex",
                              buffer_distance = 100000, split = TRUE, 
                              cluster_method = "hierarchical", 
                              split_distance = 1500000)
+#> Clustering method: hierarchical
+#> Hull type: convex
 
 summary(hull_range1)
+#> 
+#>                       Summary of sp_range_iucn object
+#> ---------------------------------------------------------------------------
+#> 
+#> Species range derived from:  Convex_hull_split 
+#> 
+#>           Species Unique_records Range_area Extent_of_occurrence
+#>  Dasypus kappleri             56    2115826              4095146
+#>  Area_of_occupancy
+#>                184
+#> 
+#> 
+#> 
+#> Other contents:
+#>                        Length Class                    Mode
+#> species_range           7     SpatialPolygonsDataFrame S4  
+#> species_unique_records 56     SpatialPointsDataFrame   S4  
+#> extent_of_occurrence    1     SpatialPolygonsDataFrame S4  
+#> area_of_occupancy      46     SpatialPolygonsDataFrame S4
 
 
 # clustering occurrences with the k-means method
@@ -293,13 +449,39 @@ hull_range2 <- rangemap_hull(occurrences = occ_d, hull_type = "convex",
                              buffer_distance = 100000, split = TRUE, 
                              cluster_method = "k-means", n_k_means = 3)
 
+#> Clustering method: k-means
+#> Hull type: convex
+
 summary(hull_range2)
+#> 
+#>                       Summary of sp_range_iucn object
+#> ---------------------------------------------------------------------------
+#> 
+#> Species range derived from:  Convex_hull_split 
+#> 
+#>           Species Unique_records Range_area Extent_of_occurrence
+#>  Dasypus kappleri             56    2115826              4095146
+#>  Area_of_occupancy
+#>                184
+#> 
+#> 
+#> 
+#> Other contents:
+#>                        Length Class                    Mode
+#> species_range           7     SpatialPolygonsDataFrame S4  
+#> species_unique_records 56     SpatialPointsDataFrame   S4  
+#> extent_of_occurrence    1     SpatialPolygonsDataFrame S4  
+#> area_of_occupancy      46     SpatialPolygonsDataFrame S4
 ```
 
 Now the figure of the species range.
 
-```{r, include=TRUE}
+```{r, include=TRUE, eval=FALSE}
 rangemap_plot(hull_range) # try hull_range1 and hull_range2 as well
+```
+
+```{r, echo=FALSE}
+knitr::include_graphics("man/figures/unnamed-chunk-21-1.png")
 ```
 
 <br>
@@ -308,15 +490,35 @@ rangemap_plot(hull_range) # try hull_range1 and hull_range2 as well
 
 With the following examples, the species range will be constructed using concave hulls. The species range will be calculated as an only area and as disjunct areas by clustering its occurrences using the k-means and hierarchical methods.
 
-```{r, include=TRUE}
+```{r, include=TRUE, eval=FALSE}
 # occurrences were obtained in prvious examples using
 # data("occ_d", package = "rangemap")
 
 # species range
 hull_range3 <- rangemap_hull(occurrences = occ_d, hull_type = "concave", 
                              buffer_distance = 100000)
+#> Hull type: concave
 
 summary(hull_range3)
+#> 
+#>                       Summary of sp_range_iucn object
+#> ---------------------------------------------------------------------------
+#> 
+#> Species range derived from:  Concave_hull 
+#> 
+#>           Species Unique_records Range_area Extent_of_occurrence
+#>  Dasypus kappleri             56    4327930              4095146
+#>  Area_of_occupancy
+#>                184
+#> 
+#> 
+#> 
+#> Other contents:
+#>                        Length Class                    Mode
+#> species_range           4     SpatialPolygonsDataFrame S4  
+#> species_unique_records 56     SpatialPointsDataFrame   S4  
+#> extent_of_occurrence    1     SpatialPolygonsDataFrame S4  
+#> area_of_occupancy      46     SpatialPolygonsDataFrame S4
 
 
 # disjunct distributions
@@ -327,8 +529,29 @@ hull_range4 <- rangemap_hull(occurrences = occ_d, hull_type = "concave",
                              buffer_distance = 100000, split = TRUE, 
                              cluster_method = "hierarchical", 
                              split_distance = 1500000)
+#> Clustering method: hierarchical
+#> Hull type: concave
 
 summary(hull_range4)
+#> 
+#>                       Summary of sp_range_iucn object
+#> ---------------------------------------------------------------------------
+#> 
+#> Species range derived from:  Concave_hull_split 
+#> 
+#>           Species Unique_records Range_area Extent_of_occurrence
+#>  Dasypus kappleri             56    1878355              4095146
+#>  Area_of_occupancy
+#>                184
+#> 
+#> 
+#> 
+#> Other contents:
+#>                        Length Class                    Mode
+#> species_range           6     SpatialPolygonsDataFrame S4  
+#> species_unique_records 56     SpatialPointsDataFrame   S4  
+#> extent_of_occurrence    1     SpatialPolygonsDataFrame S4  
+#> area_of_occupancy      46     SpatialPolygonsDataFrame S4
 
 
 # clustering occurrences with the k-means method
@@ -337,14 +560,39 @@ summary(hull_range4)
 hull_range5 <- rangemap_hull(occurrences = occ_d, hull_type = "concave", 
                              buffer_distance = 100000, split = TRUE, 
                              cluster_method = "k-means", n_k_means = 3)
+#> Clustering method: k-means
+#> Hull type: concave
 
 summary(hull_range5)
+#> 
+#>                       Summary of sp_range_iucn object
+#> ---------------------------------------------------------------------------
+#> 
+#> Species range derived from:  Concave_hull_split 
+#> 
+#>           Species Unique_records Range_area Extent_of_occurrence
+#>  Dasypus kappleri             56    1878355              4095146
+#>  Area_of_occupancy
+#>                184
+#> 
+#> 
+#> 
+#> Other contents:
+#>                        Length Class                    Mode
+#> species_range           6     SpatialPolygonsDataFrame S4  
+#> species_unique_records 56     SpatialPointsDataFrame   S4  
+#> extent_of_occurrence    1     SpatialPolygonsDataFrame S4  
+#> area_of_occupancy      46     SpatialPolygonsDataFrame S4
 ```
 
 Checking the figure.
 
-```{r, include=TRUE}
+```{r, include=TRUE, eval=FALSE}
 rangemap_plot(hull_range5) # try hull_range4 and hull_range3 as well
+```
+
+```{r, echo=FALSE}
+knitr::include_graphics("man/figures/unnamed-chunk-23-1.png")
 ```
 
 <br>
@@ -363,7 +611,7 @@ help(rangemap_enm)
 
 An example of the use of this function is written below.
 
-```{r, include=TRUE, warning=FALSE, message=FALSE}
+```{r, include=TRUE, eval=FALSE}
 # parameters
 sp_mod <- raster::raster(list.files(system.file("extdata", package = "rangemap"),
                                     pattern = "sp_model.tif", full.names = TRUE))
@@ -374,12 +622,35 @@ enm_range <- rangemap_enm(occurrences = occ_train, model = sp_mod,
                           threshold_omission = 5)
 
 summary(enm_range)
+#> 
+#>                       Summary of sp_range_iucn object
+#> ---------------------------------------------------------------------------
+#> 
+#> Species range derived from:  ENM 
+#> 
+#>               Species Unique_records Range_area Extent_of_occurrence
+#>  Amblyomma_americanum             89    2824883              3535078
+#>  Area_of_occupancy
+#>                356
+#> 
+#> 
+#> 
+#> Other contents:
+#>                        Length Class                    Mode
+#> species_range          11     SpatialPolygonsDataFrame S4  
+#> species_unique_records 89     SpatialPointsDataFrame   S4  
+#> extent_of_occurrence    1     SpatialPolygonsDataFrame S4  
+#> area_of_occupancy      89     SpatialPolygonsDataFrame S4
 ```
 
 Let's see how this range looks like.
 
-```{r, include=TRUE}
+```{r, include=TRUE, eval=FALSE}
 rangemap_plot(enm_range)
+```
+
+```{r, echo=FALSE}
+knitr::include_graphics("man/figures/unnamed-chunk-26-1.png")
 ```
 
 <br>
@@ -398,7 +669,7 @@ help(rangemap_tsa)
 
 An example of the use of this function is written below.
 
-```{r, include=TRUE}
+```{r, include=TRUE, eval=FALSE}
 # data
 data("occ_f", package = "rangemap")
 CU <- simple_wmap("simple", regions = "Cuba")
@@ -407,12 +678,35 @@ CU <- simple_wmap("simple", regions = "Cuba")
 tsa_r <- rangemap_tsa(occurrences = occ_f, region_of_interest = CU)
 
 summary(tsa_r)
+#> 
+#>                       Summary of sp_range_iucn object
+#> ---------------------------------------------------------------------------
+#> 
+#> Species range derived from:  TSA 
+#> 
+#>               Species Unique_records Range_area Extent_of_occurrence
+#>  Peltophryne fustiger             18       6825             1630.968
+#>  Area_of_occupancy
+#>                 48
+#> 
+#> 
+#> 
+#> Other contents:
+#>                        Length Class                    Mode
+#> species_range           1     SpatialPolygonsDataFrame S4  
+#> species_unique_records 18     SpatialPointsDataFrame   S4  
+#> extent_of_occurrence    1     SpatialPolygonsDataFrame S4  
+#> area_of_occupancy      12     SpatialPolygonsDataFrame S4
 ```
 
 Let's take a look at the results.
 
-```{r, include=TRUE}
+```{r, include=TRUE, eval=FALSE}
 rangemap_plot(tsa_r, polygons = CU, zoom = 0.5)
+```
+
+```{r, echo=FALSE}
+knitr::include_graphics("man/figures/unnamed-chunk-29-1.png")
 ```
 
 <br>
@@ -433,34 +727,50 @@ Examples of the use of this function are written below.
 
 #### Including extent of occurrence
 
-```{r, include=TRUE}
+```{r, include=TRUE, eval=FALSE}
 rangemap_plot(hull_range5, add_EOO = TRUE)
+```
+
+```{r, echo=FALSE}
+knitr::include_graphics("man/figures/unnamed-chunk-31-1.png")
 ```
 
 <br>
   
 #### Including occurrences
   
-```{r, include=TRUE}
+```{r, include=TRUE, eval=FALSE}
 rangemap_plot(hull_range5, add_occurrences = TRUE)
+```
+
+```{r, echo=FALSE}
+knitr::include_graphics("man/figures/unnamed-chunk-32-1.png")
 ```
 
 <br>
   
 #### Including extent of occurrence and species records
   
-```{r, include=TRUE}
+```{r, include=TRUE, eval=FALSE}
 rangemap_plot(hull_range5, add_EOO = TRUE, add_occurrences = TRUE)
+```
+
+```{r, echo=FALSE}
+knitr::include_graphics("man/figures/unnamed-chunk-33-1.png")
 ```
 
 <br>
   
 #### Using other parameters
   
-```{r, include=TRUE}
+```{r, include=TRUE, eval=FALSE}
 rangemap_plot(hull_range5, add_EOO = TRUE, add_occurrences = TRUE,
               legend = TRUE, scalebar = TRUE, scalebar_length = 500, 
               zoom = 0.5, northarrow = TRUE)
+```
+
+```{r, echo=FALSE}
+knitr::include_graphics("man/figures/unnamed-chunk-34-1.png")
 ```
 
 <br>
@@ -481,7 +791,7 @@ help(ranges_emaps)
 
 An example of the use of this function is written below.
 
-```{r, include=TRUE}
+```{r, include=TRUE, eval=FALSE}
 # example data
 data("buffer_range", package = "rangemap")
 data("cxhull_range", package = "rangemap")
@@ -493,6 +803,10 @@ names(vars) <- c("bio5", "bio6", "bio13", "bio14")
 
 # plotting
 ranges_emaps(buffer_range, cxhull_range, cvehull_range, variables = vars)
+```
+
+```{r, echo=FALSE}
+knitr::include_graphics("man/figures/unnamed-chunk-36-1.png")
 ```
 
 <br>

@@ -35,12 +35,12 @@ and Claudia Nunez-Penichet
 status](https://github.com/marlonecobos/rangemap/workflows/R-CMD-check/badge.svg)](https://github.com/marlonecobos/rangemap/actions)
 <!-- badges: end -->
 
-<img src='README_files/rangemap100dpi.png' align="right" height="139" /></a>
+<img src='man/figures/rangemap100dpi.png' align="right" height="139" /></a>
 
 <hr>
 
-**This repository is for the GSoC 2018 project “Species range maps in
-R”.**
+**This repository is for the GSoC 2018 project “Species range maps in R”
+(details at the end).**
 
 ## Package description
 
@@ -144,7 +144,7 @@ data("occ_d", package = "rangemap")
 rangemap_explore(occurrences = occ_d)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+<img src="man/figures/unnamed-chunk-6-1.png" width="672" />
 
 Same figure with country codes.
 
@@ -153,7 +153,7 @@ Same figure with country codes.
 rangemap_explore(occurrences = occ_d, show_countries = TRUE)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+<img src="man/figures/unnamed-chunk-7-1.png" width="672" />
 
 <br>
 
@@ -210,7 +210,7 @@ Let’s see how the generated range looks like.
 rangemap_plot(buff_range)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+<img src="man/figures/unnamed-chunk-10-1.png" width="672" />
 
 For further details see the function documentation.
 
@@ -254,7 +254,7 @@ distributional range.
 rangemap_explore(occurrences = occ_d, show_countries = TRUE)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+<img src="man/figures/unnamed-chunk-13-1.png" width="672" />
 
 ``` r
 # getting an example of SpatialPolygonsDataFrame to be used as polygons
@@ -291,7 +291,7 @@ Figure of the generated range.
 rangemap_plot(bound_range)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
+<img src="man/figures/unnamed-chunk-14-1.png" width="672" />
 
 <br>
 
@@ -346,7 +346,7 @@ Map of the generated range.
 rangemap_plot(bound_range1)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+<img src="man/figures/unnamed-chunk-16-1.png" width="672" />
 
 <br>
 
@@ -393,7 +393,7 @@ Now the plot.
 rangemap_plot(bound_range2)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+<img src="man/figures/unnamed-chunk-18-1.png" width="672" />
 
 <br>
 
@@ -494,6 +494,7 @@ summary(hull_range1)
 hull_range2 <- rangemap_hull(occurrences = occ_d, hull_type = "convex", 
                              buffer_distance = 100000, split = TRUE, 
                              cluster_method = "k-means", n_k_means = 3)
+
 #> Clustering method: k-means
 #> Hull type: convex
 
@@ -525,7 +526,7 @@ Now the figure of the species range.
 rangemap_plot(hull_range) # try hull_range1 and hull_range2 as well
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
+<img src="man/figures/unnamed-chunk-21-1.png" width="672" />
 
 <br>
 
@@ -637,7 +638,7 @@ Checking the figure.
 rangemap_plot(hull_range5) # try hull_range4 and hull_range3 as well
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
+<img src="man/figures/unnamed-chunk-23-1.png" width="672" />
 
 <br>
 
@@ -697,7 +698,7 @@ Let’s see how this range looks like.
 rangemap_plot(enm_range)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
+<img src="man/figures/unnamed-chunk-26-1.png" width="672" />
 
 <br>
 
@@ -757,7 +758,7 @@ Let’s take a look at the results.
 rangemap_plot(tsa_r, polygons = CU, zoom = 0.5)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-29-1.png)<!-- -->
+<img src="man/figures/unnamed-chunk-29-1.png" width="672" />
 
 <br>
 
@@ -784,7 +785,7 @@ Examples of the use of this function are written below.
 rangemap_plot(hull_range5, add_EOO = TRUE)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-31-1.png)<!-- -->
+<img src="man/figures/unnamed-chunk-31-1.png" width="672" />
 
 <br>
 
@@ -794,7 +795,7 @@ rangemap_plot(hull_range5, add_EOO = TRUE)
 rangemap_plot(hull_range5, add_occurrences = TRUE)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-32-1.png)<!-- -->
+<img src="man/figures/unnamed-chunk-32-1.png" width="672" />
 
 <br>
 
@@ -804,7 +805,7 @@ rangemap_plot(hull_range5, add_occurrences = TRUE)
 rangemap_plot(hull_range5, add_EOO = TRUE, add_occurrences = TRUE)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-33-1.png)<!-- -->
+<img src="man/figures/unnamed-chunk-33-1.png" width="672" />
 
 <br>
 
@@ -816,7 +817,7 @@ rangemap_plot(hull_range5, add_EOO = TRUE, add_occurrences = TRUE,
               zoom = 0.5, northarrow = TRUE)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-34-1.png)<!-- -->
+<img src="man/figures/unnamed-chunk-34-1.png" width="672" />
 
 <br>
 
@@ -854,7 +855,7 @@ names(vars) <- c("bio5", "bio6", "bio13", "bio14")
 ranges_emaps(buffer_range, cxhull_range, cvehull_range, variables = vars)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-36-1.png)<!-- -->
+<img src="man/figures/unnamed-chunk-36-1.png" width="672" />
 
 <br>
 
