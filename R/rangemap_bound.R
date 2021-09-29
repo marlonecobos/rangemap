@@ -56,11 +56,14 @@
 #' used is WGS84 (EPSG:4326).
 #' @param save_shp (logical) if \code{TRUE}, shapefiles of the species range,
 #' occurrences, extent of occurrence, and area of occupancy will be written in
-#' the working directory. Default = \code{FALSE}.
+#' the working directory, or the path described as part of \code{name}.
+#' Default = \code{FALSE}.
 #' @param name (character) valid if \code{save_shp} = \code{TRUE}. The name of
 #' the shapefile to be exported. A suffix will be added to \code{name} depending
 #' on the object, as follows: species extent of occurrence = "_extent_occ", area
-#' of occupancy = "_area_occ", and occurrences = "_unique_records".
+#' of occupancy = "_area_occ", and occurrences = "_unique_records". If a path
+#' different to the working directory is included as part of this name, files
+#' will be written in such a directory.
 #' @param overwrite (logical) whether or not to overwrite previous results with
 #' the same name. Default = \code{FALSE}.
 #' @param verbose (logical) whether or not to print messages about the process.
@@ -319,10 +322,13 @@ rangemap_boundaries <- function(occurrences = NULL, adm_areas = NULL,
 
     # exporting
     if (save_shp == TRUE) {
+      dname <- dirname(name)
+      bname <- basename(name)
       if (verbose == TRUE) {
-        message("\nWriting shapefile in the working directory...\n")
+        message("\nWriting shapefiles in:  ",
+                ifelse(dname == ".", "working directory", dname))
       }
-      rgdal::writeOGR(boundaries, ".", name, driver = "ESRI Shapefile")
+      rgdal::writeOGR(boundaries, dname, bname, driver = "ESRI Shapefile")
     }
 
     # return results
@@ -370,19 +376,22 @@ rangemap_boundaries <- function(occurrences = NULL, adm_areas = NULL,
 
     # exporting
     if (save_shp == TRUE) {
+      dname <- dirname(name)
+      bname <- basename(name)
       if (verbose == TRUE) {
-        message("\nWriting shapefiles in the working directory...\n")
+        message("\nWriting shapefiles in:  ",
+                ifelse(dname == ".", "working directory", dname))
       }
-      rgdal::writeOGR(boundaries, ".", name, driver = "ESRI Shapefile",
+      rgdal::writeOGR(boundaries, dname, bname, driver = "ESRI Shapefile",
                       overwrite_layer = overwrite)
-      rgdal::writeOGR(occ_pr, ".", paste(name, "unique_records", sep = "_"),
+      rgdal::writeOGR(occ_pr, dname, paste(bname, "unique_records", sep = "_"),
                       driver = "ESRI Shapefile", overwrite_layer = overwrite)
       if (extent_of_occurrence == TRUE) {
-        rgdal::writeOGR(extent_occurrence, ".", paste(name, "extent_occ", sep = "_"),
+        rgdal::writeOGR(extent_occurrence, dname, paste(bname, "extent_occ", sep = "_"),
                         driver = "ESRI Shapefile", overwrite_layer = overwrite)
       }
       if (area_of_occupancy == TRUE) {
-        rgdal::writeOGR(area_occupancy, ".", paste(name, "area_occ", sep = "_"),
+        rgdal::writeOGR(area_occupancy, dname, paste(bname, "area_occ", sep = "_"),
                         driver = "ESRI Shapefile", overwrite_layer = overwrite)
       }
     }

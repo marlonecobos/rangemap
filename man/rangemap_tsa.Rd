@@ -51,17 +51,21 @@ used is WGS84 (EPSG:4326).}
 
 \item{save_shp}{(logical) if \code{TRUE}, shapefiles of the species range,
 occurrences, extent of occurrence, and area of occupancy will be written in
-the working directory. Default = \code{FALSE}.}
+the working directory, or the path described as part of \code{name}.
+Default = \code{FALSE}.}
 
 \item{save_ts_layer}{(logical) if \code{TRUE}, the TSA layer will be included
 as part of the object returned. If \code{save_shp} = TRUE, the TSA layer will
-be written in GeoTiff format. Default = \code{FALSE}}
-
-\item{name}{(character) valid if \code{save_shp} = TRUE. The name of the
-geographic files to be exported. A suffix will be added to \code{name}
-depending on the object as follows: species extent of occurrence = "_extent_occ",
-area of occupancy = "_area_occ", occurrences = "_unique_records", and,
+be written in GeoTiff format. Default = \code{FALSE}
 if \code{save_ts_layer} = \code{TRUE}, trend surface layer "_tsa".}
+
+\item{name}{(character) valid if \code{save_shp} = \code{TRUE}. The name of
+the shapefile to be exported. A suffix will be added to \code{name} depending
+on the object, as follows: species extent of occurrence = "_extent_occ", area
+of occupancy = "_area_occ", occurrences = "_unique_records", and,
+if \code{save_ts_layer} = \code{TRUE}, trend surface layer "_tsa". If a path
+different to the working directory is included as part of this name, files
+will be written in such a directory.}
 
 \item{overwrite}{(logical) whether or not to overwrite previous results with
 the same name. Default = \code{FALSE}.}

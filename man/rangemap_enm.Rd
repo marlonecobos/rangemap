@@ -66,12 +66,15 @@ projection used is WGS84 (EPSG:4326).}
 
 \item{save_shp}{(logical) if \code{TRUE}, shapefiles of the species range,
 occurrences, extent of occurrence, and area of occupancy will be written in
-the working directory. Default = \code{FALSE}.}
+the working directory, or the path described as part of \code{name}.
+Default = \code{FALSE}.}
 
 \item{name}{(character) valid if \code{save_shp} = \code{TRUE}. The name of
 the shapefile to be exported. A suffix will be added to \code{name} depending
 on the object, as follows: species extent of occurrence = "_extent_occ", area
-of occupancy = "_area_occ", and occurrences = "_unique_records".}
+of occupancy = "_area_occ", and occurrences = "_unique_records". If a path
+different to the working directory is included as part of this name, files
+will be written in such a directory.}
 
 \item{overwrite}{(logical) whether or not to overwrite previous results with
 the same name. Default = \code{FALSE}.}
